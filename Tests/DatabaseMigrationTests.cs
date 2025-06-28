@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using FluentAssertions;
 using iskxpress_api.Data;
 using iskxpress_api.Models;

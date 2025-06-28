@@ -5,7 +5,6 @@ using iskxpress_api.Models;
 using iskxpress_api.Services;
 using iskxpress_api.Repositories;
 using iskxpress_api.DTOs.Users;
-using Microsoft.Extensions.Logging;
 
 namespace iskxpress_api.Tests;
 

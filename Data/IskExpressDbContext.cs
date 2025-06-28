@@ -18,6 +18,7 @@ public class IskExpressDbContext : DbContext
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<FileRecord> Files { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -153,6 +154,19 @@ public class IskExpressDbContext : DbContext
                 .WithMany(p => p.OrderItems)
                 .HasForeignKey(oi => oi.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // Configure FileRecord entity
+        modelBuilder.Entity<FileRecord>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ObjectKey).HasMaxLength(500);
+            entity.Property(e => e.ObjectUrl).HasMaxLength(1000);
+            entity.Property(e => e.OriginalFileName).HasMaxLength(255);
+            entity.Property(e => e.ContentType).HasMaxLength(100);
+            entity.Property(e => e.Type).HasConversion<string>();
+            
+            entity.HasIndex(e => new { e.Type, e.EntityId }).IsUnique();
         });
 
         // Configure enum conversions

@@ -4,6 +4,7 @@ using System.Reflection;
 using iskxpress_api.Data;
 using iskxpress_api.Repositories;
 using iskxpress_api.Services;
+using Amazon.S3;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,16 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<IFileRepository, FileRepository>();
+
+// Register AWS S3 services
+builder.Services.AddScoped<IAmazonS3>(provider =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    var region = Amazon.RegionEndpoint.GetBySystemName(config["AWS:Region"] ?? "us-east-1");
+    return new Amazon.S3.AmazonS3Client(region);
+});
+builder.Services.AddScoped<IS3Repository, S3Repository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();

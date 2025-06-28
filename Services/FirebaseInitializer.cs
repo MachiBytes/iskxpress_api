@@ -1,5 +1,4 @@
 using FirebaseAdmin;
-using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 
 namespace iskxpress_api.Services;

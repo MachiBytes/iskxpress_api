@@ -2,7 +2,6 @@ using Xunit;
 using Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using iskxpress_api.Models;
 using iskxpress_api.Services;
 using iskxpress_api.Controllers;

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.DependencyInjection;
 using FluentAssertions;
 using iskxpress_api.Data;
 using iskxpress_api.Models;

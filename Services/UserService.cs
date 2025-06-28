@@ -2,9 +2,7 @@ using iskxpress_api.Models;
 using iskxpress_api.Repositories;
 using iskxpress_api.DTOs.Users;
 using iskxpress_api.Services.Mapping;
-using FirebaseAdmin;
 using FirebaseAdmin.Auth;
-using Google.Apis.Auth.OAuth2;
 
 namespace iskxpress_api.Services;
 
