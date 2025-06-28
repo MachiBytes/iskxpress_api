@@ -4,6 +4,9 @@ using iskxpress_api.Models;
 
 namespace iskxpress_api.Repositories;
 
+/// <summary>
+/// Repository implementation for order operations
+/// </summary>
 public class OrderRepository : GenericRepository<Order>, IOrderRepository
 {
     public OrderRepository(IskExpressDbContext context) : base(context)
@@ -12,10 +15,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
 
     public async Task<IEnumerable<Order>> GetByUserIdAsync(int userId)
     {
-        return await _dbSet
-            .Include(o => o.Stall)
-            .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Product)
+        return await _context.Orders
             .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -23,10 +23,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
 
     public async Task<IEnumerable<Order>> GetByStallIdAsync(int stallId)
     {
-        return await _dbSet
-            .Include(o => o.User)
-            .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Product)
+        return await _context.Orders
             .Where(o => o.StallId == stallId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -34,9 +31,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
 
     public async Task<IEnumerable<Order>> GetByStatusAsync(OrderStatus status)
     {
-        return await _dbSet
-            .Include(o => o.Stall)
-            .Include(o => o.User)
+        return await _context.Orders
             .Where(o => o.Status == status)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -44,12 +39,39 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
 
     public async Task<IEnumerable<Order>> GetByDeliveryPartnerIdAsync(int deliveryPartnerId)
     {
-        return await _dbSet
-            .Include(o => o.Stall)
-            .Include(o => o.User)
-            .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Product)
+        return await _context.Orders
             .Where(o => o.DeliveryPartnerId == deliveryPartnerId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Order>> GetAllWithDetailsAsync()
+    {
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Stall)
+            .Include(o => o.DeliveryPartner)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<Order?> GetByIdWithDetailsAsync(int id)
+    {
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Stall)
+            .Include(o => o.DeliveryPartner)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.Id == id);
+    }
+
+    public async Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
+    {
+        return await _context.Orders
+            .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }

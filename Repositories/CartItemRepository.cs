@@ -4,6 +4,9 @@ using iskxpress_api.Models;
 
 namespace iskxpress_api.Repositories;
 
+/// <summary>
+/// Repository implementation for cart item operations
+/// </summary>
 public class CartItemRepository : GenericRepository<CartItem>, ICartItemRepository
 {
     public CartItemRepository(IskExpressDbContext context) : base(context)
@@ -12,55 +15,68 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
 
     public async Task<IEnumerable<CartItem>> GetByUserIdAsync(int userId)
     {
-        return await _dbSet
-            .Include(ci => ci.Product)
-            .ThenInclude(p => p.Category)
-            .Include(ci => ci.Product)
-            .ThenInclude(p => p.Section)
-            .Include(ci => ci.Stall)
+        return await _context.CartItems
             .Where(ci => ci.UserId == userId)
+            .OrderBy(ci => ci.Id)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<CartItem>> GetByProductIdAsync(int productId)
+    {
+        return await _context.CartItems
+            .Where(ci => ci.ProductId == productId)
+            .OrderBy(ci => ci.Id)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<CartItem>> GetByStallIdAsync(int stallId)
     {
-        return await _dbSet
-            .Include(ci => ci.Product)
-            .Include(ci => ci.User)
+        return await _context.CartItems
             .Where(ci => ci.StallId == stallId)
+            .OrderBy(ci => ci.Id)
             .ToListAsync();
     }
 
-    public async Task<CartItem?> GetByUserAndProductAsync(int userId, int productId)
+    public async Task<IEnumerable<CartItem>> GetByUserAndStallAsync(int userId, int stallId)
     {
-        return await _dbSet
+        return await _context.CartItems
+            .Where(ci => ci.UserId == userId && ci.StallId == stallId)
+            .OrderBy(ci => ci.Id)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<CartItem>> GetAllWithDetailsAsync()
+    {
+        return await _context.CartItems
+            .Include(ci => ci.User)
             .Include(ci => ci.Product)
             .Include(ci => ci.Stall)
-            .FirstOrDefaultAsync(ci => ci.UserId == userId && ci.ProductId == productId);
-    }
-
-    public async Task<bool> ClearCartByUserIdAsync(int userId)
-    {
-        var cartItems = await _dbSet.Where(ci => ci.UserId == userId).ToListAsync();
-        if (cartItems.Any())
-        {
-            _dbSet.RemoveRange(cartItems);
-            await _context.SaveChangesAsync();
-        }
-        return true;
-    }
-
-    public async Task<bool> RemoveCartItemsByStallAsync(int userId, int stallId)
-    {
-        var cartItems = await _dbSet
-            .Where(ci => ci.UserId == userId && ci.StallId == stallId)
+            .OrderBy(ci => ci.Id)
             .ToListAsync();
-        
+    }
+
+    public async Task<CartItem?> GetByIdWithDetailsAsync(int id)
+    {
+        return await _context.CartItems
+            .Include(ci => ci.User)
+            .Include(ci => ci.Product)
+            .Include(ci => ci.Stall)
+            .FirstOrDefaultAsync(ci => ci.Id == id);
+    }
+
+    public async Task<bool> ClearCartAsync(int userId)
+    {
+        var cartItems = await _context.CartItems
+            .Where(ci => ci.UserId == userId)
+            .ToListAsync();
+
         if (cartItems.Any())
         {
-            _dbSet.RemoveRange(cartItems);
-            await _context.SaveChangesAsync();
+            _context.CartItems.RemoveRange(cartItems);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
-        return true;
+
+        return true; // Cart was already empty
     }
 } 

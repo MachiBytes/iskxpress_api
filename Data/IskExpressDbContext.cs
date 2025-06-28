@@ -10,6 +10,7 @@ public class IskExpressDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Delivery> Deliveries { get; set; }
     public DbSet<Stall> Stalls { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<StallSection> StallSections { get; set; }

@@ -4,6 +4,9 @@ using iskxpress_api.Models;
 
 namespace iskxpress_api.Repositories;
 
+/// <summary>
+/// Repository implementation for stall operations
+/// </summary>
 public class StallRepository : GenericRepository<Stall>, IStallRepository
 {
     public StallRepository(IskExpressDbContext context) : base(context)
@@ -12,7 +15,37 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
 
     public async Task<IEnumerable<Stall>> GetByVendorIdAsync(int vendorId)
     {
-        return await _dbSet.Where(s => s.VendorId == vendorId).ToListAsync();
+        return await _context.Stalls
+            .Where(s => s.VendorId == vendorId)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Stall>> SearchByNameAsync(string searchTerm)
+    {
+        return await _context.Stalls
+            .Where(s => s.Name.Contains(searchTerm))
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Stall>> GetAllWithDetailsAsync()
+    {
+        return await _context.Stalls
+            .Include(s => s.Vendor)
+            .Include(s => s.StallSections)
+            .Include(s => s.Products)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public async Task<Stall?> GetByIdWithDetailsAsync(int id)
+    {
+        return await _context.Stalls
+            .Include(s => s.Vendor)
+            .Include(s => s.StallSections)
+            .Include(s => s.Products)
+            .FirstOrDefaultAsync(s => s.Id == id);
     }
 
     public async Task<Stall?> GetWithProductsAsync(int stallId)

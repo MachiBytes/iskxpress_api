@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using FluentAssertions;
 using iskxpress_api.Data;
@@ -13,6 +13,7 @@ public class RepositoryTests : IDisposable
 {
     private readonly IskExpressDbContext _context;
     private readonly ServiceProvider _serviceProvider;
+    private readonly SqliteConnection _connection;
     private readonly IUserRepository _userRepository;
     private readonly IStallRepository _stallRepository;
     private readonly IProductRepository _productRepository;
@@ -23,8 +24,12 @@ public class RepositoryTests : IDisposable
     {
         var services = new ServiceCollection();
         
+        // Create SQLite in-memory database
+        _connection = new SqliteConnection("Data Source=:memory:");
+        _connection.Open();
+        
         services.AddDbContext<IskExpressDbContext>(options =>
-            options.UseInMemoryDatabase($"TestDb_{Guid.NewGuid()}")
+            options.UseSqlite(_connection)
                    .EnableServiceProviderCaching(false));
         
         // Register repositories
@@ -189,7 +194,7 @@ public class RepositoryTests : IDisposable
         await _productRepository.AddAsync(product);
 
         // Act
-        var productWithDetails = await _productRepository.GetWithDetailsAsync(product.Id);
+        var productWithDetails = await _productRepository.GetByIdWithDetailsAsync(product.Id);
 
         // Assert
         productWithDetails.Should().NotBeNull();
@@ -300,7 +305,7 @@ public class RepositoryTests : IDisposable
         await _cartItemRepository.AddAsync(cartItem1);
 
         // Act
-        var result = await _cartItemRepository.ClearCartByUserIdAsync(user.Id);
+        var result = await _cartItemRepository.ClearCartAsync(user.Id);
 
         // Assert
         result.Should().BeTrue();
@@ -379,8 +384,9 @@ public class RepositoryTests : IDisposable
 
     public void Dispose()
     {
-        _context.Database.EnsureDeleted();
-        _context.Dispose();
-        _serviceProvider.Dispose();
+        _context?.Dispose();
+        _serviceProvider?.Dispose();
+        _connection?.Close();
+        _connection?.Dispose();
     }
 } 
