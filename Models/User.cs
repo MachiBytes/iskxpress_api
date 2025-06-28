@@ -23,7 +23,7 @@ public class User
     [Required]
     public UserRole Role { get; set; }
 
-    public string? Picture { get; set; }
+    public string? PictureURL { get; set; }
 
     // Navigation properties
     public virtual ICollection<Stall> Stalls { get; set; } = new List<Stall>();

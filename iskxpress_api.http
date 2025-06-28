@@ -1,6 +1,90 @@
 @iskxpress_api_HostAddress = http://localhost:5083
 
-GET {{iskxpress_api_HostAddress}}/weatherforecast/
+# API Health Check
+GET {{iskxpress_api_HostAddress}}/
+Accept: application/json
+
+###
+
+# Swagger Documentation
+GET {{iskxpress_api_HostAddress}}/swagger
+Accept: text/html
+
+###
+
+# User Management Endpoints
+
+# Get all users
+GET {{iskxpress_api_HostAddress}}/api/User
+Accept: application/json
+
+###
+
+# Get user by ID
+GET {{iskxpress_api_HostAddress}}/api/User/1
+Accept: application/json
+
+###
+
+# Get user by email
+GET {{iskxpress_api_HostAddress}}/api/User/email/john.doe@example.com
+Accept: application/json
+
+###
+
+# Get users by role (User or Vendor)
+GET {{iskxpress_api_HostAddress}}/api/User/role/User
+Accept: application/json
+
+###
+
+# Get users by auth provider (Google or Microsoft)
+GET {{iskxpress_api_HostAddress}}/api/User/provider/Google
+Accept: application/json
+
+###
+
+# FIREBASE SYNC ENDPOINT (Main endpoint for Flutter app)
+# This endpoint connects directly to Firebase and syncs all users to the local database
+# Microsoft users become Users, Google users become Vendors
+# Returns sync statistics including new users, updated users, and any errors
+GET {{iskxpress_api_HostAddress}}/api/User/sync
+Accept: application/json
+
+###
+
+# Create user manually (alternative method)
+POST {{iskxpress_api_HostAddress}}/api/User
+Content-Type: application/json
+
+{
+    "name": "Manual User",
+    "email": "manual@example.com",
+    "verified": true,
+    "authProvider": "Microsoft",
+    "role": "User",
+    "pictureURL": null
+}
+
+###
+
+# Update user
+PUT {{iskxpress_api_HostAddress}}/api/User/1
+Content-Type: application/json
+
+{
+    "name": "Updated Name",
+    "email": "updated@example.com",
+    "verified": true,
+    "authProvider": "Google",
+    "role": "Vendor",
+    "pictureURL": "https://example.com/new-profile.jpg"
+}
+
+###
+
+# Delete user
+DELETE {{iskxpress_api_HostAddress}}/api/User/1
 Accept: application/json
 
 ###

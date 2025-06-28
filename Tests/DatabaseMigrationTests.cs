@@ -73,7 +73,7 @@ public class DatabaseMigrationTests : IDisposable
             Verified = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User,
-            Picture = "profile.jpg"
+            PictureURL = "profile.jpg"
         };
 
         // Act

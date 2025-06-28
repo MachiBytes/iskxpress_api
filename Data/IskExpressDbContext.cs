@@ -29,7 +29,7 @@ public class IskExpressDbContext : DbContext
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.Picture).HasMaxLength(500);
+            entity.Property(e => e.PictureURL).HasMaxLength(500);
         });
 
         // Configure Stall entity
