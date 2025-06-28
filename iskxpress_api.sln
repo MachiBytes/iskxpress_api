@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iskxpress_api", "iskxpress_api.csproj", "{DADF798B-24E3-275A-6B6C-3A61B3C2FF2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DADF798B-24E3-275A-6B6C-3A61B3C2FF2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DADF798B-24E3-275A-6B6C-3A61B3C2FF2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DADF798B-24E3-275A-6B6C-3A61B3C2FF2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DADF798B-24E3-275A-6B6C-3A61B3C2FF2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E8789E2E-F0F1-4DF4-9E2E-5C9FB3BFBD95}
+	EndGlobalSection
+EndGlobal
