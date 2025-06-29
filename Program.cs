@@ -86,6 +86,9 @@ builder.Services.AddScoped<IStallService, StallService>();
 builder.Services.AddScoped<ISectionService, SectionService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
+// Register seeder
+builder.Services.AddScoped<DatabaseSeeder>();
+
 // Add CORS with more specific configuration
 builder.Services.AddCors(options =>
 {
@@ -114,6 +117,30 @@ builder.Services.AddHttpLogging(logging =>
 });
 
 var app = builder.Build();
+
+// Seed database in development
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        try
+        {
+            var context = scope.ServiceProvider.GetRequiredService<IskExpressDbContext>();
+            var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+            
+            // Ensure database is created
+            await context.Database.EnsureCreatedAsync();
+            
+            // Seed the database
+            await seeder.SeedAsync();
+        }
+        catch (Exception ex)
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred while seeding the database");
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

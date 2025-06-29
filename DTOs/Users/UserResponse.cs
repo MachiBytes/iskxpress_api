@@ -33,9 +33,19 @@ public class UserResponse
     public AuthProvider AuthProvider { get; set; }
 
     /// <summary>
+    /// String representation of the authentication provider
+    /// </summary>
+    public string AuthProviderString => AuthProvider.ToString();
+
+    /// <summary>
     /// User's role in the system
     /// </summary>
     public UserRole Role { get; set; }
+
+    /// <summary>
+    /// String representation of the user's role
+    /// </summary>
+    public string RoleString => Role.ToString();
 
     /// <summary>
     /// Profile picture file ID reference (optional)
