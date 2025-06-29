@@ -135,21 +135,22 @@ if (app.Environment.IsDevelopment())
 }
 
 // Configure the HTTP request pipeline.
+// Enable Swagger in all environments
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "ISK Express API v1");
+    options.RoutePrefix = "swagger";
+    options.DocumentTitle = "ISK Express API Documentation";
+    options.EnableDeepLinking();
+    options.EnableFilter();
+    options.ShowExtensions();
+});
+
+// Enable detailed HTTP logging only in development
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ISK Express API v1");
-        options.RoutePrefix = "swagger";
-        options.DocumentTitle = "ISK Express API Documentation";
-        options.EnableDeepLinking();
-        options.EnableFilter();
-        options.ShowExtensions();
-    });
-    
-    // Enable detailed HTTP logging in development
     app.UseHttpLogging();
 }
 
