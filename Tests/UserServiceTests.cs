@@ -18,7 +18,8 @@ public class UserServiceTests
     {
         _mockUserRepository = new Mock<IUserRepository>();
         _mockLogger = new Mock<ILogger<UserService>>();
-        _userService = new UserService(_mockUserRepository.Object);
+        var mockFileRepository = new Mock<IFileRepository>();
+        _userService = new UserService(_mockUserRepository.Object, mockFileRepository.Object);
     }
 
     [Fact]

@@ -20,7 +20,7 @@ public class StallControllerTests
     {
         _mockStallService = new Mock<IStallService>();
         _mockLogger = new Mock<ILogger<StallController>>();
-        _controller = new StallController(_mockStallService.Object);
+        _controller = new StallController(_mockStallService.Object, _mockLogger.Object);
     }
 
     [Fact]

@@ -1,12 +1,14 @@
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Xunit;
 using iskxpress_api.Data;
 using iskxpress_api.DTOs.Vendors;
 using iskxpress_api.Models;
 using iskxpress_api.Repositories;
 using iskxpress_api.Services;
+using Moq;
 
 namespace iskxpress_api.Tests;
 
@@ -30,7 +32,8 @@ public class StallServiceTests : IDisposable
         _context.Database.EnsureCreated();
         
         _stallRepository = new StallRepository(_context);
-        _stallService = new StallService(_stallRepository);
+        var mockFileRepository = new Mock<IFileRepository>();
+        _stallService = new StallService(_stallRepository, mockFileRepository.Object);
     }
 
     [Fact]

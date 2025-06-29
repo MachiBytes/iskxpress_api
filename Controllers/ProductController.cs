@@ -9,10 +9,12 @@ namespace iskxpress_api.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
+    private readonly ILogger<ProductController> _logger;
 
-    public ProductController(IProductService productService)
+    public ProductController(IProductService productService, ILogger<ProductController> logger)
     {
         _productService = productService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -183,5 +185,59 @@ public class ProductController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    /// <summary>
+    /// Upload or replace product picture
+    /// </summary>
+    /// <param name="productId">The product ID</param>
+    /// <param name="file">The image file to upload</param>
+    /// <returns>Updated product with new picture</returns>
+    /// <response code="200">Product picture uploaded successfully</response>
+    /// <response code="400">Invalid file or request</response>
+    /// <response code="404">Product not found</response>
+    /// <response code="413">File too large</response>
+    /// <response code="500">Internal server error</response>
+    [HttpPost("products/{productId}/upload-picture")]
+    [ProducesResponseType(typeof(ProductResponse), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(413)]
+    [ProducesResponseType(500)]
+    public async Task<ActionResult<ProductResponse>> UploadProductPicture(int productId, IFormFile file)
+    {
+        try
+        {
+            // Validate file
+            if (file == null || file.Length == 0)
+                return BadRequest("No file provided");
+
+            // Check file size (5MB limit)
+            const long maxFileSize = 5 * 1024 * 1024;
+            if (file.Length > maxFileSize)
+                return StatusCode(413, "File size exceeds 5MB limit");
+
+            // Validate file type
+            var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" };
+            if (!allowedTypes.Contains(file.ContentType?.ToLowerInvariant()))
+                return BadRequest("Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed");
+
+            // Check if product exists
+            var existingProduct = await _productService.GetProductByIdAsync(productId);
+            if (existingProduct == null)
+                return NotFound($"Product with ID {productId} not found");
+
+            // Upload the file (this will automatically replace any existing product picture)
+            var updatedProduct = await _productService.UploadProductPictureAsync(productId, file);
+            if (updatedProduct == null)
+                return NotFound($"Product with ID {productId} not found");
+
+            return Ok(updatedProduct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error uploading product picture for product {ProductId}", productId);
+            return StatusCode(500, "Internal server error");
+        }
     }
 } 

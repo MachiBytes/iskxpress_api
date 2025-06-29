@@ -8,10 +8,12 @@ namespace iskxpress_api.Services;
 public class StallService : IStallService
 {
     private readonly IStallRepository _stallRepository;
+    private readonly IFileRepository _fileRepository;
 
-    public StallService(IStallRepository stallRepository)
+    public StallService(IStallRepository stallRepository, IFileRepository fileRepository)
     {
         _stallRepository = stallRepository;
+        _fileRepository = fileRepository;
     }
 
     public async Task<IEnumerable<StallResponse>> GetAllStallsAsync()
@@ -67,5 +69,34 @@ public class StallService : IStallService
 
         var createdStall = await _stallRepository.AddAsync(newStall);
         return createdStall.ToStallResponse();
+    }
+
+    public async Task<StallResponse?> UploadStallPictureAsync(int stallId, IFormFile file)
+    {
+        var stall = await _stallRepository.GetByIdAsync(stallId);
+        if (stall == null)
+        {
+            return null;
+        }
+
+        // Get file extension from the original filename
+        var fileExtension = Path.GetExtension(file.FileName)?.TrimStart('.').ToLowerInvariant() ?? "jpg";
+
+        // Upload the file using FileRepository (this automatically replaces existing files)
+        using var fileStream = file.OpenReadStream();
+        var fileRecord = await _fileRepository.UploadFileAsync(
+            FileType.StallAvatar,
+            stallId,
+            fileStream,
+            file.ContentType,
+            file.FileName,
+            fileExtension
+        );
+
+        // Update stall with new picture reference
+        stall.PictureId = fileRecord.Id;
+        var updatedStall = await _stallRepository.UpdateAsync(stall);
+
+        return updatedStall.ToStallResponse();
     }
 } 

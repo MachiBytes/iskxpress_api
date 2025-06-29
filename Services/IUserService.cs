@@ -1,5 +1,6 @@
 using iskxpress_api.Models;
 using iskxpress_api.DTOs.Users;
+using Microsoft.AspNetCore.Http;
 
 namespace iskxpress_api.Services;
 
@@ -12,6 +13,7 @@ public interface IUserService
     Task<bool> DeleteUserAsync(int id);
     Task<SyncResultDto> SyncAllFirebaseUsersAsync();
     Task<IEnumerable<UserResponse>> GetAllUsersAsync();
+    Task<UserResponse?> UploadProfilePictureAsync(int userId, IFormFile file);
 }
 
  

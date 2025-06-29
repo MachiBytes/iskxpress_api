@@ -17,7 +17,8 @@ public class ProductControllerTests
     public ProductControllerTests()
     {
         _mockProductService = new Mock<IProductService>();
-        _controller = new ProductController(_mockProductService.Object);
+        var mockLogger = new Mock<ILogger<ProductController>>();
+        _controller = new ProductController(_mockProductService.Object, mockLogger.Object);
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using iskxpress_api.DTOs.Vendors;
+using Microsoft.AspNetCore.Http;
 
 namespace iskxpress_api.Services;
 
@@ -13,4 +14,5 @@ public interface IProductService
     Task<ProductResponse?> UpdateProductBasicsAsync(int productId, UpdateProductBasicsRequest request);
     Task<ProductResponse?> UpdateProductAvailabilityAsync(int productId, UpdateProductAvailabilityRequest request);
     Task<bool> DeleteProductAsync(int productId);
+    Task<ProductResponse?> UploadProductPictureAsync(int productId, IFormFile file);
 } 

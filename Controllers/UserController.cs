@@ -234,4 +234,58 @@ public class UserController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    /// <summary>
+    /// Upload or replace user profile picture
+    /// </summary>
+    /// <param name="id">The user ID</param>
+    /// <param name="file">The image file to upload</param>
+    /// <returns>Updated user with new profile picture</returns>
+    /// <response code="200">Profile picture uploaded successfully</response>
+    /// <response code="400">Invalid file or request</response>
+    /// <response code="404">User not found</response>
+    /// <response code="413">File too large</response>
+    /// <response code="500">Internal server error</response>
+    [HttpPost("{id}/upload-picture")]
+    [ProducesResponseType(typeof(UserResponse), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(413)]
+    [ProducesResponseType(500)]
+    public async Task<ActionResult<UserResponse>> UploadProfilePicture(int id, IFormFile file)
+    {
+        try
+        {
+            // Validate file
+            if (file == null || file.Length == 0)
+                return BadRequest("No file provided");
+
+            // Check file size (5MB limit)
+            const long maxFileSize = 5 * 1024 * 1024;
+            if (file.Length > maxFileSize)
+                return StatusCode(413, "File size exceeds 5MB limit");
+
+            // Validate file type
+            var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" };
+            if (!allowedTypes.Contains(file.ContentType?.ToLowerInvariant()))
+                return BadRequest("Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed");
+
+            // Check if user exists
+            var existingUser = await _userService.GetUserByIdAsync(id);
+            if (existingUser == null)
+                return NotFound($"User with ID {id} not found");
+
+            // Upload the file (this will automatically replace any existing profile picture)
+            var updatedUser = await _userService.UploadProfilePictureAsync(id, file);
+            if (updatedUser == null)
+                return NotFound($"User with ID {id} not found");
+
+            return Ok(updatedUser);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error uploading profile picture for user {UserId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 } 

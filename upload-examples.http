@@ -1,0 +1,56 @@
+### ISK Express API - Picture Upload Examples
+
+@baseUrl = https://localhost:7026
+
+### Upload User Profile Picture
+POST {{baseUrl}}/api/users/1/upload-picture
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="profile.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/profile.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Upload Stall Display Picture
+POST {{baseUrl}}/api/stalls/1/upload-picture
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="stall.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/stall.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Upload Product Picture
+POST {{baseUrl}}/api/products/1/upload-picture
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="product.jpg"
+Content-Type: image/jpeg
+
+< ./path/to/product.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Notes:
+# - Maximum file size: 5MB
+# - Supported formats: JPEG, PNG, GIF, WebP
+# - Uploading a new picture automatically replaces the existing one
+# - Both S3 storage and database records are managed automatically
+# - Pictures are deleted from S3 when replaced
+# - Returns the updated entity with the new picture URL
+
+### Example Response (User Profile Picture Upload):
+# {
+#   "id": 1,
+#   "name": "John Doe",
+#   "email": "john@example.com",
+#   "verified": true,
+#   "authProvider": "Google",
+#   "role": "Vendor",
+#   "profilePictureId": 123,
+#   "profilePictureUrl": "https://bucket.s3.region.amazonaws.com/user_avatars/1.jpg"
+# } 

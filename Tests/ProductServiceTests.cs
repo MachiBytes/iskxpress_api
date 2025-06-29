@@ -22,11 +22,13 @@ public class ProductServiceTests
         _mockStallRepository = new Mock<IStallRepository>();
         _mockSectionRepository = new Mock<IStallSectionRepository>();
         _mockCategoryRepository = new Mock<ICategoryRepository>();
+        var mockFileRepository = new Mock<IFileRepository>();
         _productService = new ProductService(
             _mockProductRepository.Object,
             _mockStallRepository.Object,
             _mockSectionRepository.Object,
-            _mockCategoryRepository.Object);
+            _mockCategoryRepository.Object,
+            mockFileRepository.Object);
     }
 
     [Fact]

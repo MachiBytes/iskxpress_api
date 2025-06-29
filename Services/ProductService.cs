@@ -2,6 +2,7 @@ using iskxpress_api.DTOs.Vendors;
 using iskxpress_api.Models;
 using iskxpress_api.Repositories;
 using iskxpress_api.Services.Mapping;
+using Microsoft.AspNetCore.Http;
 
 namespace iskxpress_api.Services;
 
@@ -11,17 +12,20 @@ public class ProductService : IProductService
     private readonly IStallRepository _stallRepository;
     private readonly IStallSectionRepository _sectionRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IFileRepository _fileRepository;
 
     public ProductService(
         IProductRepository productRepository,
         IStallRepository stallRepository,
         IStallSectionRepository sectionRepository,
-        ICategoryRepository categoryRepository)
+        ICategoryRepository categoryRepository,
+        IFileRepository fileRepository)
     {
         _productRepository = productRepository;
         _stallRepository = stallRepository;
         _sectionRepository = sectionRepository;
         _categoryRepository = categoryRepository;
+        _fileRepository = fileRepository;
     }
 
     public async Task<ProductResponse?> GetProductByIdAsync(int productId)
@@ -200,5 +204,37 @@ public class ProductService : IProductService
     private static decimal CalculateDeliveryPrice(decimal basePrice)
     {
         return CalculateMarkupPrice(basePrice) + 3.00m;
+    }
+
+    public async Task<ProductResponse?> UploadProductPictureAsync(int productId, IFormFile file)
+    {
+        var product = await _productRepository.GetByIdWithDetailsAsync(productId);
+        if (product == null)
+        {
+            return null;
+        }
+
+        // Get file extension from the original filename
+        var fileExtension = Path.GetExtension(file.FileName)?.TrimStart('.').ToLowerInvariant() ?? "jpg";
+
+        // Upload the file using FileRepository (this automatically replaces existing files)
+        using var fileStream = file.OpenReadStream();
+        var fileRecord = await _fileRepository.UploadFileAsync(
+            FileType.ProductImage,
+            productId,
+            fileStream,
+            file.ContentType,
+            file.FileName,
+            fileExtension
+        );
+
+        // Update product with new picture reference
+        product.PictureId = fileRecord.Id;
+        var updatedProduct = await _productRepository.UpdateAsync(product);
+
+        // Load related data for the response
+        var productWithDetails = await _productRepository.GetByIdWithDetailsAsync(updatedProduct.Id);
+        
+        return productWithDetails?.ToProductResponse();
     }
 } 
