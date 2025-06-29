@@ -57,15 +57,15 @@ public class ProductService : IProductService
                       .Select(p => p.ToProductResponse());
     }
 
-    public async Task<ProductResponse> CreateAsync(CreateProductRequest request)
+    public async Task<ProductResponse> CreateAsync(int stallId, CreateProductRequest request)
     {
         try
         {
-            // Get the stall to validate vendor ownership
-            var stall = await _stallRepository.GetByIdAsync(request.StallId);
+            // Get the stall to validate it exists
+            var stall = await _stallRepository.GetByIdAsync(stallId);
             if (stall == null)
             {
-                throw new ArgumentException($"Stall with ID {request.StallId} not found");
+                throw new ArgumentException($"Stall with ID {stallId} not found");
             }
 
             // Validate that the category exists (no need to check VendorId since categories are global)
@@ -77,13 +77,13 @@ public class ProductService : IProductService
 
             // Validate that the section belongs to the stall
             var section = await _sectionRepository.GetByIdAsync(request.SectionId);
-            if (section == null || section.StallId != request.StallId)
+            if (section == null || section.StallId != stallId)
             {
                 throw new ArgumentException($"Section with ID {request.SectionId} not found or does not belong to the specified stall");
             }
 
             var product = request.ToEntity();
-            product.StallId = request.StallId;
+            product.StallId = stallId;
 
             var createdProduct = await _productRepository.AddAsync(product);
             var response = createdProduct.ToResponse();
@@ -125,11 +125,11 @@ public class ProductService : IProductService
             // Update the product with new values
             existingProduct.Name = request.Name;
             existingProduct.BasePrice = request.BasePrice;
-            existingProduct.PriceWithMarkup = request.PriceWithMarkup;
-            existingProduct.PriceWithDelivery = request.PriceWithDelivery;
+            existingProduct.PriceWithMarkup = CalculateMarkupPrice(request.BasePrice);
+            existingProduct.PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice);
             existingProduct.CategoryId = request.CategoryId;
             existingProduct.SectionId = request.SectionId;
-            existingProduct.PictureId = request.PictureId;
+            // PictureId stays the same (can be updated via upload endpoint)
 
             var updatedProduct = await _productRepository.UpdateAsync(existingProduct);
             var response = updatedProduct.ToResponse();
@@ -144,28 +144,7 @@ public class ProductService : IProductService
         }
     }
 
-    public async Task<ProductResponse?> UpdateProductBasicsAsync(int productId, UpdateProductBasicsRequest request)
-    {
-        var product = await _productRepository.GetByIdWithDetailsAsync(productId);
-        if (product == null)
-        {
-            return null;
-        }
 
-        // Update only basic properties
-        product.Name = request.Name;
-        product.PictureId = request.PictureId;
-        product.BasePrice = request.BasePrice;
-        product.PriceWithMarkup = CalculateMarkupPrice(request.BasePrice);
-        product.PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice);
-
-        var updatedProduct = await _productRepository.UpdateAsync(product);
-        
-        // Load related data for the response
-        var productWithDetails = await _productRepository.GetByIdWithDetailsAsync(updatedProduct.Id);
-        
-        return productWithDetails?.ToProductResponse();
-    }
 
     public async Task<ProductResponse?> UpdateProductAvailabilityAsync(int productId, UpdateProductAvailabilityRequest request)
     {

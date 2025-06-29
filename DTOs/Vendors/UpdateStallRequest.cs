@@ -19,9 +19,4 @@ public class UpdateStallRequest
     /// </summary>
     [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
     public string? ShortDescription { get; set; }
-
-    /// <summary>
-    /// Stall picture file ID reference (optional)
-    /// </summary>
-    public int? PictureId { get; set; }
 } 

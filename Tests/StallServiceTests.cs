@@ -125,8 +125,7 @@ public class StallServiceTests : IDisposable
         var updateRequest = new UpdateStallRequest
         {
             Name = "Updated Stall Name",
-            ShortDescription = "Updated description",
-            PictureId = fileRecord.Id
+            ShortDescription = "Updated description"
         };
 
         // Act
@@ -137,7 +136,7 @@ public class StallServiceTests : IDisposable
         result.Id.Should().Be(stall.Id);
         result.Name.Should().Be("Updated Stall Name");
         result.ShortDescription.Should().Be("Updated description");
-        result.PictureId.Should().Be(fileRecord.Id);
+        // Picture ID is managed via upload endpoint, not update request
         result.VendorId.Should().Be(vendor.Id);
     }
 
@@ -209,14 +208,12 @@ public class StallServiceTests : IDisposable
 
         var createRequest = new CreateStallRequest
         {
-            VendorId = vendor.Id,
             Name = "New Stall",
-            ShortDescription = "A brand new stall",
-            PictureId = null
+            ShortDescription = "A brand new stall"
         };
 
         // Act
-        var result = await _stallService.CreateStallAsync(createRequest);
+        var result = await _stallService.CreateStallAsync(vendor.Id, createRequest);
 
         // Assert
         result.Should().NotBeNull();
@@ -251,14 +248,12 @@ public class StallServiceTests : IDisposable
 
         var createRequest = new CreateStallRequest
         {
-            VendorId = vendor.Id,
             Name = "Second Stall",
-            ShortDescription = "Should not be allowed",
-            PictureId = null
+            ShortDescription = "Should not be allowed"
         };
 
         // Act
-        var result = await _stallService.CreateStallAsync(createRequest);
+        var result = await _stallService.CreateStallAsync(vendor.Id, createRequest);
 
         // Assert
         result.Should().BeNull();

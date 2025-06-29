@@ -176,7 +176,6 @@ public class ProductControllerTests
         {
             Name = "New Product",
             BasePrice = 12.99m,
-            Availability = ProductAvailability.Available,
             CategoryId = 1,
             SectionId = 1
         };
@@ -186,10 +185,10 @@ public class ProductControllerTests
             Id = 1,
             Name = request.Name,
             BasePrice = request.BasePrice,
-            Availability = request.Availability
+            Availability = ProductAvailability.Available
         };
 
-        _mockProductService.Setup(service => service.CreateAsync(request))
+        _mockProductService.Setup(service => service.CreateAsync(stallId, request))
             .ReturnsAsync(response);
 
         // Act
@@ -199,7 +198,7 @@ public class ProductControllerTests
         var createdResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
         createdResult.StatusCode.Should().Be(201);
 
-        _mockProductService.Verify(s => s.CreateAsync(request), Times.Once);
+        _mockProductService.Verify(s => s.CreateAsync(stallId, request), Times.Once);
     }
 
     [Fact]
@@ -215,7 +214,7 @@ public class ProductControllerTests
             SectionId = 1
         };
 
-        _mockProductService.Setup(service => service.CreateAsync(request))
+        _mockProductService.Setup(service => service.CreateAsync(stallId, request))
             .ReturnsAsync((ProductResponse?)null);
 
         // Act
@@ -236,7 +235,6 @@ public class ProductControllerTests
         {
             Name = "Updated Product",
             BasePrice = 15.99m,
-            Availability = ProductAvailability.Available,
             CategoryId = 1,
             SectionId = 1
         };
@@ -246,7 +244,7 @@ public class ProductControllerTests
             Id = productId,
             Name = request.Name,
             BasePrice = request.BasePrice,
-            Availability = request.Availability
+            Availability = ProductAvailability.Available
         };
 
         _mockProductService.Setup(service => service.UpdateAsync(productId, request))
@@ -289,36 +287,7 @@ public class ProductControllerTests
         _mockProductService.Verify(s => s.UpdateAsync(productId, request), Times.Once);
     }
 
-    [Fact]
-    public async Task UpdateProductBasics_ValidRequest_ReturnsOkWithUpdatedProduct()
-    {
-        // Arrange
-        var productId = 1;
-        var request = new UpdateProductBasicsRequest
-        {
-            Name = "Updated Product Name",
-            BasePrice = 18.99m
-        };
 
-        var updatedProduct = new ProductResponse
-        {
-            Id = productId,
-            Name = request.Name,
-            BasePrice = request.BasePrice
-        };
-
-        _mockProductService.Setup(service => service.UpdateProductBasicsAsync(productId, request))
-            .ReturnsAsync(updatedProduct);
-
-        // Act
-        var result = await _controller.UpdateProductBasics(productId, request);
-
-        // Assert
-        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var product = okResult.Value.Should().BeOfType<ProductResponse>().Subject;
-        product.Name.Should().Be("Updated Product Name");
-        product.BasePrice.Should().Be(18.99m);
-    }
 
     [Fact]
     public async Task UpdateProductAvailability_ValidRequest_ReturnsOkWithUpdatedProduct()

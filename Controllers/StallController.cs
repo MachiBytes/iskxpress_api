@@ -63,22 +63,23 @@ public class StallController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new stall
+    /// Create a new stall for a vendor
     /// </summary>
-    /// <param name="request">The stall information including vendor ID</param>
+    /// <param name="vendorId">The ID of the vendor who will own the stall</param>
+    /// <param name="request">The stall information</param>
     /// <returns>The created stall information</returns>
-    [HttpPost]
-    public async Task<ActionResult<StallResponse>> CreateStall([FromBody] CreateStallRequest request)
+    [HttpPost("vendor/{vendorId}")]
+    public async Task<ActionResult<StallResponse>> CreateStall(int vendorId, [FromBody] CreateStallRequest request)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var createdStall = await _stallService.CreateStallAsync(request);
+        var createdStall = await _stallService.CreateStallAsync(vendorId, request);
         if (createdStall == null)
         {
-            return Conflict($"Vendor {request.VendorId} already has a stall");
+            return Conflict($"Vendor {vendorId} already has a stall");
         }
 
         return CreatedAtAction(nameof(GetStall), new { stallId = createdStall.Id }, createdStall);

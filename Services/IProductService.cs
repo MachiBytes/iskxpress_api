@@ -10,9 +10,8 @@ public interface IProductService
     Task<IEnumerable<ProductResponse>> GetProductsByStallIdAsync(int stallId);
     Task<IEnumerable<ProductResponse>> GetProductsBySectionIdAsync(int sectionId);
     Task<IEnumerable<ProductResponse>> GetAvailableProductsByStallIdAsync(int stallId);
-    Task<ProductResponse> CreateAsync(CreateProductRequest request);
+    Task<ProductResponse> CreateAsync(int stallId, CreateProductRequest request);
     Task<ProductResponse> UpdateAsync(int id, UpdateProductRequest request);
-    Task<ProductResponse?> UpdateProductBasicsAsync(int productId, UpdateProductBasicsRequest request);
     Task<ProductResponse?> UpdateProductAvailabilityAsync(int productId, UpdateProductAvailabilityRequest request);
     Task<bool> DeleteProductAsync(int productId);
     Task<ProductResponse?> UploadProductPictureAsync(int productId, IFormFile file);

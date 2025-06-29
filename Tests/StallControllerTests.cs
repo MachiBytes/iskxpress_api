@@ -130,9 +130,9 @@ public class StallControllerTests
     public async Task CreateStall_ValidRequest_ReturnsCreatedAtAction()
     {
         // Arrange
+        var vendorId = 1;
         var request = new CreateStallRequest
         {
-            VendorId = 1,
             Name = "New Stall",
             ShortDescription = "New Description"
         };
@@ -144,11 +144,11 @@ public class StallControllerTests
             ShortDescription = request.ShortDescription
         };
 
-        _mockStallService.Setup(service => service.CreateStallAsync(request))
+        _mockStallService.Setup(service => service.CreateStallAsync(vendorId, request))
             .ReturnsAsync(createdStall);
 
         // Act
-        var result = await _controller.CreateStall(request);
+        var result = await _controller.CreateStall(vendorId, request);
 
         // Assert
         var createdResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
@@ -163,22 +163,22 @@ public class StallControllerTests
     public async Task CreateStall_InvalidRequest_ReturnsConflict()
     {
         // Arrange
+        var vendorId = 1;
         var request = new CreateStallRequest
         {
-            VendorId = 1,
             Name = "New Stall",
             ShortDescription = "New Description"
         };
 
-        _mockStallService.Setup(service => service.CreateStallAsync(request))
+        _mockStallService.Setup(service => service.CreateStallAsync(vendorId, request))
             .ReturnsAsync((StallResponse?)null);
 
         // Act
-        var result = await _controller.CreateStall(request);
+        var result = await _controller.CreateStall(vendorId, request);
 
         // Assert
         var conflictResult = result.Result.Should().BeOfType<ConflictObjectResult>().Subject;
-        conflictResult.Value.Should().Be($"Vendor {request.VendorId} already has a stall");
+        conflictResult.Value.Should().Be($"Vendor {vendorId} already has a stall");
     }
 
     [Fact]

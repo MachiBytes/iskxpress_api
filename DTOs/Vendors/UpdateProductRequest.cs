@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using iskxpress_api.Models;
 
 namespace iskxpress_api.DTOs.Vendors;
 
@@ -16,45 +15,12 @@ public class UpdateProductRequest
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Product description (optional)
-    /// </summary>
-    [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Product picture file ID reference (optional)
-    /// </summary>
-    public int? PictureId { get; set; }
-
-    /// <summary>
     /// Base price of the product (before markup)
     /// </summary>
     [Required(ErrorMessage = "Base price is required")]
     [Range(0.01, 999.99, ErrorMessage = "Base price must be between $0.01 and $999.99")]
     [DataType(DataType.Currency)]
     public decimal BasePrice { get; set; }
-
-    /// <summary>
-    /// Price with markup (calculated from base price + 10%)
-    /// </summary>
-    [Required(ErrorMessage = "Price with markup is required")]
-    [Range(0.01, 999.99, ErrorMessage = "Price with markup must be between $0.01 and $999.99")]
-    [DataType(DataType.Currency)]
-    public decimal PriceWithMarkup { get; set; }
-
-    /// <summary>
-    /// Price with delivery (markup price + $3.00)
-    /// </summary>
-    [Required(ErrorMessage = "Price with delivery is required")]
-    [Range(0.01, 999.99, ErrorMessage = "Price with delivery must be between $0.01 and $999.99")]
-    [DataType(DataType.Currency)]
-    public decimal PriceWithDelivery { get; set; }
-
-    /// <summary>
-    /// Product availability status
-    /// </summary>
-    [Required(ErrorMessage = "Availability is required")]
-    public ProductAvailability Availability { get; set; }
 
     /// <summary>
     /// Category ID that this product belongs to

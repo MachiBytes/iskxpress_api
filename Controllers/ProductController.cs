@@ -57,12 +57,9 @@ public class ProductController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // Set the StallId from the route parameter
-        request.StallId = stallId;
-
         try
         {
-            var createdProduct = await _productService.CreateAsync(request);
+            var createdProduct = await _productService.CreateAsync(stallId, request);
             if (createdProduct == null)
             {
                 return BadRequest($"Unable to create product. Check that stall {stallId} exists, and that the section and category belong to the stall.");
@@ -145,30 +142,7 @@ public class ProductController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Update basic product information (name, picture, base price only)
-    /// </summary>
-    /// <param name="productId">The ID of the product to update</param>
-    /// <param name="request">The basic product information to update</param>
-    /// <returns>The updated product information</returns>
-    [HttpPatch("products/{productId}/basics")]
-    public async Task<ActionResult<ProductResponse>> UpdateProductBasics(
-        int productId,
-        [FromBody] UpdateProductBasicsRequest request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
 
-        var updatedProduct = await _productService.UpdateProductBasicsAsync(productId, request);
-        if (updatedProduct == null)
-        {
-            return NotFound($"Product with ID {productId} not found");
-        }
-
-        return Ok(updatedProduct);
-    }
 
     /// <summary>
     /// Update product availability

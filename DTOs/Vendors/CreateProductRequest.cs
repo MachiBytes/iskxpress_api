@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using iskxpress_api.Models;
 
 namespace iskxpress_api.DTOs.Vendors;
 
@@ -16,28 +15,12 @@ public class CreateProductRequest
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Product description (optional)
-    /// </summary>
-    [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Product picture file ID reference (optional)
-    /// </summary>
-    public int? PictureId { get; set; }
-
-    /// <summary>
     /// Base price of the product (before markup)
     /// </summary>
     [Required(ErrorMessage = "Base price is required")]
     [Range(0.01, 999.99, ErrorMessage = "Base price must be between $0.01 and $999.99")]
     [DataType(DataType.Currency)]
     public decimal BasePrice { get; set; }
-
-    /// <summary>
-    /// Product availability status
-    /// </summary>
-    public ProductAvailability Availability { get; set; } = ProductAvailability.Available;
 
     /// <summary>
     /// Category ID that this product belongs to
@@ -52,11 +35,4 @@ public class CreateProductRequest
     [Required(ErrorMessage = "Section ID is required")]
     [Range(1, int.MaxValue, ErrorMessage = "Section ID must be a positive number")]
     public int SectionId { get; set; }
-
-    /// <summary>
-    /// Stall ID that this product belongs to
-    /// </summary>
-    [Required(ErrorMessage = "Stall ID is required")]
-    [Range(1, int.MaxValue, ErrorMessage = "Stall ID must be a positive number")]
-    public int StallId { get; set; }
 } 

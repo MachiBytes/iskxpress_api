@@ -10,6 +10,6 @@ public interface IStallService
     Task<StallResponse?> GetStallByIdAsync(int stallId);
     Task<StallResponse?> GetStallByVendorIdAsync(int vendorId);
     Task<StallResponse?> UpdateStallAsync(int stallId, UpdateStallRequest request);
-    Task<StallResponse?> CreateStallAsync(CreateStallRequest request);
+    Task<StallResponse?> CreateStallAsync(int vendorId, CreateStallRequest request);
     Task<StallResponse?> UploadStallPictureAsync(int stallId, IFormFile file);
 } 

@@ -44,16 +44,16 @@ public class StallService : IStallService
 
         stall.Name = request.Name;
         stall.ShortDescription = request.ShortDescription;
-        stall.PictureId = request.PictureId;
+        // PictureId stays the same (can be updated via upload endpoint)
 
         var updatedStall = await _stallRepository.UpdateAsync(stall);
         return updatedStall.ToStallResponse();
     }
 
-    public async Task<StallResponse?> CreateStallAsync(CreateStallRequest request)
+    public async Task<StallResponse?> CreateStallAsync(int vendorId, CreateStallRequest request)
     {
         // Check if vendor already has a stall
-        var existingStall = await _stallRepository.GetByVendorIdAsync(request.VendorId);
+        var existingStall = await _stallRepository.GetByVendorIdAsync(vendorId);
         if (existingStall != null)
         {
             return null; // Vendor already has a stall
@@ -63,8 +63,8 @@ public class StallService : IStallService
         {
             Name = request.Name,
             ShortDescription = request.ShortDescription,
-            PictureId = request.PictureId,
-            VendorId = request.VendorId
+            PictureId = null, // Picture will be set via upload endpoint
+            VendorId = vendorId
         };
 
         var createdStall = await _stallRepository.AddAsync(newStall);

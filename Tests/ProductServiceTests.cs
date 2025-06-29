@@ -171,10 +171,8 @@ public class ProductServiceTests
         {
             Name = "New Product",
             BasePrice = 12.99m,
-            Availability = ProductAvailability.Available,
             CategoryId = 1,
-            SectionId = 1,
-            StallId = stallId
+            SectionId = 1
         };
 
         var createdProduct = new Product
@@ -184,7 +182,7 @@ public class ProductServiceTests
             BasePrice = request.BasePrice,
             PriceWithMarkup = 15.00m,
             PriceWithDelivery = 18.00m,
-            Availability = request.Availability,
+            Availability = ProductAvailability.Available,
             CategoryId = request.CategoryId,
             SectionId = request.SectionId,
             StallId = stallId
@@ -200,7 +198,7 @@ public class ProductServiceTests
             .ReturnsAsync(createdProduct);
 
         // Act
-        var result = await _productService.CreateAsync(request);
+        var result = await _productService.CreateAsync(stallId, request);
 
         // Assert
         result.Should().NotBeNull();
@@ -218,15 +216,14 @@ public class ProductServiceTests
             Name = "New Product",
             BasePrice = 12.99m,
             CategoryId = 1,
-            SectionId = 1,
-            StallId = 1
+            SectionId = 1
         };
 
         _mockStallRepository.Setup(repo => repo.GetByIdAsync(1))
             .ReturnsAsync((Stall?)null);
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateAsync(request));
+        await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateAsync(1, request));
     }
 
     [Fact]
@@ -251,11 +248,8 @@ public class ProductServiceTests
         {
             Name = "Updated Product",
             BasePrice = 15.0m,
-            PriceWithMarkup = 17.0m,
-            PriceWithDelivery = 20.0m,
             CategoryId = 1,
-            SectionId = 1,
-            Availability = ProductAvailability.Available
+            SectionId = 1
         };
 
         _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId))
@@ -284,11 +278,8 @@ public class ProductServiceTests
         {
             Name = "Updated Product",
             BasePrice = 15.0m,
-            PriceWithMarkup = 17.0m,
-            PriceWithDelivery = 20.0m,
             CategoryId = 1,
-            SectionId = 1,
-            Availability = ProductAvailability.Available
+            SectionId = 1
         };
 
         _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId))

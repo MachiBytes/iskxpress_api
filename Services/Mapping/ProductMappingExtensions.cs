@@ -40,14 +40,14 @@ public static class ProductMappingExtensions
         return new Product
         {
             Name = request.Name,
-            PictureId = request.PictureId,
+            PictureId = null, // Picture will be set via upload endpoint
             BasePrice = request.BasePrice,
             PriceWithMarkup = CalculateMarkupPrice(request.BasePrice),
             PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice),
-            Availability = request.Availability,
+            Availability = ProductAvailability.Available, // Default to available
             CategoryId = request.CategoryId,
-            SectionId = request.SectionId,
-            StallId = request.StallId
+            SectionId = request.SectionId
+            // StallId will be set by the service layer from the path parameter
         };
     }
 
