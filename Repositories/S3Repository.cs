@@ -47,9 +47,9 @@ public class S3Repository : IS3Repository
 
             if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
             {
-                // Construct the public URL
+                // Construct the public URL using path-style format
                 var region = _configuration["AWS:Region"] ?? "us-east-1";
-                var publicUrl = $"https://{_bucketName}.s3.{region}.amazonaws.com/{objectKey}";
+                var publicUrl = $"https://s3.{region}.amazonaws.com/{_bucketName}/{objectKey}";
                 
                 _logger.LogInformation("Successfully uploaded file to S3: {ObjectKey}", objectKey);
                 return publicUrl;

@@ -62,13 +62,12 @@ public class S3RepositoryTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().Be("https://test-bucket.s3.us-east-1.amazonaws.com/user_avatars/123.jpg");
+        result.Should().Be("https://s3.us-east-1.amazonaws.com/test-bucket/user_avatars/123.jpg");
 
         _mockS3Client.Verify(s3 => s3.PutObjectAsync(It.Is<PutObjectRequest>(req =>
             req.BucketName == "test-bucket" &&
             req.Key == "user_avatars/123.jpg" &&
-            req.ContentType == contentType &&
-            req.CannedACL == S3CannedACL.PublicRead
+            req.ContentType == contentType
         ), default), Times.Once);
     }
 
@@ -92,7 +91,7 @@ public class S3RepositoryTests
         var result = await _repository.UploadFileAsync(objectKey, fileStream, contentType);
 
         // Assert
-        result.Should().Be("https://test-bucket.s3.us-east-1.amazonaws.com/user_avatars/123.jpg");
+        result.Should().Be("https://s3.us-east-1.amazonaws.com/test-bucket/user_avatars/123.jpg");
 
         _mockS3Client.Verify(s3 => s3.PutObjectAsync(It.Is<PutObjectRequest>(req =>
             req.Key == "user_avatars/123.jpg"

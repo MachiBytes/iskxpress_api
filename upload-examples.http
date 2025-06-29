@@ -52,5 +52,5 @@ Content-Type: image/jpeg
 #   "authProvider": "Google",
 #   "role": "Vendor",
 #   "profilePictureId": 123,
-#   "profilePictureUrl": "https://bucket.s3.region.amazonaws.com/user_avatars/1.jpg"
+#   "profilePictureUrl": "https://s3.region.amazonaws.com/bucket/user_avatars/1.jpg"
 # } 

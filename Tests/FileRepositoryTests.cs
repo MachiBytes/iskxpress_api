@@ -92,14 +92,14 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = entityId,
             ObjectKey = "user_avatars/123.png",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.png",
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.png",
             ContentType = "image/png"
         };
         _context.Files.Add(existingFile);
         await _context.SaveChangesAsync();
 
         var fileStream = new MemoryStream(new byte[] { 1, 2, 3 });
-        var expectedUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg";
+        var expectedUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg";
 
         _mockS3Repository.Setup(s3 => s3.RemoveFileAsync("user_avatars/123.png"))
             .ReturnsAsync(true);
@@ -133,7 +133,7 @@ public class FileRepositoryTests : IDisposable
     {
         // Arrange
         var fileStream = new MemoryStream(new byte[] { 1, 2, 3 });
-        var expectedUrl = $"https://bucket.s3.region.amazonaws.com/{expectedKey}";
+        var expectedUrl = $"https://s3.region.amazonaws.com/bucket/{expectedKey}";
 
         _mockS3Repository.Setup(s3 => s3.UploadFileAsync(expectedKey, It.IsAny<Stream>(), It.IsAny<string>()))
             .ReturnsAsync(expectedUrl);
@@ -155,7 +155,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg"
         };
         _context.Files.Add(file);
         await _context.SaveChangesAsync();
@@ -197,7 +197,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg"
         };
         _context.Files.Add(file);
         await _context.SaveChangesAsync();
@@ -225,7 +225,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg"
         };
         _context.Files.Add(file1);
         await _context.SaveChangesAsync();
@@ -270,7 +270,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg"
         };
         _context.Files.Add(file);
         await _context.SaveChangesAsync();
@@ -303,7 +303,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg",
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg",
             CreatedAt = DateTime.UtcNow.AddDays(-1)
         };
         var file2 = new FileRecord
@@ -311,7 +311,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 456, // Different entity ID to avoid unique constraint violation
             ObjectKey = "user_avatars/456.png",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/456.png",
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/456.png",
             CreatedAt = DateTime.UtcNow
         };
         var file3 = new FileRecord
@@ -319,7 +319,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.StallAvatar,
             EntityId = 123,
             ObjectKey = "stall_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/stall_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/stall_avatars/123.jpg"
         };
         _context.Files.AddRange(file1, file2, file3);
         await _context.SaveChangesAsync();
@@ -342,21 +342,21 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg"
         };
         var file2 = new FileRecord
         {
             Type = FileType.UserAvatar,
             EntityId = 456,
             ObjectKey = "user_avatars/456.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/456.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/456.jpg"
         };
         var file3 = new FileRecord
         {
             Type = FileType.StallAvatar,
             EntityId = 123,
             ObjectKey = "stall_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/stall_avatars/123.jpg"
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/stall_avatars/123.jpg"
         };
         _context.Files.AddRange(file1, file2, file3);
         await _context.SaveChangesAsync();
@@ -378,7 +378,7 @@ public class FileRepositoryTests : IDisposable
             Type = FileType.UserAvatar,
             EntityId = 123,
             ObjectKey = "user_avatars/123.jpg",
-            ObjectUrl = "https://bucket.s3.region.amazonaws.com/user_avatars/123.jpg",
+            ObjectUrl = "https://s3.region.amazonaws.com/bucket/user_avatars/123.jpg",
             OriginalFileName = "old.jpg",
             UpdatedAt = DateTime.UtcNow.AddHours(-1)
         };
