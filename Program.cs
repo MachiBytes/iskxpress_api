@@ -89,22 +89,14 @@ builder.Services.AddScoped<IProductService, ProductService>();
 // Register seeder
 builder.Services.AddScoped<DatabaseSeeder>();
 
-// Add CORS with more specific configuration
+// Add CORS - Allow everything for temporary private use
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Development", builder =>
+    options.AddPolicy("AllowAll", builder =>
     {
         builder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
-    });
-    
-    options.AddPolicy("Production", builder =>
-    {
-        builder.WithOrigins("https://iskexpress.com", "https://app.iskexpress.com")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
     });
 });
 
@@ -189,15 +181,8 @@ app.UseExceptionHandler(appError =>
 
 app.UseHttpsRedirection();
 
-// Use environment-specific CORS policy
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("Development");
-}
-else
-{
-    app.UseCors("Production");
-}
+// Use CORS - Allow all for temporary private application
+app.UseCors("AllowAll");
 
 // Add health check endpoint
 app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
