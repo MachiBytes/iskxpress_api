@@ -13,9 +13,28 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
     }
 
+    public override async Task<IEnumerable<StallSection>> GetAllAsync()
+    {
+        return await _context.StallSections
+            .Include(ss => ss.Stall)
+            .Include(ss => ss.Products)
+            .OrderBy(ss => ss.Name)
+            .ToListAsync();
+    }
+
+    public override async Task<StallSection?> GetByIdAsync(int id)
+    {
+        return await _context.StallSections
+            .Include(ss => ss.Stall)
+            .Include(ss => ss.Products)
+            .FirstOrDefaultAsync(ss => ss.Id == id);
+    }
+
     public async Task<IEnumerable<StallSection>> GetByStallIdAsync(int stallId)
     {
         return await _context.StallSections
+            .Include(ss => ss.Stall)
+            .Include(ss => ss.Products)
             .Where(ss => ss.StallId == stallId)
             .OrderBy(ss => ss.Name)
             .ToListAsync();
@@ -24,6 +43,8 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     public async Task<IEnumerable<StallSection>> SearchByNameAsync(string searchTerm)
     {
         return await _context.StallSections
+            .Include(ss => ss.Stall)
+            .Include(ss => ss.Products)
             .Where(ss => ss.Name.Contains(searchTerm))
             .OrderBy(ss => ss.Name)
             .ToListAsync();

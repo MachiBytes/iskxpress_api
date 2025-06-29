@@ -13,16 +13,36 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
     {
     }
 
+    public override async Task<IEnumerable<Stall>> GetAllAsync()
+    {
+        return await _context.Stalls
+            .Include(s => s.Vendor)
+            .Include(s => s.Picture)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+    }
+
+    public override async Task<Stall?> GetByIdAsync(int id)
+    {
+        return await _context.Stalls
+            .Include(s => s.Vendor)
+            .Include(s => s.Picture)
+            .FirstOrDefaultAsync(s => s.Id == id);
+    }
+
     public async Task<Stall?> GetByVendorIdAsync(int vendorId)
     {
         return await _context.Stalls
             .Include(s => s.Vendor)
+            .Include(s => s.Picture)
             .FirstOrDefaultAsync(s => s.VendorId == vendorId);
     }
 
     public async Task<IEnumerable<Stall>> SearchByNameAsync(string searchTerm)
     {
         return await _context.Stalls
+            .Include(s => s.Vendor)
+            .Include(s => s.Picture)
             .Where(s => s.Name.Contains(searchTerm))
             .OrderBy(s => s.Name)
             .ToListAsync();
@@ -32,6 +52,7 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
     {
         return await _context.Stalls
             .Include(s => s.Vendor)
+            .Include(s => s.Picture)
             .Include(s => s.StallSections)
             .Include(s => s.Products)
             .OrderBy(s => s.Name)
@@ -42,6 +63,7 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
     {
         return await _context.Stalls
             .Include(s => s.Vendor)
+            .Include(s => s.Picture)
             .Include(s => s.StallSections)
             .Include(s => s.Products)
             .FirstOrDefaultAsync(s => s.Id == id);
