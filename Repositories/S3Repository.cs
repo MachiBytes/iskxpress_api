@@ -41,7 +41,6 @@ public class S3Repository : IS3Repository
                 Key = objectKey,
                 InputStream = fileStream,
                 ContentType = contentType,
-                CannedACL = S3CannedACL.PublicRead // Make the file publicly readable
             };
 
             var response = await _s3Client.PutObjectAsync(request);
