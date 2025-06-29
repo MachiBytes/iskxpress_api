@@ -31,6 +31,7 @@ public class FirebaseUserSyncRequest
 
     /// <summary>
     /// URL to user's profile picture from Firebase (optional)
+    /// This will be used to create a FileRecord if provided
     /// </summary>
     [StringLength(500, ErrorMessage = "Picture URL cannot exceed 500 characters")]
     public string? PictureURL { get; set; }

@@ -6,7 +6,7 @@ using iskxpress_api.DTOs.Users;
 namespace iskxpress_api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -95,54 +95,6 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving user with email {Email}", email);
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    /// <summary>
-    /// Get users by their role
-    /// </summary>
-    /// <param name="role">The user role (User or Vendor)</param>
-    /// <returns>List of users with the specified role</returns>
-    /// <response code="200">Returns the list of users</response>
-    /// <response code="500">Internal server error</response>
-    [HttpGet("role/{role}")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponse>), 200)]
-    [ProducesResponseType(500)]
-    public async Task<ActionResult<IEnumerable<UserResponse>>> GetUsersByRole(UserRole role)
-    {
-        try
-        {
-            var users = await _userService.GetUsersByRoleAsync(role);
-            return Ok(users);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving users with role {Role}", role);
-            return StatusCode(500, "Internal server error");
-        }
-    }
-
-    /// <summary>
-    /// Get users by their authentication provider
-    /// </summary>
-    /// <param name="provider">The authentication provider (Google or Microsoft)</param>
-    /// <returns>List of users using the specified auth provider</returns>
-    /// <response code="200">Returns the list of users</response>
-    /// <response code="500">Internal server error</response>
-    [HttpGet("provider/{provider}")]
-    [ProducesResponseType(typeof(IEnumerable<UserResponse>), 200)]
-    [ProducesResponseType(500)]
-    public async Task<ActionResult<IEnumerable<UserResponse>>> GetUsersByAuthProvider(AuthProvider provider)
-    {
-        try
-        {
-            var users = await _userService.GetUsersByAuthProviderAsync(provider);
-            return Ok(users);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving users with auth provider {Provider}", provider);
             return StatusCode(500, "Internal server error");
         }
     }

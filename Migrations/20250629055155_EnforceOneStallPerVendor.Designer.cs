@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using iskxpress_api.Data;
 
@@ -11,9 +12,11 @@ using iskxpress_api.Data;
 namespace iskxpress_api.Migrations
 {
     [DbContext(typeof(IskExpressDbContext))]
-    partial class IskExpressDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250629055155_EnforceOneStallPerVendor")]
+    partial class EnforceOneStallPerVendor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,9 +255,6 @@ namespace iskxpress_api.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Availability")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");

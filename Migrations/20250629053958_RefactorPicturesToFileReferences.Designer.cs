@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using iskxpress_api.Data;
 
@@ -11,9 +12,11 @@ using iskxpress_api.Data;
 namespace iskxpress_api.Migrations
 {
     [DbContext(typeof(IskExpressDbContext))]
-    partial class IskExpressDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250629053958_RefactorPicturesToFileReferences")]
+    partial class RefactorPicturesToFileReferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,9 +256,6 @@ namespace iskxpress_api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Availability")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -323,8 +323,7 @@ namespace iskxpress_api.Migrations
 
                     b.HasIndex("PictureId");
 
-                    b.HasIndex("VendorId")
-                        .IsUnique();
+                    b.HasIndex("VendorId");
 
                     b.ToTable("Stalls");
                 });
@@ -538,8 +537,8 @@ namespace iskxpress_api.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("iskxpress_api.Models.User", "Vendor")
-                        .WithOne("Stall")
-                        .HasForeignKey("iskxpress_api.Models.Stall", "VendorId")
+                        .WithMany("Stalls")
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -612,7 +611,7 @@ namespace iskxpress_api.Migrations
 
                     b.Navigation("Orders");
 
-                    b.Navigation("Stall");
+                    b.Navigation("Stalls");
                 });
 #pragma warning restore 612, 618
         }

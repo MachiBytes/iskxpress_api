@@ -134,7 +134,7 @@ public class UserControllerTests
     public async Task GetUserByEmail_NonExistingUser_ReturnsNotFound()
     {
         // Arrange
-        var email = "nonexistent@example.com";
+        var email = "nonexisting@example.com";
         _mockUserService.Setup(service => service.GetUserByEmailAsync(email))
             .ReturnsAsync((UserResponse?)null);
 
@@ -144,54 +144,6 @@ public class UserControllerTests
         // Assert
         var notFoundResult = result.Result.Should().BeOfType<NotFoundObjectResult>().Subject;
         notFoundResult.Value.Should().Be($"User with email {email} not found");
-    }
-
-    [Fact]
-    public async Task GetUsersByRole_ValidRole_ReturnsOkWithUsers()
-    {
-        // Arrange
-        var role = UserRole.Vendor;
-        var expectedUsers = new List<UserResponse>
-        {
-            new UserResponse { Id = 1, Name = "Vendor 1", Email = "vendor1@example.com", Role = UserRole.Vendor },
-            new UserResponse { Id = 2, Name = "Vendor 2", Email = "vendor2@example.com", Role = UserRole.Vendor }
-        };
-
-        _mockUserService.Setup(service => service.GetUsersByRoleAsync(role))
-            .ReturnsAsync(expectedUsers);
-
-        // Act
-        var result = await _controller.GetUsersByRole(role);
-
-        // Assert
-        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var users = okResult.Value.Should().BeAssignableTo<IEnumerable<UserResponse>>().Subject;
-        users.Should().HaveCount(2);
-        users.Should().OnlyContain(u => u.Role == UserRole.Vendor);
-    }
-
-    [Fact]
-    public async Task GetUsersByAuthProvider_ValidProvider_ReturnsOkWithUsers()
-    {
-        // Arrange
-        var authProvider = AuthProvider.Google;
-        var expectedUsers = new List<UserResponse>
-        {
-            new UserResponse { Id = 1, Name = "Google User 1", Email = "user1@gmail.com", AuthProvider = AuthProvider.Google },
-            new UserResponse { Id = 2, Name = "Google User 2", Email = "user2@gmail.com", AuthProvider = AuthProvider.Google }
-        };
-
-        _mockUserService.Setup(service => service.GetUsersByAuthProviderAsync(authProvider))
-            .ReturnsAsync(expectedUsers);
-
-        // Act
-        var result = await _controller.GetUsersByAuthProvider(authProvider);
-
-        // Assert
-        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var users = okResult.Value.Should().BeAssignableTo<IEnumerable<UserResponse>>().Subject;
-        users.Should().HaveCount(2);
-        users.Should().OnlyContain(u => u.AuthProvider == AuthProvider.Google);
     }
 
     [Fact]
@@ -243,8 +195,7 @@ public class UserControllerTests
         {
             Name = "New User",
             Email = "new@example.com",
-            AuthProvider = AuthProvider.Microsoft,
-            Role = UserRole.User
+            AuthProvider = AuthProvider.Microsoft
         };
 
         var createdUser = new UserResponse
@@ -254,7 +205,7 @@ public class UserControllerTests
             Email = createRequest.Email,
             Verified = false,
             AuthProvider = createRequest.AuthProvider,
-            Role = createRequest.Role
+            Role = UserRole.User // Role inferred from Microsoft AuthProvider
         };
 
         _mockUserService.Setup(service => service.CreateUserAsync(createRequest))
@@ -279,7 +230,7 @@ public class UserControllerTests
         var updateRequest = new UpdateUserRequest
         {
             Name = "Updated User",
-            PictureURL = "https://example.com/updated.jpg"
+            ProfilePictureId = 1
         };
 
         var updatedUser = new UserResponse
@@ -290,7 +241,7 @@ public class UserControllerTests
             Verified = true,
             AuthProvider = AuthProvider.Microsoft,
             Role = UserRole.User,
-            PictureURL = updateRequest.PictureURL
+            ProfilePictureId = updateRequest.ProfilePictureId
         };
 
         _mockUserService.Setup(service => service.UpdateUserAsync(userId, updateRequest))
@@ -313,7 +264,7 @@ public class UserControllerTests
         var updateRequest = new UpdateUserRequest
         {
             Name = "", // Invalid - empty name
-            PictureURL = "https://example.com/picture.jpg"
+            ProfilePictureId = 1
         };
 
         _controller.ModelState.AddModelError("Name", "Name is required");
@@ -333,7 +284,7 @@ public class UserControllerTests
         var updateRequest = new UpdateUserRequest
         {
             Name = "Updated User",
-            PictureURL = "https://example.com/updated.jpg"
+            ProfilePictureId = 1
         };
 
         _mockUserService.Setup(service => service.UpdateUserAsync(userId, updateRequest))

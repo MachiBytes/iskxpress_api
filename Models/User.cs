@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace iskxpress_api.Models;
 
@@ -22,10 +23,12 @@ public class User
     [Required]
     public UserRole Role { get; set; }
 
-    public string? PictureURL { get; set; }
+    [ForeignKey("ProfilePicture")]
+    public int? ProfilePictureId { get; set; }
 
     // Navigation properties
-    public virtual ICollection<Stall> Stalls { get; set; } = new List<Stall>();
+    public virtual FileRecord? ProfilePicture { get; set; }
+    public virtual Stall? Stall { get; set; }
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();

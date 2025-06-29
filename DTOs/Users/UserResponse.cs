@@ -38,9 +38,14 @@ public class UserResponse
     public UserRole Role { get; set; }
 
     /// <summary>
+    /// Profile picture file ID reference (optional)
+    /// </summary>
+    public int? ProfilePictureId { get; set; }
+
+    /// <summary>
     /// URL to user's profile picture (optional)
     /// </summary>
-    public string? PictureURL { get; set; }
+    public string? PictureUrl { get; set; }
 
     /// <summary>
     /// Date and time when the user was created (if available)

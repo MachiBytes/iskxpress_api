@@ -34,7 +34,7 @@ public class UserServiceTests
             Verified = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.Vendor,
-            PictureURL = "https://example.com/picture.jpg"
+            ProfilePictureId = null
         };
 
         _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId))
@@ -95,56 +95,22 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task GetUsersByRoleAsync_ValidRole_ReturnsUsers()
+    public async Task GetUserByEmailAsync_NonExistingUser_ReturnsNull()
     {
         // Arrange
-        var role = UserRole.Vendor;
-        var expectedUsers = new List<User>
-        {
-            new User { Id = 1, Name = "Vendor 1", Email = "vendor1@example.com", Role = UserRole.Vendor },
-            new User { Id = 2, Name = "Vendor 2", Email = "vendor2@example.com", Role = UserRole.Vendor }
-        };
-
-        _mockUserRepository.Setup(repo => repo.GetByRoleAsync(role))
-            .ReturnsAsync(expectedUsers);
+        var email = "nonexisting@example.com";
+        _mockUserRepository.Setup(repo => repo.GetByEmailAsync(email))
+            .ReturnsAsync((User?)null);
 
         // Act
-        var result = await _userService.GetUsersByRoleAsync(role);
+        var result = await _userService.GetUserByEmailAsync(email);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        var resultList = result.ToList();
-        resultList[0].Role.Should().Be(UserRole.Vendor);
-        resultList[1].Role.Should().Be(UserRole.Vendor);
-        _mockUserRepository.Verify(repo => repo.GetByRoleAsync(role), Times.Once);
+        result.Should().BeNull();
+        _mockUserRepository.Verify(repo => repo.GetByEmailAsync(email), Times.Once);
     }
 
-    [Fact]
-    public async Task GetUsersByAuthProviderAsync_ValidProvider_ReturnsUsers()
-    {
-        // Arrange
-        var authProvider = AuthProvider.Google;
-        var expectedUsers = new List<User>
-        {
-            new User { Id = 1, Name = "Google User 1", Email = "user1@gmail.com", AuthProvider = AuthProvider.Google },
-            new User { Id = 2, Name = "Google User 2", Email = "user2@gmail.com", AuthProvider = AuthProvider.Google }
-        };
 
-        _mockUserRepository.Setup(repo => repo.GetByAuthProviderAsync(authProvider))
-            .ReturnsAsync(expectedUsers);
-
-        // Act
-        var result = await _userService.GetUsersByAuthProviderAsync(authProvider);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        var resultList = result.ToList();
-        resultList[0].AuthProvider.Should().Be(AuthProvider.Google);
-        resultList[1].AuthProvider.Should().Be(AuthProvider.Google);
-        _mockUserRepository.Verify(repo => repo.GetByAuthProviderAsync(authProvider), Times.Once);
-    }
 
     [Fact]
     public async Task CreateUserAsync_ValidUser_ReturnsCreatedUser()
@@ -154,8 +120,7 @@ public class UserServiceTests
         {
             Name = "New User",
             Email = "new@example.com",
-            AuthProvider = AuthProvider.Microsoft,
-            Role = UserRole.User
+            AuthProvider = AuthProvider.Microsoft
         };
 
         var createdUser = new User
@@ -165,7 +130,7 @@ public class UserServiceTests
             Email = createRequest.Email,
             Verified = false,
             AuthProvider = createRequest.AuthProvider,
-            Role = createRequest.Role
+            Role = UserRole.User // Role inferred from Microsoft AuthProvider
         };
 
         _mockUserRepository.Setup(repo => repo.AddAsync(It.IsAny<User>()))
@@ -178,6 +143,7 @@ public class UserServiceTests
         result.Should().NotBeNull();
         result.Id.Should().BeGreaterThan(0);
         result.Email.Should().Be(createRequest.Email);
+        result.Role.Should().Be(UserRole.User); // Should be inferred correctly
         _mockUserRepository.Verify(repo => repo.AddAsync(It.IsAny<User>()), Times.Once);
     }
 
@@ -189,7 +155,7 @@ public class UserServiceTests
         var updateRequest = new UpdateUserRequest
         {
             Name = "Updated User",
-            PictureURL = "https://example.com/updated.jpg"
+            ProfilePictureId = 1
         };
 
         var existingUser = new User
@@ -210,7 +176,7 @@ public class UserServiceTests
             Verified = existingUser.Verified,
             AuthProvider = existingUser.AuthProvider,
             Role = existingUser.Role,
-            PictureURL = updateRequest.PictureURL
+            ProfilePictureId = updateRequest.ProfilePictureId
         };
 
         _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId))
@@ -229,7 +195,7 @@ public class UserServiceTests
         result.Verified.Should().Be(existingUser.Verified);
         result.AuthProvider.Should().Be(existingUser.AuthProvider);
         result.Role.Should().Be(existingUser.Role);
-        result.PictureURL.Should().Be(updateRequest.PictureURL);
+        result.ProfilePictureId.Should().Be(updateRequest.ProfilePictureId);
         _mockUserRepository.Verify(repo => repo.GetByIdAsync(userId), Times.Once);
         _mockUserRepository.Verify(repo => repo.UpdateAsync(It.IsAny<User>()), Times.Once);
     }

@@ -13,12 +13,11 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
     {
     }
 
-    public async Task<IEnumerable<Stall>> GetByVendorIdAsync(int vendorId)
+    public async Task<Stall?> GetByVendorIdAsync(int vendorId)
     {
         return await _context.Stalls
-            .Where(s => s.VendorId == vendorId)
-            .OrderBy(s => s.Name)
-            .ToListAsync();
+            .Include(s => s.Vendor)
+            .FirstOrDefaultAsync(s => s.VendorId == vendorId);
     }
 
     public async Task<IEnumerable<Stall>> SearchByNameAsync(string searchTerm)

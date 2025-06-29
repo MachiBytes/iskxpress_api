@@ -15,8 +15,7 @@ public class UpdateUserRequest
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// URL to user's profile picture (optional)
+    /// Profile picture file ID reference (optional)
     /// </summary>
-    [StringLength(500, ErrorMessage = "Picture URL cannot exceed 500 characters")]
-    public string? PictureURL { get; set; }
+    public int? ProfilePictureId { get; set; }
 } 

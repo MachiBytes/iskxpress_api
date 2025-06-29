@@ -125,37 +125,40 @@ public class RepositoryTests : IDisposable
         var vendor2 = await CreateTestVendor("vendor2@example.com");
         
         var stall1 = new Stall { Name = "Stall 1", ShortDescription = "Description 1", VendorId = vendor1.Id };
-        var stall2 = new Stall { Name = "Stall 2", ShortDescription = "Description 2", VendorId = vendor1.Id };
-        var stall3 = new Stall { Name = "Stall 3", ShortDescription = "Description 3", VendorId = vendor2.Id };
+        var stall2 = new Stall { Name = "Stall 2", ShortDescription = "Description 2", VendorId = vendor2.Id };
         
         await _stallRepository.AddAsync(stall1);
         await _stallRepository.AddAsync(stall2);
-        await _stallRepository.AddAsync(stall3);
 
         // Act
-        var vendor1Stalls = await _stallRepository.GetByVendorIdAsync(vendor1.Id);
-        var vendor2Stalls = await _stallRepository.GetByVendorIdAsync(vendor2.Id);
+        var vendor1Stall = await _stallRepository.GetByVendorIdAsync(vendor1.Id);
+        var vendor2Stall = await _stallRepository.GetByVendorIdAsync(vendor2.Id);
 
         // Assert
-        vendor1Stalls.Should().HaveCount(2);
-        vendor2Stalls.Should().HaveCount(1);
-        vendor1Stalls.All(s => s.VendorId == vendor1.Id).Should().BeTrue();
+        vendor1Stall.Should().NotBeNull();
+        vendor2Stall.Should().NotBeNull();
+        vendor1Stall!.VendorId.Should().Be(vendor1.Id);
+        vendor2Stall!.VendorId.Should().Be(vendor2.Id);
+        vendor1Stall.Name.Should().Be("Stall 1");
+        vendor2Stall.Name.Should().Be("Stall 2");
     }
 
     [Fact]
     public async Task ProductRepository_Should_Get_Products_By_Stall()
     {
         // Arrange
-        var vendor = await CreateTestVendor("vendor@example.com");
-        var stall1 = await CreateTestStall("Stall 1", vendor.Id);
-        var stall2 = await CreateTestStall("Stall 2", vendor.Id);
-        var category = await CreateTestCategory("Category 1", vendor.Id);
+        var vendor1 = await CreateTestVendor("vendor1@example.com");
+        var vendor2 = await CreateTestVendor("vendor2@example.com");
+        var stall1 = await CreateTestStall("Stall 1", vendor1.Id);
+        var stall2 = await CreateTestStall("Stall 2", vendor2.Id);
+        var category1 = await CreateTestCategory("Category 1", vendor1.Id);
+        var category2 = await CreateTestCategory("Category 2", vendor2.Id);
         var section1 = await CreateTestStallSection("Section 1", stall1.Id);
         var section2 = await CreateTestStallSection("Section 2", stall2.Id);
         
-        var product1 = new Product { Name = "Product 1", BasePrice = 100, PriceWithMarkup = 110, PriceWithDelivery = 120, CategoryId = category.Id, SectionId = section1.Id, StallId = stall1.Id };
-        var product2 = new Product { Name = "Product 2", BasePrice = 200, PriceWithMarkup = 220, PriceWithDelivery = 240, CategoryId = category.Id, SectionId = section1.Id, StallId = stall1.Id };
-        var product3 = new Product { Name = "Product 3", BasePrice = 300, PriceWithMarkup = 330, PriceWithDelivery = 360, CategoryId = category.Id, SectionId = section2.Id, StallId = stall2.Id };
+        var product1 = new Product { Name = "Product 1", BasePrice = 100, PriceWithMarkup = 110, PriceWithDelivery = 120, CategoryId = category1.Id, SectionId = section1.Id, StallId = stall1.Id };
+        var product2 = new Product { Name = "Product 2", BasePrice = 200, PriceWithMarkup = 220, PriceWithDelivery = 240, CategoryId = category1.Id, SectionId = section1.Id, StallId = stall1.Id };
+        var product3 = new Product { Name = "Product 3", BasePrice = 300, PriceWithMarkup = 330, PriceWithDelivery = 360, CategoryId = category2.Id, SectionId = section2.Id, StallId = stall2.Id };
         
         await _productRepository.AddAsync(product1);
         await _productRepository.AddAsync(product2);

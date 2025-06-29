@@ -5,6 +5,7 @@ using iskxpress_api.Data;
 using iskxpress_api.Repositories;
 using iskxpress_api.Services;
 using Amazon.S3;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,8 +42,16 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Add controllers
-builder.Services.AddControllers();
+// Add controllers with improved JSON serialization
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
+
+// Add health checks
+builder.Services.AddHealthChecks();
 
 // Add Entity Framework
 builder.Services.AddDbContext<IskExpressDbContext>(options =>
@@ -50,7 +59,6 @@ builder.Services.AddDbContext<IskExpressDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
-
 
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -74,16 +82,35 @@ builder.Services.AddScoped<IS3Repository, S3Repository>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IStallService, StallService>();
+builder.Services.AddScoped<ISectionService, SectionService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
-// Add CORS
+// Add CORS with more specific configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("Development", builder =>
     {
         builder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
     });
+    
+    options.AddPolicy("Production", builder =>
+    {
+        builder.WithOrigins("https://iskexpress.com", "https://app.iskexpress.com")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
+
+// Add request/response logging
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.All;
+    logging.RequestBodyLogLimit = 4096;
+    logging.ResponseBodyLogLimit = 4096;
 });
 
 var app = builder.Build();
@@ -98,16 +125,93 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "ISK Express API v1");
         options.RoutePrefix = "swagger";
         options.DocumentTitle = "ISK Express API Documentation";
+        options.EnableDeepLinking();
+        options.EnableFilter();
+        options.ShowExtensions();
     });
+    
+    // Enable detailed HTTP logging in development
+    app.UseHttpLogging();
 }
 
+// Global exception handling middleware
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+
+        var contextFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        if (contextFeature != null)
+        {
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError(contextFeature.Error, "An unhandled exception occurred");
+
+            var response = new
+            {
+                error = "An internal server error occurred",
+                message = app.Environment.IsDevelopment() ? contextFeature.Error.Message : "Please try again later",
+                traceId = context.TraceIdentifier
+            };
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+    });
+});
+
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+
+// Use environment-specific CORS policy
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("Development");
+}
+else
+{
+    app.UseCors("Production");
+}
+
+// Add health check endpoint
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var response = new
+        {
+            status = report.Status.ToString(),
+            timestamp = DateTime.UtcNow,
+            duration = report.TotalDuration,
+            checks = report.Entries.Select(x => new
+            {
+                name = x.Key,
+                status = x.Value.Status.ToString(),
+                duration = x.Value.Duration,
+                description = x.Value.Description
+            })
+        };
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+    }
+});
 
 // Map controllers
 app.MapControllers();
 
-// Sample endpoint
-app.MapGet("/", () => "ISK Express API is running!");
+// API information endpoint
+app.MapGet("/", () => new
+{
+    name = "ISK Express API",
+    version = "v1.0",
+    status = "running",
+    timestamp = DateTime.UtcNow,
+    environment = app.Environment.EnvironmentName,
+    endpoints = new
+    {
+        health = "/health",
+        swagger = "/swagger",
+        api = "/api"
+    }
+});
 
 app.Run();

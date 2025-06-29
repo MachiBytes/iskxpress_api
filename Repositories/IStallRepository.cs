@@ -8,11 +8,11 @@ namespace iskxpress_api.Repositories;
 public interface IStallRepository : IGenericRepository<Stall>
 {
     /// <summary>
-    /// Gets stalls by vendor ID
+    /// Gets the stall owned by a vendor
     /// </summary>
     /// <param name="vendorId">The vendor ID</param>
-    /// <returns>Collection of stalls owned by the vendor</returns>
-    Task<IEnumerable<Stall>> GetByVendorIdAsync(int vendorId);
+    /// <returns>The stall owned by the vendor, or null if none exists</returns>
+    Task<Stall?> GetByVendorIdAsync(int vendorId);
 
     /// <summary>
     /// Searches stalls by name

@@ -13,13 +13,15 @@ public class Stall
 
     public string ShortDescription { get; set; } = string.Empty;
 
-    public string? Picture { get; set; }
+    [ForeignKey("Picture")]
+    public int? PictureId { get; set; }
 
     [Required]
     [ForeignKey("Vendor")]
     public int VendorId { get; set; }
 
     // Navigation properties
+    public virtual FileRecord? Picture { get; set; }
     public virtual User Vendor { get; set; } = null!;
     public virtual ICollection<StallSection> StallSections { get; set; } = new List<StallSection>();
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();

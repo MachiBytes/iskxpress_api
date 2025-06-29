@@ -11,7 +11,8 @@ public class Product
     [Required]
     public string Name { get; set; } = string.Empty;
 
-    public string? Picture { get; set; }
+    [ForeignKey("Picture")]
+    public int? PictureId { get; set; }
 
     [Required]
     [Column(TypeName = "decimal(18,2)")]
@@ -37,7 +38,11 @@ public class Product
     [ForeignKey("Stall")]
     public int StallId { get; set; }
 
+    [Required]
+    public ProductAvailability Availability { get; set; } = ProductAvailability.Available;
+
     // Navigation properties
+    public virtual FileRecord? Picture { get; set; }
     public virtual Category Category { get; set; } = null!;
     public virtual StallSection Section { get; set; } = null!;
     public virtual Stall Stall { get; set; } = null!;

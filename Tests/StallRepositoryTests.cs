@@ -55,66 +55,61 @@ public class StallRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetByVendorIdAsync_ShouldReturnStallsForVendor()
+    public async Task GetByVendorIdAsync_ShouldReturnStallForVendor()
     {
         // Arrange
         var vendor = new User { Email = "vendor@example.com", Name = "Vendor", Role = UserRole.Vendor };
-        var stall1 = new Stall 
+        var stall = new Stall 
         { 
-            Name = "Stall 1", 
-            ShortDescription = "First stall",
-            VendorId = vendor.Id, 
-            Vendor = vendor 
-        };
-        var stall2 = new Stall 
-        { 
-            Name = "Stall 2", 
-            ShortDescription = "Second stall",
+            Name = "Vendor's Stall", 
+            ShortDescription = "The vendor's only stall",
             VendorId = vendor.Id, 
             Vendor = vendor 
         };
 
         _context.Users.Add(vendor);
-        _context.Stalls.AddRange(stall1, stall2);
+        _context.Stalls.Add(stall);
         await _context.SaveChangesAsync();
 
         // Act
         var result = await _repository.GetByVendorIdAsync(vendor.Id);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().Contain(s => s.Name == "Stall 1");
-        result.Should().Contain(s => s.Name == "Stall 2");
+        result.Should().NotBeNull();
+        result!.Name.Should().Be("Vendor's Stall");
+        result.VendorId.Should().Be(vendor.Id);
     }
 
     [Fact]
     public async Task SearchByNameAsync_ShouldReturnMatchingStalls()
     {
         // Arrange
-        var vendor = new User { Email = "vendor@example.com", Name = "Vendor", Role = UserRole.Vendor };
+        var vendor1 = new User { Email = "vendor1@example.com", Name = "Vendor 1", Role = UserRole.Vendor };
+        var vendor2 = new User { Email = "vendor2@example.com", Name = "Vendor 2", Role = UserRole.Vendor };
+        var vendor3 = new User { Email = "vendor3@example.com", Name = "Vendor 3", Role = UserRole.Vendor };
         var stall1 = new Stall 
         { 
             Name = "Coffee Shop", 
             ShortDescription = "Best coffee in town",
-            VendorId = vendor.Id, 
-            Vendor = vendor 
+            VendorId = vendor1.Id, 
+            Vendor = vendor1 
         };
         var stall2 = new Stall 
         { 
             Name = "Coffee Corner", 
             ShortDescription = "Corner coffee stand",
-            VendorId = vendor.Id, 
-            Vendor = vendor 
+            VendorId = vendor2.Id, 
+            Vendor = vendor2 
         };
         var stall3 = new Stall 
         { 
             Name = "Tea House", 
             ShortDescription = "Traditional tea",
-            VendorId = vendor.Id, 
-            Vendor = vendor 
+            VendorId = vendor3.Id, 
+            Vendor = vendor3 
         };
 
-        _context.Users.Add(vendor);
+        _context.Users.AddRange(vendor1, vendor2, vendor3);
         _context.Stalls.AddRange(stall1, stall2, stall3);
         await _context.SaveChangesAsync();
 
@@ -161,23 +156,24 @@ public class StallRepositoryTests : IDisposable
     public async Task GetAllWithDetailsAsync_ShouldReturnAllStallsWithNavigationProperties()
     {
         // Arrange
-        var vendor = new User { Email = "vendor@example.com", Name = "Vendor", Role = UserRole.Vendor };
+        var vendor1 = new User { Email = "vendor1@example.com", Name = "Vendor 1", Role = UserRole.Vendor };
+        var vendor2 = new User { Email = "vendor2@example.com", Name = "Vendor 2", Role = UserRole.Vendor };
         var stall1 = new Stall 
         { 
             Name = "Stall 1", 
             ShortDescription = "First stall",
-            VendorId = vendor.Id, 
-            Vendor = vendor 
+            VendorId = vendor1.Id, 
+            Vendor = vendor1 
         };
         var stall2 = new Stall 
         { 
             Name = "Stall 2", 
             ShortDescription = "Second stall",
-            VendorId = vendor.Id, 
-            Vendor = vendor 
+            VendorId = vendor2.Id, 
+            Vendor = vendor2 
         };
 
-        _context.Users.Add(vendor);
+        _context.Users.AddRange(vendor1, vendor2);
         _context.Stalls.AddRange(stall1, stall2);
         await _context.SaveChangesAsync();
 

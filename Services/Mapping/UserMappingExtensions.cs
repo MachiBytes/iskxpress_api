@@ -21,7 +21,8 @@ public static class UserMappingExtensions
             Verified = user.Verified,
             AuthProvider = user.AuthProvider,
             Role = user.Role,
-            PictureURL = user.PictureURL
+            ProfilePictureId = user.ProfilePictureId,
+            PictureUrl = user.ProfilePicture?.ObjectUrl
         };
     }
 
@@ -36,8 +37,22 @@ public static class UserMappingExtensions
             Email = request.Email,
             Verified = false, // Default to false as requested
             AuthProvider = request.AuthProvider,
-            Role = request.Role,
-            PictureURL = request.PictureURL
+            Role = MapUserRole(request.AuthProvider),
+            ProfilePictureId = request.ProfilePictureId
+        };
+    }
+
+    /// <summary>
+    /// Maps user role from authentication provider
+    /// Microsoft users are regular Users, Google users are Vendors
+    /// </summary>
+    private static UserRole MapUserRole(AuthProvider authProvider)
+    {
+        return authProvider switch
+        {
+            AuthProvider.Microsoft => UserRole.User,
+            AuthProvider.Google => UserRole.Vendor,
+            _ => throw new ArgumentException($"Unknown auth provider: {authProvider}")
         };
     }
 
@@ -47,7 +62,7 @@ public static class UserMappingExtensions
     public static void UpdateFromRequest(this User user, UpdateUserRequest request)
     {
         user.Name = request.Name;
-        user.PictureURL = request.PictureURL;
+        user.ProfilePictureId = request.ProfilePictureId;
     }
 
     /// <summary>
@@ -61,12 +76,10 @@ public static class UserMappingExtensions
             Email = request.Email,
             Verified = request.Verified,
             AuthProvider = authProvider,
-            Role = role,
-            PictureURL = request.PictureURL
+            Role = role
+            // Note: PictureURL from Firebase will need to be handled separately to create FileRecord
         };
     }
-
-
 
     /// <summary>
     /// Maps a collection of User models to UserResponse DTOs

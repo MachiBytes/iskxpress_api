@@ -31,7 +31,11 @@ public class IskExpressDbContext : DbContext
             entity.HasIndex(e => e.Email).IsUnique();
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.PictureURL).HasMaxLength(500);
+
+            entity.HasOne(u => u.ProfilePicture)
+                .WithMany()
+                .HasForeignKey(u => u.ProfilePictureId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Configure Stall entity
@@ -40,12 +44,19 @@ public class IskExpressDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.ShortDescription).HasMaxLength(500);
-            entity.Property(e => e.Picture).HasMaxLength(500);
+
+            // Note: Unique constraint on VendorId is handled by migration SQL
+            // to avoid conflicts with foreign key index requirements
 
             entity.HasOne(s => s.Vendor)
-                .WithMany(u => u.Stalls)
-                .HasForeignKey(s => s.VendorId)
+                .WithOne(u => u.Stall)
+                .HasForeignKey<Stall>(s => s.VendorId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(s => s.Picture)
+                .WithMany()
+                .HasForeignKey(s => s.PictureId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Configure Category entity
@@ -77,7 +88,6 @@ public class IskExpressDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.Picture).HasMaxLength(500);
 
             entity.HasOne(p => p.Category)
                 .WithMany(c => c.Products)
@@ -93,6 +103,11 @@ public class IskExpressDbContext : DbContext
                 .WithMany(s => s.Products)
                 .HasForeignKey(p => p.StallId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(p => p.Picture)
+                .WithMany()
+                .HasForeignKey(p => p.PictureId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         // Configure CartItem entity

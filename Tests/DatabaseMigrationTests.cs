@@ -71,7 +71,7 @@ public class DatabaseMigrationTests : IDisposable
             Verified = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User,
-            PictureURL = "profile.jpg"
+            ProfilePictureId = null
         };
 
         // Act
@@ -106,7 +106,7 @@ public class DatabaseMigrationTests : IDisposable
         {
             Name = "Test Stall",
             ShortDescription = "A test stall",
-            Picture = "stall.jpg",
+            PictureId = null,
             VendorId = vendor.Id
         };
 
@@ -138,7 +138,7 @@ public class DatabaseMigrationTests : IDisposable
         var product = new Product
         {
             Name = "Test Product",
-            Picture = "product.jpg",
+            PictureId = null,
             BasePrice = 100.00m,
             PriceWithMarkup = 110.00m,
             PriceWithDelivery = 120.00m,

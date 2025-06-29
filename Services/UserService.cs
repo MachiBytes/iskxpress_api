@@ -27,18 +27,6 @@ public class UserService : IUserService
         return user?.ToResponse();
     }
 
-    public async Task<IEnumerable<UserResponse>> GetUsersByRoleAsync(UserRole role)
-    {
-        var users = await _userRepository.GetByRoleAsync(role);
-        return users.ToResponse();
-    }
-
-    public async Task<IEnumerable<UserResponse>> GetUsersByAuthProviderAsync(AuthProvider authProvider)
-    {
-        var users = await _userRepository.GetByAuthProviderAsync(authProvider);
-        return users.ToResponse();
-    }
-
     public async Task<UserResponse> CreateUserAsync(CreateUserRequest request)
     {
         var user = request.ToModel();
@@ -149,7 +137,7 @@ public class UserService : IUserService
             {
                 Name = firebaseUser.DisplayName ?? firebaseUser.Email,
                 Email = firebaseUser.Email,
-                PictureURL = firebaseUser.PhotoUrl,
+                // Firebase picture URL will need to be handled separately to create FileRecord
                 Verified = firebaseUser.EmailVerified,
                 AuthProvider = authProvider.Value,
                 Role = MapUserRole(authProvider.Value)
