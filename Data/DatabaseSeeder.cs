@@ -14,11 +14,34 @@ public class DatabaseSeeder
         _logger = logger;
     }
 
-    public async Task SeedAsync()
+    /// <summary>
+    /// Seeds production data (categories only)
+    /// </summary>
+    public async Task SeedProductionAsync()
     {
         try
         {
-            _logger.LogInformation("Starting database seeding...");
+            _logger.LogInformation("Starting production database seeding...");
+            
+            await SeedCategoriesAsync();
+            
+            _logger.LogInformation("Production database seeding completed successfully!");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while seeding production database");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Seeds development data (all test data including users, stalls, products, etc.)
+    /// </summary>
+    public async Task SeedDevelopmentAsync()
+    {
+        try
+        {
+            _logger.LogInformation("Starting development database seeding...");
 
             // Check if data already exists
             if (await _context.Users.AnyAsync())
@@ -34,13 +57,22 @@ public class DatabaseSeeder
             await SeedProductsAsync();
 
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Database seeding completed successfully!");
+            _logger.LogInformation("Development database seeding completed successfully!");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while seeding the database");
+            _logger.LogError(ex, "An error occurred while seeding development database");
             throw;
         }
+    }
+
+    /// <summary>
+    /// Legacy method for backward compatibility - calls development seeding
+    /// </summary>
+    [Obsolete("Use SeedDevelopmentAsync() or SeedProductionAsync() instead")]
+    public async Task SeedAsync()
+    {
+        await SeedDevelopmentAsync();
     }
 
     private async Task SeedUsersAsync()

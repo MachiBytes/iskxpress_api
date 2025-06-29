@@ -110,27 +110,35 @@ builder.Services.AddHttpLogging(logging =>
 
 var app = builder.Build();
 
-// Seed database in development
-if (app.Environment.IsDevelopment())
+// Seed database - Categories in all environments, full data only in development
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
+    try
     {
-        try
+        var context = scope.ServiceProvider.GetRequiredService<IskExpressDbContext>();
+        var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
+        // Ensure database is created
+        await context.Database.EnsureCreatedAsync();
+        
+        if (app.Environment.IsDevelopment())
         {
-            var context = scope.ServiceProvider.GetRequiredService<IskExpressDbContext>();
-            var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-            
-            // Ensure database is created
-            await context.Database.EnsureCreatedAsync();
-            
-            // Seed the database
-            await seeder.SeedAsync();
+            // Seed full development data (users, stalls, products, etc.)
+            logger.LogInformation("Development environment detected - seeding full test data");
+            await seeder.SeedDevelopmentAsync();
         }
-        catch (Exception ex)
+        else
         {
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred while seeding the database");
+            // Seed only essential production data (categories)
+            logger.LogInformation("Production environment detected - seeding essential data only");
+            await seeder.SeedProductionAsync();
         }
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database");
     }
 }
 
