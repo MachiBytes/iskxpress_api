@@ -341,11 +341,7 @@ public class DatabaseMigrationTests : IDisposable
 
     private Category CreateTestCategory(int vendorId)
     {
-        var category = new Category
-        {
-            Name = "Test Category",
-            VendorId = vendorId
-        };
+        var category = new Category { Name = "Test Category" };
         _context.Categories.Add(category);
         _context.SaveChanges();
         return category;

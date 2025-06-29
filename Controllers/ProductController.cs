@@ -57,13 +57,27 @@ public class ProductController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var createdProduct = await _productService.CreateProductAsync(stallId, request);
-        if (createdProduct == null)
-        {
-            return BadRequest($"Unable to create product. Check that stall {stallId} exists, and that the section and category belong to the stall.");
-        }
+        // Set the StallId from the route parameter
+        request.StallId = stallId;
 
-        return CreatedAtAction(nameof(GetProduct), new { productId = createdProduct.Id }, createdProduct);
+        try
+        {
+            var createdProduct = await _productService.CreateAsync(request);
+            if (createdProduct == null)
+            {
+                return BadRequest($"Unable to create product. Check that stall {stallId} exists, and that the section and category belong to the stall.");
+            }
+            return CreatedAtAction(nameof(GetProduct), new { productId = createdProduct.Id }, createdProduct);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating product for stall {StallId}", stallId);
+            return StatusCode(500, "Internal server error");
+        }
     }
 
     /// <summary>
@@ -111,13 +125,24 @@ public class ProductController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var updatedProduct = await _productService.UpdateProductAsync(productId, request);
-        if (updatedProduct == null)
+        try
         {
-            return NotFound($"Product with ID {productId} not found");
+            var updatedProduct = await _productService.UpdateAsync(productId, request);
+            return Ok(updatedProduct);
         }
-
-        return Ok(updatedProduct);
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product {ProductId}", productId);
+            return StatusCode(500, "Internal server error");
+        }
     }
 
     /// <summary>

@@ -35,6 +35,22 @@ public class UpdateProductRequest
     public decimal BasePrice { get; set; }
 
     /// <summary>
+    /// Price with markup (calculated from base price + 10%)
+    /// </summary>
+    [Required(ErrorMessage = "Price with markup is required")]
+    [Range(0.01, 999.99, ErrorMessage = "Price with markup must be between $0.01 and $999.99")]
+    [DataType(DataType.Currency)]
+    public decimal PriceWithMarkup { get; set; }
+
+    /// <summary>
+    /// Price with delivery (markup price + $3.00)
+    /// </summary>
+    [Required(ErrorMessage = "Price with delivery is required")]
+    [Range(0.01, 999.99, ErrorMessage = "Price with delivery must be between $0.01 and $999.99")]
+    [DataType(DataType.Currency)]
+    public decimal PriceWithDelivery { get; set; }
+
+    /// <summary>
     /// Product availability status
     /// </summary>
     [Required(ErrorMessage = "Availability is required")]

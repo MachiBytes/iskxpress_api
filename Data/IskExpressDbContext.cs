@@ -64,11 +64,7 @@ public class IskExpressDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(100);
-
-            entity.HasOne(c => c.Vendor)
-                .WithMany(u => u.Categories)
-                .HasForeignKey(c => c.VendorId)
-                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => e.Name).IsUnique(); // Ensure category names are unique
         });
 
         // Configure StallSection entity
@@ -90,7 +86,7 @@ public class IskExpressDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(100);
 
             entity.HasOne(p => p.Category)
-                .WithMany(c => c.Products)
+                .WithMany()
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 

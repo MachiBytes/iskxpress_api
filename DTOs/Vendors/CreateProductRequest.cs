@@ -52,4 +52,11 @@ public class CreateProductRequest
     [Required(ErrorMessage = "Section ID is required")]
     [Range(1, int.MaxValue, ErrorMessage = "Section ID must be a positive number")]
     public int SectionId { get; set; }
+
+    /// <summary>
+    /// Stall ID that this product belongs to
+    /// </summary>
+    [Required(ErrorMessage = "Stall ID is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "Stall ID must be a positive number")]
+    public int StallId { get; set; }
 } 

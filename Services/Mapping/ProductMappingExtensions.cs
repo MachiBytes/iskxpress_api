@@ -30,6 +30,27 @@ public static class ProductMappingExtensions
         };
     }
 
+    public static ProductResponse ToResponse(this Product product)
+    {
+        return product.ToProductResponse();
+    }
+
+    public static Product ToEntity(this CreateProductRequest request)
+    {
+        return new Product
+        {
+            Name = request.Name,
+            PictureId = request.PictureId,
+            BasePrice = request.BasePrice,
+            PriceWithMarkup = CalculateMarkupPrice(request.BasePrice),
+            PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice),
+            Availability = request.Availability,
+            CategoryId = request.CategoryId,
+            SectionId = request.SectionId,
+            StallId = request.StallId
+        };
+    }
+
     public static VendorProductPricingResponse ToVendorProductPricingResponse(this Product product)
     {
         var calculatedMarkupPrice = Math.Ceiling(product.BasePrice * 1.1m);
@@ -48,5 +69,21 @@ public static class ProductMappingExtensions
             SectionName = product.Section?.Name ?? string.Empty,
             CategoryName = product.Category?.Name ?? string.Empty
         };
+    }
+
+    /// <summary>
+    /// Calculates the markup price by adding 10% to the base price and rounding up using Math.Ceiling
+    /// </summary>
+    private static decimal CalculateMarkupPrice(decimal basePrice)
+    {
+        return Math.Ceiling(basePrice * 1.10m);
+    }
+
+    /// <summary>
+    /// Calculates the delivery price by adding $3.00 to the markup price
+    /// </summary>
+    private static decimal CalculateDeliveryPrice(decimal basePrice)
+    {
+        return CalculateMarkupPrice(basePrice) + 3.00m;
     }
 } 

@@ -12,37 +12,4 @@ public class CategoryRepository : GenericRepository<Category>, ICategoryReposito
     public CategoryRepository(IskExpressDbContext context) : base(context)
     {
     }
-
-    public async Task<IEnumerable<Category>> GetByVendorIdAsync(int vendorId)
-    {
-        return await _context.Categories
-            .Where(c => c.VendorId == vendorId)
-            .OrderBy(c => c.Name)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Category>> SearchByNameAsync(string searchTerm)
-    {
-        return await _context.Categories
-            .Where(c => c.Name.Contains(searchTerm))
-            .OrderBy(c => c.Name)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<Category>> GetAllWithDetailsAsync()
-    {
-        return await _context.Categories
-            .Include(c => c.Vendor)
-            .Include(c => c.Products)
-            .OrderBy(c => c.Name)
-            .ToListAsync();
-    }
-
-    public async Task<Category?> GetByIdWithDetailsAsync(int id)
-    {
-        return await _context.Categories
-            .Include(c => c.Vendor)
-            .Include(c => c.Products)
-            .FirstOrDefaultAsync(c => c.Id == id);
-    }
 } 

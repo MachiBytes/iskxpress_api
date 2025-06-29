@@ -151,8 +151,8 @@ public class RepositoryTests : IDisposable
         var vendor2 = await CreateTestVendor("vendor2@example.com");
         var stall1 = await CreateTestStall("Stall 1", vendor1.Id);
         var stall2 = await CreateTestStall("Stall 2", vendor2.Id);
-        var category1 = await CreateTestCategory("Category 1", vendor1.Id);
-        var category2 = await CreateTestCategory("Category 2", vendor2.Id);
+        var category1 = await CreateTestCategory("Category 1");
+        var category2 = await CreateTestCategory("Category 2");
         var section1 = await CreateTestStallSection("Section 1", stall1.Id);
         var section2 = await CreateTestStallSection("Section 2", stall2.Id);
         
@@ -180,7 +180,7 @@ public class RepositoryTests : IDisposable
         // Arrange
         var vendor = await CreateTestVendor("vendor@example.com");
         var stall = await CreateTestStall("Test Stall", vendor.Id);
-        var category = await CreateTestCategory("Test Category", vendor.Id);
+        var category = await CreateTestCategory("Test Category");
         var section = await CreateTestStallSection("Test Section", stall.Id);
         
         var product = new Product
@@ -268,7 +268,7 @@ public class RepositoryTests : IDisposable
         var user2 = await CreateTestUser("user2@example.com");
         var vendor = await CreateTestVendor("vendor@example.com");
         var stall = await CreateTestStall("Test Stall", vendor.Id);
-        var category = await CreateTestCategory("Test Category", vendor.Id);
+        var category = await CreateTestCategory("Test Category");
         var section = await CreateTestStallSection("Test Section", stall.Id);
         var product1 = await CreateTestProduct("Product 1", category.Id, section.Id, stall.Id);
         var product2 = await CreateTestProduct("Product 2", category.Id, section.Id, stall.Id);
@@ -299,7 +299,7 @@ public class RepositoryTests : IDisposable
         var user = await CreateTestUser("user@example.com");
         var vendor = await CreateTestVendor("vendor@example.com");
         var stall = await CreateTestStall("Test Stall", vendor.Id);
-        var category = await CreateTestCategory("Test Category", vendor.Id);
+        var category = await CreateTestCategory("Test Category");
         var section = await CreateTestStallSection("Test Section", stall.Id);
         var product1 = await CreateTestProduct("Product 1", category.Id, section.Id, stall.Id);
         
@@ -353,9 +353,9 @@ public class RepositoryTests : IDisposable
         return await _stallRepository.AddAsync(stall);
     }
 
-    private async Task<Category> CreateTestCategory(string name, int vendorId)
+    private async Task<Category> CreateTestCategory(string name)
     {
-        var category = new Category { Name = name, VendorId = vendorId };
+        var category = new Category { Name = name };
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
         return category;

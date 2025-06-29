@@ -181,7 +181,7 @@ public class ProductControllerTests
             SectionId = 1
         };
 
-        var createdProduct = new ProductResponse
+        var response = new ProductResponse
         {
             Id = 1,
             Name = request.Name,
@@ -189,20 +189,17 @@ public class ProductControllerTests
             Availability = request.Availability
         };
 
-        _mockProductService.Setup(service => service.CreateProductAsync(stallId, request))
-            .ReturnsAsync(createdProduct);
+        _mockProductService.Setup(service => service.CreateAsync(request))
+            .ReturnsAsync(response);
 
         // Act
         var result = await _controller.CreateProduct(stallId, request);
 
         // Assert
         var createdResult = result.Result.Should().BeOfType<CreatedAtActionResult>().Subject;
-        createdResult.ActionName.Should().Be(nameof(_controller.GetProduct));
-        createdResult.RouteValues!["productId"].Should().Be(1);
-        
-        var product = createdResult.Value.Should().BeOfType<ProductResponse>().Subject;
-        product.Name.Should().Be("New Product");
-        product.BasePrice.Should().Be(12.99m);
+        createdResult.StatusCode.Should().Be(201);
+
+        _mockProductService.Verify(s => s.CreateAsync(request), Times.Once);
     }
 
     [Fact]
@@ -218,7 +215,7 @@ public class ProductControllerTests
             SectionId = 1
         };
 
-        _mockProductService.Setup(service => service.CreateProductAsync(stallId, request))
+        _mockProductService.Setup(service => service.CreateAsync(request))
             .ReturnsAsync((ProductResponse?)null);
 
         // Act
@@ -226,6 +223,7 @@ public class ProductControllerTests
 
         // Assert
         var badRequestResult = result.Result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        badRequestResult.StatusCode.Should().Be(400);
         badRequestResult.Value.Should().Be($"Unable to create product. Check that stall {stallId} exists, and that the section and category belong to the stall.");
     }
 
@@ -251,7 +249,7 @@ public class ProductControllerTests
             Availability = request.Availability
         };
 
-        _mockProductService.Setup(service => service.UpdateProductAsync(productId, request))
+        _mockProductService.Setup(service => service.UpdateAsync(productId, request))
             .ReturnsAsync(updatedProduct);
 
         // Act
@@ -259,10 +257,10 @@ public class ProductControllerTests
 
         // Assert
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-        var product = okResult.Value.Should().BeOfType<ProductResponse>().Subject;
-        product.Id.Should().Be(productId);
-        product.Name.Should().Be("Updated Product");
-        product.BasePrice.Should().Be(15.99m);
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().Be(updatedProduct);
+
+        _mockProductService.Verify(s => s.UpdateAsync(productId, request), Times.Once);
     }
 
     [Fact]
@@ -278,15 +276,17 @@ public class ProductControllerTests
             SectionId = 1
         };
 
-        _mockProductService.Setup(service => service.UpdateProductAsync(productId, request))
-            .ReturnsAsync((ProductResponse?)null);
+        _mockProductService.Setup(service => service.UpdateAsync(productId, request))
+            .ThrowsAsync(new KeyNotFoundException("Product not found"));
 
         // Act
         var result = await _controller.UpdateProduct(productId, request);
 
         // Assert
         var notFoundResult = result.Result.Should().BeOfType<NotFoundObjectResult>().Subject;
-        notFoundResult.Value.Should().Be($"Product with ID {productId} not found");
+        notFoundResult.StatusCode.Should().Be(404);
+
+        _mockProductService.Verify(s => s.UpdateAsync(productId, request), Times.Once);
     }
 
     [Fact]

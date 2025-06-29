@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using iskxpress_api.Data;
 
@@ -11,9 +12,11 @@ using iskxpress_api.Data;
 namespace iskxpress_api.Migrations
 {
     [DbContext(typeof(IskExpressDbContext))]
-    partial class IskExpressDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250629150650_MakeCategoryVendorIdNullable")]
+    partial class MakeCategoryVendorIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,10 +69,12 @@ namespace iskxpress_api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int?>("VendorId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("VendorId");
 
                     b.ToTable("Categories");
                 });
@@ -419,6 +424,16 @@ namespace iskxpress_api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("iskxpress_api.Models.Category", b =>
+                {
+                    b.HasOne("iskxpress_api.Models.User", "Vendor")
+                        .WithMany("Categories")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Vendor");
+                });
+
             modelBuilder.Entity("iskxpress_api.Models.Delivery", b =>
                 {
                     b.HasOne("iskxpress_api.Models.User", "DeliveryPartner")
@@ -592,6 +607,8 @@ namespace iskxpress_api.Migrations
             modelBuilder.Entity("iskxpress_api.Models.User", b =>
                 {
                     b.Navigation("CartItems");
+
+                    b.Navigation("Categories");
 
                     b.Navigation("DeliveryOrders");
 

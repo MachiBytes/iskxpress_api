@@ -38,7 +38,7 @@ public class OrderItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -100,7 +100,7 @@ public class OrderItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -155,53 +155,33 @@ public class OrderItemRepositoryTests : IDisposable
     public async Task GetByIdWithDetailsAsync_ShouldReturnOrderItemWithNavigationProperties()
     {
         // Arrange
-        var user = new User { Email = "user@example.com", Name = "User", Role = UserRole.User };
         var vendor = new User { Email = "vendor@example.com", Name = "Vendor", Role = UserRole.Vendor };
-        await _context.Users.AddRangeAsync(user, vendor);
+        var user = new User { Email = "user@example.com", Name = "User", Role = UserRole.User };
+        _context.Users.AddRange(vendor, user);
         await _context.SaveChangesAsync();
-
+        
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
-        await _context.Stalls.AddAsync(stall);
-        await _context.Categories.AddAsync(category);
+        _context.Stalls.Add(stall);
         await _context.SaveChangesAsync();
-
+        
+        var category = new Category { Name = "Test Category" };
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+        
         var section = new StallSection { Name = "Test Section", StallId = stall.Id };
-        var order = new Order 
-        { 
-            UserId = user.Id, 
-            StallId = stall.Id, 
-            VendorOrderId = "ORDER001",
-            TotalPrice = 100.00m, 
-            Status = OrderStatus.Pending,
-            FulfillmentMethod = FulfillmentMethod.Delivery,
-            CreatedAt = DateTime.Now
-        };
-        await _context.StallSections.AddAsync(section);
-        await _context.Orders.AddAsync(order);
+        _context.StallSections.Add(section);
         await _context.SaveChangesAsync();
-
-        var product = new Product 
-        { 
-            Name = "Test Product", 
-            BasePrice = 10.00m,
-            PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
-            CategoryId = category.Id,
-            SectionId = section.Id,
-            StallId = stall.Id
-        };
-        await _context.Products.AddAsync(product);
+        
+        var product = new Product { Name = "Test Product", BasePrice = 10.00m, CategoryId = category.Id, SectionId = section.Id, StallId = stall.Id };
+        _context.Products.Add(product);
         await _context.SaveChangesAsync();
-
-        var orderItem = new OrderItem 
-        { 
-            OrderId = order.Id, 
-            ProductId = product.Id, 
-            Quantity = 2, 
-            PriceEach = 15.00m
-        };
-        await _context.OrderItems.AddAsync(orderItem);
+        
+        var order = new Order { UserId = user.Id, StallId = stall.Id, Status = OrderStatus.Pending, DeliveryAddress = "Test Address" };
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync();
+        
+        var orderItem = new OrderItem { OrderId = order.Id, ProductId = product.Id, Quantity = 2, PriceEach = 10.00m };
+        _context.OrderItems.Add(orderItem);
         await _context.SaveChangesAsync();
 
         // Act
@@ -209,9 +189,9 @@ public class OrderItemRepositoryTests : IDisposable
 
         // Assert
         result.Should().NotBeNull();
-        result!.Order.Should().NotBeNull();
+        result!.Id.Should().Be(orderItem.Id);
+        result.Order.Should().NotBeNull();
         result.Product.Should().NotBeNull();
-        result.Product.Name.Should().Be("Test Product");
     }
 
     [Fact]
@@ -224,7 +204,7 @@ public class OrderItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();

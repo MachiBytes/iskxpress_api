@@ -141,69 +141,32 @@ public class DatabaseSeeder
     {
         _logger.LogInformation("Seeding categories...");
 
-        var vendors = await _context.Users.Where(u => u.Role == UserRole.Vendor).ToListAsync();
-        var categories = new List<Category>();
-
-        foreach (var vendor in vendors)
+        // Check if categories already exist
+        if (await _context.Categories.AnyAsync())
         {
-            // Create categories based on vendor's specialty
-            switch (vendor.Email)
-            {
-                case "markachilesflores2004@gmail.com":
-                    categories.AddRange(new[]
-                    {
-                        new Category { Name = "Filipino Dishes", VendorId = vendor.Id },
-                        new Category { Name = "Rice Meals", VendorId = vendor.Id },
-                        new Category { Name = "Desserts", VendorId = vendor.Id },
-                        new Category { Name = "Beverages", VendorId = vendor.Id }
-                    });
-                    break;
-                    
-                case "sarah.johnson@email.com":
-                    categories.AddRange(new[]
-                    {
-                        new Category { Name = "Burgers", VendorId = vendor.Id },
-                        new Category { Name = "Sides", VendorId = vendor.Id },
-                        new Category { Name = "Shakes", VendorId = vendor.Id },
-                        new Category { Name = "Salads", VendorId = vendor.Id }
-                    });
-                    break;
-                    
-                case "carlos.rodriguez@email.com":
-                    categories.AddRange(new[]
-                    {
-                        new Category { Name = "Tacos", VendorId = vendor.Id },
-                        new Category { Name = "Burritos", VendorId = vendor.Id },
-                        new Category { Name = "Nachos", VendorId = vendor.Id },
-                        new Category { Name = "Drinks", VendorId = vendor.Id }
-                    });
-                    break;
-                    
-                case "emily.chen@email.com":
-                    categories.AddRange(new[]
-                    {
-                        new Category { Name = "Noodles", VendorId = vendor.Id },
-                        new Category { Name = "Dumplings", VendorId = vendor.Id },
-                        new Category { Name = "Rice Bowls", VendorId = vendor.Id },
-                        new Category { Name = "Tea", VendorId = vendor.Id }
-                    });
-                    break;
-                    
-                case "john.doe@email.com":
-                    categories.AddRange(new[]
-                    {
-                        new Category { Name = "Pizza", VendorId = vendor.Id },
-                        new Category { Name = "Pasta", VendorId = vendor.Id },
-                        new Category { Name = "Appetizers", VendorId = vendor.Id },
-                        new Category { Name = "Desserts", VendorId = vendor.Id }
-                    });
-                    break;
-            }
+            _logger.LogInformation("Categories already exist. Skipping category seeding.");
+            return;
         }
+
+        // Seed the global categories (like enums)
+        var categories = new List<Category>
+        {
+            new Category { Name = "Rice Meals" },
+            new Category { Name = "Fried Snacks" },
+            new Category { Name = "Street Bites" },
+            new Category { Name = "Noodles & Pasta" },
+            new Category { Name = "Burgers & Sandwiches" },
+            new Category { Name = "Wraps & Rolls" },
+            new Category { Name = "Iced Drinks" },
+            new Category { Name = "Hot Drinks" },
+            new Category { Name = "Bottled Drinks" },
+            new Category { Name = "Desserts" },
+            new Category { Name = "Others" }
+        };
 
         await _context.Categories.AddRangeAsync(categories);
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Seeded {categories.Count} categories");
+        _logger.LogInformation($"Seeded {categories.Count} global categories");
     }
 
     private async Task SeedStallsAsync()
@@ -350,34 +313,32 @@ public class DatabaseSeeder
             .Include(s => s.Vendor)
             .Include(s => s.StallSections)
             .ToListAsync();
-        
+
         var categories = await _context.Categories.ToListAsync();
         var products = new List<Product>();
 
         foreach (var stall in stalls)
         {
-            var stallCategories = categories.Where(c => c.VendorId == stall.VendorId).ToList();
-            
             switch (stall.Vendor.Email)
             {
                 case "markachilesflores2004@gmail.com":
-                    await SeedLolaKitchenProducts(products, stall, stallCategories);
+                    await SeedLolaKitchenProducts(products, stall, categories);
                     break;
                     
                 case "sarah.johnson@email.com":
-                    await SeedBurgerJunctionProducts(products, stall, stallCategories);
+                    await SeedBurgerJunctionProducts(products, stall, categories);
                     break;
                     
                 case "carlos.rodriguez@email.com":
-                    await SeedElSaborLatinoProducts(products, stall, stallCategories);
+                    await SeedElSaborLatinoProducts(products, stall, categories);
                     break;
                     
                 case "emily.chen@email.com":
-                    await SeedGoldenDragonProducts(products, stall, stallCategories);
+                    await SeedGoldenDragonProducts(products, stall, categories);
                     break;
                     
                 case "john.doe@email.com":
-                    await SeedMamaMiaPizzeriaProducts(products, stall, stallCategories);
+                    await SeedMamaMiaPizzeriaProducts(products, stall, categories);
                     break;
             }
         }
@@ -390,10 +351,10 @@ public class DatabaseSeeder
     private async Task SeedLolaKitchenProducts(List<Product> products, Stall stall, List<Category> categories)
     {
         var sections = stall.StallSections.ToList();
-        var filipinoDishesCategory = categories.First(c => c.Name == "Filipino Dishes");
         var riceMealsCategory = categories.First(c => c.Name == "Rice Meals");
+        var streetBitesCategory = categories.First(c => c.Name == "Street Bites");
         var dessertsCategory = categories.First(c => c.Name == "Desserts");
-        var beveragesCategory = categories.First(c => c.Name == "Beverages");
+        var hotDrinksCategory = categories.First(c => c.Name == "Hot Drinks");
 
         var mainDishesSection = sections.First(s => s.Name == "Main Dishes");
         var riceBowlsSection = sections.First(s => s.Name == "Rice Bowls");
@@ -403,9 +364,9 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Main Dishes
-            new Product { Name = "Adobong Manok", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PriceWithDelivery = 18.00m, Availability = ProductAvailability.Available, CategoryId = filipinoDishesCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Sinigang na Baboy", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PriceWithDelivery = 20.00m, Availability = ProductAvailability.Available, CategoryId = filipinoDishesCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Kare-Kare", BasePrice = 16.99m, PriceWithMarkup = 19.00m, PriceWithDelivery = 22.00m, Availability = ProductAvailability.Available, CategoryId = filipinoDishesCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Adobong Manok", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PriceWithDelivery = 18.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Sinigang na Baboy", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PriceWithDelivery = 20.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Kare-Kare", BasePrice = 16.99m, PriceWithMarkup = 19.00m, PriceWithDelivery = 22.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
             
             // Rice Bowls
             new Product { Name = "Chicken Tocino Bowl", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PriceWithDelivery = 14.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
@@ -413,22 +374,22 @@ public class DatabaseSeeder
             new Product { Name = "Beef Tapa Bowl", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PriceWithDelivery = 17.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
             
             // Appetizers
-            new Product { Name = "Lumpia Shanghai", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PriceWithDelivery = 11.00m, Availability = ProductAvailability.Available, CategoryId = filipinoDishesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Empanada", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = filipinoDishesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Lumpia Shanghai", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PriceWithDelivery = 11.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Empanada", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
             
             // Desserts & Drinks
             new Product { Name = "Halo-Halo", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PriceWithDelivery = 12.00m, Availability = ProductAvailability.Available, CategoryId = dessertsCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fresh Buko Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = beveragesCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Fresh Buko Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
     private async Task SeedBurgerJunctionProducts(List<Product> products, Stall stall, List<Category> categories)
     {
         var sections = stall.StallSections.ToList();
-        var burgersCategory = categories.First(c => c.Name == "Burgers");
-        var sidesCategory = categories.First(c => c.Name == "Sides");
-        var shakesCategory = categories.First(c => c.Name == "Shakes");
-        var saladsCategory = categories.First(c => c.Name == "Salads");
+        var burgersCategory = categories.First(c => c.Name == "Burgers & Sandwiches");
+        var friedSnacksCategory = categories.First(c => c.Name == "Fried Snacks");
+        var icedDrinksCategory = categories.First(c => c.Name == "Iced Drinks");
+        var othersCategory = categories.First(c => c.Name == "Others");
 
         var signatureBurgersSection = sections.First(s => s.Name == "Signature Burgers");
         var chickenFishSection = sections.First(s => s.Name == "Chicken & Fish");
@@ -444,25 +405,25 @@ public class DatabaseSeeder
             
             // Chicken & Fish
             new Product { Name = "Crispy Chicken Burger", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PriceWithDelivery = 15.00m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fish & Chips", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PriceWithDelivery = 19.00m, Availability = ProductAvailability.Available, CategoryId = sidesCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fish & Chips", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PriceWithDelivery = 19.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
             
             // Sides & Salads
-            new Product { Name = "Loaded Fries", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PriceWithDelivery = 11.00m, Availability = ProductAvailability.Available, CategoryId = sidesCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Caesar Salad", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = saladsCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Loaded Fries", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PriceWithDelivery = 11.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Caesar Salad", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
             
             // Shakes & Drinks
-            new Product { Name = "Chocolate Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, PriceWithDelivery = 10.00m, Availability = ProductAvailability.Available, CategoryId = shakesCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Vanilla Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, PriceWithDelivery = 10.00m, Availability = ProductAvailability.Available, CategoryId = shakesCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Chocolate Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, PriceWithDelivery = 10.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Vanilla Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, PriceWithDelivery = 10.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
     private async Task SeedElSaborLatinoProducts(List<Product> products, Stall stall, List<Category> categories)
     {
         var sections = stall.StallSections.ToList();
-        var tacosCategory = categories.First(c => c.Name == "Tacos");
-        var burritosCategory = categories.First(c => c.Name == "Burritos");
-        var nachosCategory = categories.First(c => c.Name == "Nachos");
-        var drinksCategory = categories.First(c => c.Name == "Drinks");
+        var streetBitesCategory = categories.First(c => c.Name == "Street Bites");
+        var wrapsRollsCategory = categories.First(c => c.Name == "Wraps & Rolls");
+        var friedSnacksCategory = categories.First(c => c.Name == "Fried Snacks");
+        var icedDrinksCategory = categories.First(c => c.Name == "Iced Drinks");
 
         var tacosSection = sections.First(s => s.Name == "Tacos & Quesadillas");
         var burritosSection = sections.First(s => s.Name == "Burritos & Bowls");
@@ -472,31 +433,31 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Tacos & Quesadillas
-            new Product { Name = "Carne Asada Tacos", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PriceWithDelivery = 14.00m, Availability = ProductAvailability.Available, CategoryId = tacosCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Quesadilla", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = tacosCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fish Tacos", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PriceWithDelivery = 15.00m, Availability = ProductAvailability.Available, CategoryId = tacosCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Carne Asada Tacos", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PriceWithDelivery = 14.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Quesadilla", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fish Tacos", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PriceWithDelivery = 15.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
             
             // Burritos & Bowls
-            new Product { Name = "Beef Burrito", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PriceWithDelivery = 17.00m, Availability = ProductAvailability.Available, CategoryId = burritosCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Bowl", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PriceWithDelivery = 15.00m, Availability = ProductAvailability.Available, CategoryId = burritosCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Beef Burrito", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PriceWithDelivery = 17.00m, Availability = ProductAvailability.Available, CategoryId = wrapsRollsCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Bowl", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PriceWithDelivery = 15.00m, Availability = ProductAvailability.Available, CategoryId = wrapsRollsCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
             
             // Appetizers
-            new Product { Name = "Loaded Nachos", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = nachosCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Guacamole & Chips", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PriceWithDelivery = 11.00m, Availability = ProductAvailability.Available, CategoryId = nachosCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Loaded Nachos", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Guacamole & Chips", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PriceWithDelivery = 11.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
             
             // Beverages
-            new Product { Name = "Horchata", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = drinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fresh Agua Fresca", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = drinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Horchata", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fresh Agua Fresca", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
     private async Task SeedGoldenDragonProducts(List<Product> products, Stall stall, List<Category> categories)
     {
         var sections = stall.StallSections.ToList();
-        var noodlesCategory = categories.First(c => c.Name == "Noodles");
-        var dumplingsCategory = categories.First(c => c.Name == "Dumplings");
-        var riceBowlsCategory = categories.First(c => c.Name == "Rice Bowls");
-        var teaCategory = categories.First(c => c.Name == "Tea");
+        var noodlesPastaCategory = categories.First(c => c.Name == "Noodles & Pasta");
+        var streetBitesCategory = categories.First(c => c.Name == "Street Bites");
+        var riceMealsCategory = categories.First(c => c.Name == "Rice Meals");
+        var hotDrinksCategory = categories.First(c => c.Name == "Hot Drinks");
 
         var noodleSoupsSection = sections.First(s => s.Name == "Noodle Soups");
         var stirFrySection = sections.First(s => s.Name == "Stir Fry");
@@ -506,30 +467,30 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Noodle Soups
-            new Product { Name = "Beef Noodle Soup", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PriceWithDelivery = 17.00m, Availability = ProductAvailability.Available, CategoryId = noodlesCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Wonton Soup", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PriceWithDelivery = 14.00m, Availability = ProductAvailability.Available, CategoryId = noodlesCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Beef Noodle Soup", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PriceWithDelivery = 17.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Wonton Soup", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PriceWithDelivery = 14.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
             
             // Stir Fry
-            new Product { Name = "Kung Pao Chicken", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PriceWithDelivery = 18.00m, Availability = ProductAvailability.Available, CategoryId = riceBowlsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Sweet & Sour Pork", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PriceWithDelivery = 19.00m, Availability = ProductAvailability.Available, CategoryId = riceBowlsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fried Rice", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = riceBowlsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Kung Pao Chicken", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PriceWithDelivery = 18.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Sweet & Sour Pork", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PriceWithDelivery = 19.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fried Rice", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
             
             // Dim Sum
-            new Product { Name = "Pork Dumplings (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PriceWithDelivery = 12.00m, Availability = ProductAvailability.Available, CategoryId = dumplingsCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Siu Mai (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PriceWithDelivery = 12.00m, Availability = ProductAvailability.Available, CategoryId = dumplingsCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Pork Dumplings (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PriceWithDelivery = 12.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Siu Mai (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PriceWithDelivery = 12.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
             
             // Drinks & Tea
-            new Product { Name = "Jasmine Tea", BasePrice = 2.99m, PriceWithMarkup = 4.00m, PriceWithDelivery = 7.00m, Availability = ProductAvailability.Available, CategoryId = teaCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fresh Lychee Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = teaCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Jasmine Tea", BasePrice = 2.99m, PriceWithMarkup = 4.00m, PriceWithDelivery = 7.00m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fresh Lychee Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PriceWithDelivery = 8.00m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
     private async Task SeedMamaMiaPizzeriaProducts(List<Product> products, Stall stall, List<Category> categories)
     {
         var sections = stall.StallSections.ToList();
-        var pizzaCategory = categories.First(c => c.Name == "Pizza");
-        var pastaCategory = categories.First(c => c.Name == "Pasta");
-        var appetizersCategory = categories.First(c => c.Name == "Appetizers");
+        var othersCategory = categories.First(c => c.Name == "Others"); // Pizza goes to Others
+        var noodlesPastaCategory = categories.First(c => c.Name == "Noodles & Pasta");
+        var friedSnacksCategory = categories.First(c => c.Name == "Fried Snacks");
         var dessertsCategory = categories.First(c => c.Name == "Desserts");
 
         var classicPizzasSection = sections.First(s => s.Name == "Classic Pizzas");
@@ -540,19 +501,19 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Classic Pizzas
-            new Product { Name = "Margherita Pizza", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PriceWithDelivery = 18.00m, Availability = ProductAvailability.Available, CategoryId = pizzaCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Pepperoni Pizza", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PriceWithDelivery = 20.00m, Availability = ProductAvailability.Available, CategoryId = pizzaCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Margherita Pizza", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PriceWithDelivery = 18.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Pepperoni Pizza", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PriceWithDelivery = 20.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
             
             // Specialty Pizzas
-            new Product { Name = "Four Cheese Pizza", BasePrice = 15.99m, PriceWithMarkup = 18.00m, PriceWithDelivery = 21.00m, Availability = ProductAvailability.Available, CategoryId = pizzaCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "BBQ Chicken Pizza", BasePrice = 16.99m, PriceWithMarkup = 19.00m, PriceWithDelivery = 22.00m, Availability = ProductAvailability.Available, CategoryId = pizzaCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Four Cheese Pizza", BasePrice = 15.99m, PriceWithMarkup = 18.00m, PriceWithDelivery = 21.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "BBQ Chicken Pizza", BasePrice = 16.99m, PriceWithMarkup = 19.00m, PriceWithDelivery = 22.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
             
             // Pasta Dishes
-            new Product { Name = "Spaghetti Carbonara", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PriceWithDelivery = 19.00m, Availability = ProductAvailability.Available, CategoryId = pastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fettuccine Alfredo", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PriceWithDelivery = 20.00m, Availability = ProductAvailability.Available, CategoryId = pastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Spaghetti Carbonara", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PriceWithDelivery = 19.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fettuccine Alfredo", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PriceWithDelivery = 20.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
             
             // Appetizers & Desserts
-            new Product { Name = "Garlic Bread", BasePrice = 4.99m, PriceWithMarkup = 6.00m, PriceWithDelivery = 9.00m, Availability = ProductAvailability.Available, CategoryId = appetizersCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Garlic Bread", BasePrice = 4.99m, PriceWithMarkup = 6.00m, PriceWithDelivery = 9.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null },
             new Product { Name = "Tiramisu", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PriceWithDelivery = 13.00m, Availability = ProductAvailability.Available, CategoryId = dessertsCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null }
         });
     }

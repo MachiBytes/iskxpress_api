@@ -38,7 +38,7 @@ public class CartItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -88,7 +88,7 @@ public class CartItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -138,7 +138,7 @@ public class CartItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -188,7 +188,7 @@ public class CartItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -234,7 +234,7 @@ public class CartItemRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
 
         var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
-        var category = new Category { Name = "Test Category", VendorId = vendor.Id };
+        var category = new Category { Name = "Test Category" };
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.SaveChangesAsync();
@@ -271,6 +271,46 @@ public class CartItemRepositoryTests : IDisposable
         result.Should().NotBeNull();
         result.Id.Should().BeGreaterThan(0);
         result.Quantity.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task GetByIdWithDetailsAsync_ShouldReturnCartItemDetails()
+    {
+        // Arrange
+        var vendor = new User { Email = "vendor@example.com", Name = "Vendor", Role = UserRole.Vendor };
+        var user = new User { Email = "user@example.com", Name = "User", Role = UserRole.User };
+        _context.Users.AddRange(vendor, user);
+        await _context.SaveChangesAsync();
+        
+        var stall = new Stall { Name = "Test Stall", VendorId = vendor.Id };
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+        
+        var category = new Category { Name = "Test Category" };
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+        
+        var section = new StallSection { Name = "Test Section", StallId = stall.Id };
+        _context.StallSections.Add(section);
+        await _context.SaveChangesAsync();
+        
+        var product = new Product { Name = "Test Product", BasePrice = 10.00m, CategoryId = category.Id, SectionId = section.Id, StallId = stall.Id };
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        
+        var cartItem = new CartItem { UserId = user.Id, ProductId = product.Id, StallId = stall.Id, Quantity = 2 };
+        _context.CartItems.Add(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _repository.GetByIdWithDetailsAsync(cartItem.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(cartItem.Id);
+        result.User.Should().NotBeNull();
+        result.Product.Should().NotBeNull();
+        result.Stall.Should().NotBeNull();
     }
 
     public void Dispose()

@@ -5,6 +5,7 @@ using iskxpress_api.Services;
 using iskxpress_api.Repositories;
 using iskxpress_api.Models;
 using iskxpress_api.DTOs.Vendors;
+using Microsoft.Extensions.Logging;
 
 namespace iskxpress_api.Tests;
 
@@ -14,6 +15,7 @@ public class ProductServiceTests
     private readonly Mock<IStallRepository> _mockStallRepository;
     private readonly Mock<IStallSectionRepository> _mockSectionRepository;
     private readonly Mock<ICategoryRepository> _mockCategoryRepository;
+    private readonly Mock<IFileRepository> _mockFileRepository;
     private readonly ProductService _productService;
 
     public ProductServiceTests()
@@ -22,13 +24,15 @@ public class ProductServiceTests
         _mockStallRepository = new Mock<IStallRepository>();
         _mockSectionRepository = new Mock<IStallSectionRepository>();
         _mockCategoryRepository = new Mock<ICategoryRepository>();
-        var mockFileRepository = new Mock<IFileRepository>();
+        _mockFileRepository = new Mock<IFileRepository>();
+        var mockLogger = new Mock<ILogger<ProductService>>();
         _productService = new ProductService(
             _mockProductRepository.Object,
             _mockStallRepository.Object,
             _mockSectionRepository.Object,
             _mockCategoryRepository.Object,
-            mockFileRepository.Object);
+            _mockFileRepository.Object,
+            mockLogger.Object);
     }
 
     [Fact]
@@ -38,7 +42,7 @@ public class ProductServiceTests
         var productId = 1;
         var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 1 };
         var section = new StallSection { Id = 1, Name = "Test Section", StallId = stall.Id };
-        var category = new Category { Id = 1, Name = "Test Category", VendorId = 1 };
+        var category = new Category { Id = 1, Name = "Test Category" };
 
         var product = new Product
         {
@@ -155,14 +159,13 @@ public class ProductServiceTests
     }
 
     [Fact]
-    public async Task CreateProductAsync_ValidRequest_ReturnsCreatedProduct()
+    public async Task CreateAsync_ValidRequest_ReturnsCreatedProduct()
     {
         // Arrange
         var stallId = 1;
-        var vendorId = 1;
-        var stall = new Stall { Id = stallId, Name = "Test Stall", VendorId = vendorId };
+        var stall = new Stall { Id = stallId, Name = "Test Stall", VendorId = 1 };
         var section = new StallSection { Id = 1, Name = "Test Section", StallId = stallId };
-        var category = new Category { Id = 1, Name = "Test Category", VendorId = vendorId };
+        var category = new Category { Id = 1, Name = "Test Category" };
 
         var request = new CreateProductRequest
         {
@@ -170,7 +173,8 @@ public class ProductServiceTests
             BasePrice = 12.99m,
             Availability = ProductAvailability.Available,
             CategoryId = 1,
-            SectionId = 1
+            SectionId = 1,
+            StallId = stallId
         };
 
         var createdProduct = new Product
@@ -194,110 +198,104 @@ public class ProductServiceTests
             .ReturnsAsync(category);
         _mockProductRepository.Setup(repo => repo.AddAsync(It.IsAny<Product>()))
             .ReturnsAsync(createdProduct);
-        _mockProductRepository.Setup(repo => repo.GetByIdWithDetailsAsync(createdProduct.Id))
-            .ReturnsAsync(createdProduct);
 
         // Act
-        var result = await _productService.CreateProductAsync(stallId, request);
+        var result = await _productService.CreateAsync(request);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Name.Should().Be("New Product");
+        result.Name.Should().Be("New Product");
         result.BasePrice.Should().Be(12.99m);
         result.Availability.Should().Be(ProductAvailability.Available);
     }
 
     [Fact]
-    public async Task CreateProductAsync_StallNotFound_ReturnsNull()
+    public async Task CreateAsync_StallNotFound_ThrowsArgumentException()
     {
         // Arrange
-        var stallId = 1;
         var request = new CreateProductRequest
         {
             Name = "New Product",
             BasePrice = 12.99m,
             CategoryId = 1,
-            SectionId = 1
+            SectionId = 1,
+            StallId = 1
         };
 
-        _mockStallRepository.Setup(repo => repo.GetByIdAsync(stallId))
+        _mockStallRepository.Setup(repo => repo.GetByIdAsync(1))
             .ReturnsAsync((Stall?)null);
 
-        // Act
-        var result = await _productService.CreateProductAsync(stallId, request);
-
-        // Assert
-        result.Should().BeNull();
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateAsync(request));
     }
 
     [Fact]
-    public async Task UpdateProductAsync_ValidRequest_ReturnsUpdatedProduct()
+    public async Task UpdateAsync_ValidRequest_ReturnsUpdatedProduct()
     {
         // Arrange
         var productId = 1;
         var stallId = 1;
-        var vendorId = 1;
-        var stall = new Stall { Id = stallId, Name = "Test Stall", VendorId = vendorId };
+        var stall = new Stall { Id = stallId, Name = "Test Stall", VendorId = 1 };
         var section = new StallSection { Id = 1, Name = "Test Section", StallId = stallId };
-        var category = new Category { Id = 1, Name = "Test Category", VendorId = vendorId };
+        var category = new Category { Id = 1, Name = "Test Category" };
 
         var existingProduct = new Product
         {
             Id = productId,
-            Name = "Old Product",
+            Name = "Existing Product",
             BasePrice = 10.00m,
-            StallId = stallId,
-            Stall = stall
+            StallId = stallId
         };
 
         var request = new UpdateProductRequest
         {
             Name = "Updated Product",
-            BasePrice = 15.00m,
-            Availability = ProductAvailability.Available,
+            BasePrice = 15.0m,
+            PriceWithMarkup = 17.0m,
+            PriceWithDelivery = 20.0m,
             CategoryId = 1,
-            SectionId = 1
+            SectionId = 1,
+            Availability = ProductAvailability.Available
         };
 
-        _mockProductRepository.Setup(repo => repo.GetByIdWithDetailsAsync(productId))
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId))
             .ReturnsAsync(existingProduct);
-        _mockSectionRepository.Setup(repo => repo.GetByIdAsync(request.SectionId))
-            .ReturnsAsync(section);
         _mockCategoryRepository.Setup(repo => repo.GetByIdAsync(request.CategoryId))
             .ReturnsAsync(category);
+        _mockSectionRepository.Setup(repo => repo.GetByIdAsync(request.SectionId))
+            .ReturnsAsync(section);
         _mockProductRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Product>()))
             .ReturnsAsync(existingProduct);
 
         // Act
-        var result = await _productService.UpdateProductAsync(productId, request);
+        var result = await _productService.UpdateAsync(productId, request);
 
         // Assert
         result.Should().NotBeNull();
-        result!.Name.Should().Be("Updated Product");
-        result.BasePrice.Should().Be(15.00m);
+        result.Name.Should().Be("Updated Product");
     }
 
     [Fact]
-    public async Task UpdateProductAsync_ProductNotFound_ReturnsNull()
+    public async Task UpdateAsync_ProductNotFound_ThrowsKeyNotFoundException()
     {
         // Arrange
         var productId = 1;
         var request = new UpdateProductRequest
         {
             Name = "Updated Product",
-            BasePrice = 15.00m,
+            BasePrice = 15.0m,
+            PriceWithMarkup = 17.0m,
+            PriceWithDelivery = 20.0m,
             CategoryId = 1,
-            SectionId = 1
+            SectionId = 1,
+            Availability = ProductAvailability.Available
         };
 
-        _mockProductRepository.Setup(repo => repo.GetByIdWithDetailsAsync(productId))
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId))
             .ReturnsAsync((Product?)null);
 
-        // Act
-        var result = await _productService.UpdateProductAsync(productId, request);
-
-        // Assert
-        result.Should().BeNull();
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() => _productService.UpdateAsync(productId, request));
     }
 
     [Fact]

@@ -3,6 +3,7 @@ using iskxpress_api.Models;
 using iskxpress_api.Repositories;
 using iskxpress_api.Services.Mapping;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace iskxpress_api.Services;
 
@@ -13,19 +14,22 @@ public class ProductService : IProductService
     private readonly IStallSectionRepository _sectionRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IFileRepository _fileRepository;
+    private readonly ILogger<ProductService> _logger;
 
     public ProductService(
         IProductRepository productRepository,
         IStallRepository stallRepository,
         IStallSectionRepository sectionRepository,
         ICategoryRepository categoryRepository,
-        IFileRepository fileRepository)
+        IFileRepository fileRepository,
+        ILogger<ProductService> logger)
     {
         _productRepository = productRepository;
         _stallRepository = stallRepository;
         _sectionRepository = sectionRepository;
         _categoryRepository = categoryRepository;
         _fileRepository = fileRepository;
+        _logger = logger;
     }
 
     public async Task<ProductResponse?> GetProductByIdAsync(int productId)
@@ -53,88 +57,91 @@ public class ProductService : IProductService
                       .Select(p => p.ToProductResponse());
     }
 
-    public async Task<ProductResponse?> CreateProductAsync(int stallId, CreateProductRequest request)
+    public async Task<ProductResponse> CreateAsync(CreateProductRequest request)
     {
-        // Verify that the stall exists
-        var stall = await _stallRepository.GetByIdAsync(stallId);
-        if (stall == null)
+        try
         {
-            return null; // Stall doesn't exist
+            // Get the stall to validate vendor ownership
+            var stall = await _stallRepository.GetByIdAsync(request.StallId);
+            if (stall == null)
+            {
+                throw new ArgumentException($"Stall with ID {request.StallId} not found");
+            }
+
+            // Validate that the category exists (no need to check VendorId since categories are global)
+            var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
+            if (category == null)
+            {
+                throw new ArgumentException($"Category with ID {request.CategoryId} not found");
+            }
+
+            // Validate that the section belongs to the stall
+            var section = await _sectionRepository.GetByIdAsync(request.SectionId);
+            if (section == null || section.StallId != request.StallId)
+            {
+                throw new ArgumentException($"Section with ID {request.SectionId} not found or does not belong to the specified stall");
+            }
+
+            var product = request.ToEntity();
+            product.StallId = request.StallId;
+
+            var createdProduct = await _productRepository.AddAsync(product);
+            var response = createdProduct.ToResponse();
+
+            _logger.LogInformation("Product created successfully with ID: {ProductId}", createdProduct.Id);
+            return response;
         }
-
-        // Verify that the section belongs to the stall
-        var section = await _sectionRepository.GetByIdAsync(request.SectionId);
-        if (section == null || section.StallId != stallId)
+        catch (Exception ex)
         {
-            return null; // Section doesn't belong to this stall
+            _logger.LogError(ex, "Error creating product");
+            throw;
         }
-
-        // Verify that the category exists and belongs to the same vendor as the stall
-        var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
-        if (category == null || category.VendorId != stall.VendorId)
-        {
-            return null; // Category doesn't belong to the stall's vendor
-        }
-
-        var newProduct = new Product
-        {
-            Name = request.Name,
-            PictureId = request.PictureId,
-            BasePrice = request.BasePrice,
-            PriceWithMarkup = CalculateMarkupPrice(request.BasePrice),
-            PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice),
-            Availability = request.Availability,
-            CategoryId = request.CategoryId,
-            SectionId = request.SectionId,
-            StallId = stallId
-        };
-
-        var createdProduct = await _productRepository.AddAsync(newProduct);
-        
-        // Load related data for the response
-        var productWithDetails = await _productRepository.GetByIdWithDetailsAsync(createdProduct.Id);
-        
-        return productWithDetails?.ToProductResponse();
     }
 
-    public async Task<ProductResponse?> UpdateProductAsync(int productId, UpdateProductRequest request)
+    public async Task<ProductResponse> UpdateAsync(int id, UpdateProductRequest request)
     {
-        var product = await _productRepository.GetByIdWithDetailsAsync(productId);
-        if (product == null)
+        try
         {
-            return null;
-        }
+            var existingProduct = await _productRepository.GetByIdAsync(id);
+            if (existingProduct == null)
+            {
+                throw new KeyNotFoundException($"Product with ID {id} not found");
+            }
 
-        // Verify that the section belongs to the same stall as the product
-        var section = await _sectionRepository.GetByIdAsync(request.SectionId);
-        if (section == null || section.StallId != product.StallId)
+            // Validate that the category exists (no need to check VendorId since categories are global)
+            var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
+            if (category == null)
+            {
+                throw new ArgumentException($"Category with ID {request.CategoryId} not found");
+            }
+
+            // Validate that the section belongs to the same stall as the product
+            var section = await _sectionRepository.GetByIdAsync(request.SectionId);
+            if (section == null || section.StallId != existingProduct.StallId)
+            {
+                throw new ArgumentException($"Section with ID {request.SectionId} not found or does not belong to the product's stall");
+            }
+
+            // Update the product with new values
+            existingProduct.Name = request.Name;
+            existingProduct.BasePrice = request.BasePrice;
+            existingProduct.PriceWithMarkup = request.PriceWithMarkup;
+            existingProduct.PriceWithDelivery = request.PriceWithDelivery;
+            existingProduct.CategoryId = request.CategoryId;
+            existingProduct.SectionId = request.SectionId;
+            existingProduct.PictureId = request.PictureId;
+
+            var updatedProduct = await _productRepository.UpdateAsync(existingProduct);
+            var response = updatedProduct.ToResponse();
+
+            _logger.LogInformation("Product updated successfully with ID: {ProductId}", updatedProduct.Id);
+            return response;
+        }
+        catch (Exception ex)
         {
-            return null; // Section doesn't belong to the same stall
+            _logger.LogError(ex, "Error updating product with ID: {ProductId}", id);
+            throw;
         }
-
-        // Verify that the category belongs to the same vendor as the product's stall
-        var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
-        if (category == null || category.VendorId != product.Stall.VendorId)
-        {
-            return null; // Category doesn't belong to the same vendor
-        }
-
-        // Update product properties
-        product.Name = request.Name;
-        product.PictureId = request.PictureId;
-        product.BasePrice = request.BasePrice;
-        product.PriceWithMarkup = CalculateMarkupPrice(request.BasePrice);
-        product.PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice);
-        product.Availability = request.Availability;
-        product.CategoryId = request.CategoryId;
-        product.SectionId = request.SectionId;
-
-        var updatedProduct = await _productRepository.UpdateAsync(product);
-        
-        // Load related data for the response
-        var productWithDetails = await _productRepository.GetByIdWithDetailsAsync(updatedProduct.Id);
-        
-        return productWithDetails?.ToProductResponse();
     }
 
     public async Task<ProductResponse?> UpdateProductBasicsAsync(int productId, UpdateProductBasicsRequest request)
