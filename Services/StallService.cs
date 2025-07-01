@@ -99,4 +99,16 @@ public class StallService : IStallService
 
         return updatedStall.ToStallResponse();
     }
+
+    public async Task<IEnumerable<StallResponse>> GetStallsByProductNameAsync(string productSearchTerm)
+    {
+        var stalls = await _stallRepository.GetStallsByProductNameAsync(productSearchTerm);
+        return stalls.Select(s => s.ToStallResponse());
+    }
+
+    public async Task<IEnumerable<StallResponse>> SearchStallsAsync(string searchTerm)
+    {
+        var stalls = await _stallRepository.SearchStallsAsync(searchTerm);
+        return stalls.Select(s => s.ToStallResponse());
+    }
 } 

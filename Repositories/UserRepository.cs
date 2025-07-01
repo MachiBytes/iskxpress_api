@@ -14,6 +14,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _dbSet
             .Include(u => u.ProfilePicture)
+            .Include(u => u.Stall)
             .ToListAsync();
     }
 
@@ -21,6 +22,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _dbSet
             .Include(u => u.ProfilePicture)
+            .Include(u => u.Stall)
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
@@ -28,6 +30,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _dbSet
             .Include(u => u.ProfilePicture)
+            .Include(u => u.Stall)
             .FirstOrDefaultAsync(u => u.Email == email);
     }
 
@@ -35,6 +38,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _dbSet
             .Include(u => u.ProfilePicture)
+            .Include(u => u.Stall)
             .Where(u => u.Role == role)
             .ToListAsync();
     }
@@ -43,6 +47,7 @@ public class UserRepository : GenericRepository<User>, IUserRepository
     {
         return await _dbSet
             .Include(u => u.ProfilePicture)
+            .Include(u => u.Stall)
             .Where(u => u.AuthProvider == authProvider)
             .ToListAsync();
     }

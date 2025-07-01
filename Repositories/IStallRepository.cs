@@ -33,4 +33,18 @@ public interface IStallRepository : IGenericRepository<Stall>
     /// <param name="id">The stall ID</param>
     /// <returns>The stall with navigation properties loaded, or null if not found</returns>
     Task<Stall?> GetByIdWithDetailsAsync(int id);
+
+    /// <summary>
+    /// Gets stalls that have products matching the search term
+    /// </summary>
+    /// <param name="productSearchTerm">The product name search term</param>
+    /// <returns>Collection of stalls that have products matching the search term</returns>
+    Task<IEnumerable<Stall>> GetStallsByProductNameAsync(string productSearchTerm);
+
+    /// <summary>
+    /// Searches stalls by name or by their products' names
+    /// </summary>
+    /// <param name="searchTerm">The search term to match against stall names or product names</param>
+    /// <returns>Collection of stalls matching the search term</returns>
+    Task<IEnumerable<Stall>> SearchStallsAsync(string searchTerm);
 } 

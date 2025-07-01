@@ -16,6 +16,8 @@ public class OrderItemRepository : GenericRepository<OrderItem>, IOrderItemRepos
     public async Task<IEnumerable<OrderItem>> GetByOrderIdAsync(int orderId)
     {
         return await _context.OrderItems
+            .Include(oi => oi.Order)
+            .Include(oi => oi.Product)
             .Where(oi => oi.OrderId == orderId)
             .OrderBy(oi => oi.Id)
             .ToListAsync();
@@ -24,6 +26,8 @@ public class OrderItemRepository : GenericRepository<OrderItem>, IOrderItemRepos
     public async Task<IEnumerable<OrderItem>> GetByProductIdAsync(int productId)
     {
         return await _context.OrderItems
+            .Include(oi => oi.Order)
+            .Include(oi => oi.Product)
             .Where(oi => oi.ProductId == productId)
             .OrderBy(oi => oi.Id)
             .ToListAsync();

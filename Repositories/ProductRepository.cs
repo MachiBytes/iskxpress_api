@@ -19,7 +19,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .OrderBy(p => p.Name)
             .ToListAsync();
     }
@@ -30,7 +34,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -40,7 +48,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(p => p.CategoryId == categoryId)
             .OrderBy(p => p.Name)
             .ToListAsync();
@@ -52,7 +64,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(p => p.StallId == stallId)
             .OrderBy(p => p.Name)
             .ToListAsync();
@@ -64,7 +80,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(p => p.SectionId == sectionId)
             .OrderBy(p => p.Name)
             .ToListAsync();
@@ -76,7 +96,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(p => p.Name.Contains(searchTerm))
             .OrderBy(p => p.Name)
             .ToListAsync();
@@ -88,7 +112,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(p => p.PriceWithDelivery >= minPrice && p.PriceWithDelivery <= maxPrice)
             .ToListAsync();
         
@@ -101,7 +129,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .OrderBy(p => p.Name)
             .ToListAsync();
     }
@@ -112,7 +144,11 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
             .Include(p => p.Picture)
             .Include(p => p.Category)
             .Include(p => p.Section)
+                .ThenInclude(s => s.Stall)
             .Include(p => p.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(p => p.Stall)
+                .ThenInclude(s => s.Picture)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 } 

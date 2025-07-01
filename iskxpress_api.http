@@ -88,3 +88,35 @@ DELETE {{iskxpress_api_HostAddress}}/api/User/1
 Accept: application/json
 
 ###
+
+# Stall Management Endpoints
+
+# Get all stalls (now includes categories derived from products)
+GET {{iskxpress_api_HostAddress}}/api/stalls
+Accept: application/json
+
+###
+
+# Get stall by ID
+GET {{iskxpress_api_HostAddress}}/api/stalls/1
+Accept: application/json
+
+###
+
+# Search stalls by name or product name
+GET {{iskxpress_api_HostAddress}}/api/stalls/search?query=pizza
+Accept: application/json
+
+###
+
+# Search stalls by stall name
+GET {{iskxpress_api_HostAddress}}/api/stalls/search?query=burger
+Accept: application/json
+
+###
+
+# Search stalls by product name
+GET {{iskxpress_api_HostAddress}}/api/stalls/search?query=coffee
+Accept: application/json
+
+###

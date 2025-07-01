@@ -16,6 +16,16 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
     public async Task<IEnumerable<CartItem>> GetByUserIdAsync(int userId)
     {
         return await _context.CartItems
+            .Include(ci => ci.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Picture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Category)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(ci => ci.UserId == userId)
             .OrderBy(ci => ci.Id)
             .ToListAsync();
@@ -24,6 +34,16 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
     public async Task<IEnumerable<CartItem>> GetByProductIdAsync(int productId)
     {
         return await _context.CartItems
+            .Include(ci => ci.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Picture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Category)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(ci => ci.ProductId == productId)
             .OrderBy(ci => ci.Id)
             .ToListAsync();
@@ -32,6 +52,16 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
     public async Task<IEnumerable<CartItem>> GetByStallIdAsync(int stallId)
     {
         return await _context.CartItems
+            .Include(ci => ci.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Picture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Category)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(ci => ci.StallId == stallId)
             .OrderBy(ci => ci.Id)
             .ToListAsync();
@@ -40,6 +70,16 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
     public async Task<IEnumerable<CartItem>> GetByUserAndStallAsync(int userId, int stallId)
     {
         return await _context.CartItems
+            .Include(ci => ci.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Picture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Category)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Picture)
             .Where(ci => ci.UserId == userId && ci.StallId == stallId)
             .OrderBy(ci => ci.Id)
             .ToListAsync();
@@ -49,8 +89,15 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
     {
         return await _context.CartItems
             .Include(ci => ci.User)
+                .ThenInclude(u => u.ProfilePicture)
             .Include(ci => ci.Product)
+                .ThenInclude(p => p.Picture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Category)
             .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Picture)
             .OrderBy(ci => ci.Id)
             .ToListAsync();
     }
@@ -59,8 +106,15 @@ public class CartItemRepository : GenericRepository<CartItem>, ICartItemReposito
     {
         return await _context.CartItems
             .Include(ci => ci.User)
+                .ThenInclude(u => u.ProfilePicture)
             .Include(ci => ci.Product)
+                .ThenInclude(p => p.Picture)
+            .Include(ci => ci.Product)
+                .ThenInclude(p => p.Category)
             .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ci => ci.Stall)
+                .ThenInclude(s => s.Picture)
             .FirstOrDefaultAsync(ci => ci.Id == id);
     }
 

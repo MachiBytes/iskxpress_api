@@ -16,6 +16,20 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     public async Task<IEnumerable<Order>> GetByUserIdAsync(int userId)
     {
         return await _context.Orders
+            .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
+            .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -24,6 +38,20 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     public async Task<IEnumerable<Order>> GetByStallIdAsync(int stallId)
     {
         return await _context.Orders
+            .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
+            .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .Where(o => o.StallId == stallId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -32,6 +60,20 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     public async Task<IEnumerable<Order>> GetByStatusAsync(OrderStatus status)
     {
         return await _context.Orders
+            .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
+            .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .Where(o => o.Status == status)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -40,6 +82,20 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     public async Task<IEnumerable<Order>> GetByDeliveryPartnerIdAsync(int deliveryPartnerId)
     {
         return await _context.Orders
+            .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
+            .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .Where(o => o.DeliveryPartnerId == deliveryPartnerId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -49,10 +105,19 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
         return await _context.Orders
             .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
             .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
     }
@@ -61,16 +126,39 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
         return await _context.Orders
             .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
             .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
 
     public async Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         return await _context.Orders
+            .Include(o => o.User)
+                .ThenInclude(u => u.ProfilePicture)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(o => o.Stall)
+                .ThenInclude(s => s.Picture)
+            .Include(o => o.DeliveryPartner)
+                .ThenInclude(dp => dp.ProfilePicture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Category)
             .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();

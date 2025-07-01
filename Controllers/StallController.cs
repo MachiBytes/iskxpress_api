@@ -63,6 +63,23 @@ public class StallController : ControllerBase
     }
 
     /// <summary>
+    /// Search stalls by name or by their products' names
+    /// </summary>
+    /// <param name="query">The search term to match against stall names or product names</param>
+    /// <returns>List of stalls matching the search term</returns>
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<StallResponse>>> SearchStalls([FromQuery] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return BadRequest("Search query parameter is required");
+        }
+
+        var stalls = await _stallService.SearchStallsAsync(query);
+        return Ok(stalls);
+    }
+
+    /// <summary>
     /// Create a new stall for a vendor
     /// </summary>
     /// <param name="vendorId">The ID of the vendor who will own the stall</param>

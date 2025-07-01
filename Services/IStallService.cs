@@ -12,4 +12,6 @@ public interface IStallService
     Task<StallResponse?> UpdateStallAsync(int stallId, UpdateStallRequest request);
     Task<StallResponse?> CreateStallAsync(int vendorId, CreateStallRequest request);
     Task<StallResponse?> UploadStallPictureAsync(int stallId, IFormFile file);
+    Task<IEnumerable<StallResponse>> GetStallsByProductNameAsync(string productSearchTerm);
+    Task<IEnumerable<StallResponse>> SearchStallsAsync(string searchTerm);
 } 

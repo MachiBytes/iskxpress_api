@@ -13,6 +13,22 @@ public class DeliveryRepository : GenericRepository<Delivery>, IDeliveryReposito
     {
     }
 
+    public override async Task<IEnumerable<Delivery>> GetAllAsync()
+    {
+        return await _context.Deliveries
+            .Include(d => d.Order)
+            .Include(d => d.DeliveryPartner)
+            .ToListAsync();
+    }
+
+    public override async Task<Delivery?> GetByIdAsync(int id)
+    {
+        return await _context.Deliveries
+            .Include(d => d.Order)
+            .Include(d => d.DeliveryPartner)
+            .FirstOrDefaultAsync(d => d.Id == id);
+    }
+
     /// <summary>
     /// Gets deliveries by order ID
     /// </summary>

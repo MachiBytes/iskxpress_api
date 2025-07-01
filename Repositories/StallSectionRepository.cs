@@ -17,7 +17,13 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
         return await _context.StallSections
             .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(ss => ss.Products)
+                .ThenInclude(p => p.Picture)
+            .Include(ss => ss.Products)
+                .ThenInclude(p => p.Category)
             .OrderBy(ss => ss.Name)
             .ToListAsync();
     }
@@ -26,7 +32,13 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
         return await _context.StallSections
             .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(ss => ss.Products)
+                .ThenInclude(p => p.Picture)
+            .Include(ss => ss.Products)
+                .ThenInclude(p => p.Category)
             .FirstOrDefaultAsync(ss => ss.Id == id);
     }
 
@@ -34,7 +46,13 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
         return await _context.StallSections
             .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(ss => ss.Products)
+                .ThenInclude(p => p.Picture)
+            .Include(ss => ss.Products)
+                .ThenInclude(p => p.Category)
             .Where(ss => ss.StallId == stallId)
             .OrderBy(ss => ss.Name)
             .ToListAsync();
@@ -44,7 +62,13 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
         return await _context.StallSections
             .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(ss => ss.Products)
+                .ThenInclude(p => p.Picture)
+            .Include(ss => ss.Products)
+                .ThenInclude(p => p.Category)
             .Where(ss => ss.Name.Contains(searchTerm))
             .OrderBy(ss => ss.Name)
             .ToListAsync();
@@ -54,7 +78,13 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
         return await _context.StallSections
             .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(ss => ss.Products)
+                .ThenInclude(p => p.Picture)
+            .Include(ss => ss.Products)
+                .ThenInclude(p => p.Category)
             .OrderBy(ss => ss.Name)
             .ToListAsync();
     }
@@ -63,7 +93,13 @@ public class StallSectionRepository : GenericRepository<StallSection>, IStallSec
     {
         return await _context.StallSections
             .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Vendor)
+            .Include(ss => ss.Stall)
+                .ThenInclude(s => s.Picture)
             .Include(ss => ss.Products)
+                .ThenInclude(p => p.Picture)
+            .Include(ss => ss.Products)
+                .ThenInclude(p => p.Category)
             .FirstOrDefaultAsync(ss => ss.Id == id);
     }
 } 

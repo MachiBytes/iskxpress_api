@@ -11,4 +11,11 @@ public class StallResponse
     public string VendorName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
+}
+
+public class CategoryDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
 } 

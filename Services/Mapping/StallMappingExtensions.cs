@@ -17,7 +17,18 @@ public static class StallMappingExtensions
             VendorId = stall.VendorId,
             VendorName = stall.Vendor?.Name ?? string.Empty,
             CreatedAt = DateTime.UtcNow, // TODO: Add CreatedAt to Stall model if needed
-            UpdatedAt = DateTime.UtcNow  // TODO: Add UpdatedAt to Stall model if needed
+            UpdatedAt = DateTime.UtcNow, // TODO: Add UpdatedAt to Stall model if needed
+            Categories = stall.Products
+                .Where(p => p.Category != null)
+                .Select(p => p.Category)
+                .DistinctBy(c => c.Id)
+                .Select(c => new CategoryDto
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                })
+                .OrderBy(c => c.Name)
+                .ToList()
         };
     }
 } 
