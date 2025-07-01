@@ -39,9 +39,9 @@ public class ProductMappingExtensionsTests
         result.Id.Should().Be(1);
         result.Name.Should().Be("Test Product");
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(15.00m); // Math.Ceiling(12.99 * 1.1) = 15.00
-        result.MarkupAmount.Should().Be(2.01m); // 15.00 - 12.99
-        result.MarkupPercentage.Should().Be(10.0m);
+        result.CalculatedMarkupPrice.Should().Be(13.64m); // 12.99 + (12.99 * 0.05) = 13.64
+        result.MarkupAmount.Should().Be(0.65m); // 13.64 - 12.99
+        result.MarkupPercentage.Should().Be(5.0m);
         result.Availability.Should().Be(ProductAvailability.Available);
         result.AvailabilityText.Should().Be("Available");
         result.SectionName.Should().Be("Test Section");
@@ -49,13 +49,13 @@ public class ProductMappingExtensionsTests
     }
 
     [Theory]
-    [InlineData(10.00, 11.00, 1.00)] // 10.00 * 1.1 = 11.00 (exact)
-    [InlineData(10.50, 12.00, 1.50)] // 10.50 * 1.1 = 11.55 -> rounded up to 12.00
-    [InlineData(12.99, 15.00, 2.01)] // 12.99 * 1.1 = 14.289 -> rounded up to 15.00
-    [InlineData(18.99, 21.00, 2.01)] // 18.99 * 1.1 = 20.889 -> rounded up to 21.00
-    [InlineData(25.25, 28.00, 2.75)] // 25.25 * 1.1 = 27.775 -> rounded up to 28.00
-    [InlineData(9.09, 10.00, 0.91)]  // 9.09 * 1.1 = 9.999 -> rounded up to 10.00
-    [InlineData(100.00, 110.00, 10.00)] // 100.00 * 1.1 = 110.00 (exact)
+    [InlineData(10.00, 10.50, 0.50)] // 10.00 + (10.00 * 0.05) = 10.50
+    [InlineData(10.50, 11.03, 0.53)] // 10.50 + (10.50 * 0.05) = 11.025 -> 11.03
+    [InlineData(12.99, 13.64, 0.65)] // 12.99 + (12.99 * 0.05) = 13.6395 -> 13.64
+    [InlineData(18.99, 19.94, 0.95)] // 18.99 + (18.99 * 0.05) = 19.9395 -> 19.94
+    [InlineData(25.25, 26.51, 1.26)] // 25.25 + (25.25 * 0.05) = 26.5125 -> 26.51
+    [InlineData(9.09, 9.54, 0.45)]   // 9.09 + (9.09 * 0.05) = 9.5445 -> 9.54
+    [InlineData(100.00, 105.00, 5.00)] // 100.00 + (100.00 * 0.05) = 105.00
     public void ToVendorProductPricingResponse_VariousBasePrices_CalculatesMarkupCorrectly(
         decimal basePrice, 
         decimal expectedMarkupPrice, 
@@ -171,7 +171,7 @@ public class ProductMappingExtensionsTests
         result.PictureId.Should().Be(1);
         result.PictureUrl.Should().Be("https://example.com/image.jpg");
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(15.00m); // Math.Ceiling(12.99 * 1.1)
+        result.CalculatedMarkupPrice.Should().Be(13.64m); // 12.99 + (12.99 * 0.05)
         result.PriceWithMarkup.Should().Be(15.99m); // Original stored value
         result.PriceWithDelivery.Should().Be(17.99m);
         result.Availability.Should().Be(ProductAvailability.Available);
@@ -209,13 +209,13 @@ public class ProductMappingExtensionsTests
         // Assert
         result.PictureId.Should().BeNull();
         result.PictureUrl.Should().BeNull();
-        result.CalculatedMarkupPrice.Should().Be(11.00m); // Math.Ceiling(10.00 * 1.1)
+        result.CalculatedMarkupPrice.Should().Be(10.50m); // 10.00 + (10.00 * 0.05)
     }
 
     [Theory]
-    [InlineData(0.01, 1.00)]   // Very small price: 0.01 * 1.1 = 0.011 -> rounded up to 1.00
-    [InlineData(0.91, 2.00)]   // 0.91 * 1.1 = 1.001 -> rounded up to 2.00
-    [InlineData(999.99, 1100.00)] // Large price: 999.99 * 1.1 = 1099.989 -> rounded up to 1100.00
+    [InlineData(0.01, 0.01)]   // Very small price: 0.01 + (0.01 * 0.05) = 0.0105 -> 0.01
+    [InlineData(0.91, 0.96)]   // 0.91 + (0.91 * 0.05) = 0.9555 -> 0.96
+    [InlineData(999.99, 1049.99)] // Large price: 999.99 + (999.99 * 0.05) = 1049.9895 -> 1049.99
     public void CalculatedMarkupPrice_EdgeCases_CalculatesCorrectly(decimal basePrice, decimal expectedMarkup)
     {
         // Arrange
@@ -259,8 +259,8 @@ public class ProductMappingExtensionsTests
 
         // Assert
         result.BasePrice.Should().Be(0.00m);
-        result.CalculatedMarkupPrice.Should().Be(0.00m); // Math.Ceiling(0.00 * 1.1) = 0.00
+        result.CalculatedMarkupPrice.Should().Be(0.00m); // 0.00 + (0.00 * 0.05) = 0.00
         result.MarkupAmount.Should().Be(0.00m);
-        result.MarkupPercentage.Should().Be(10.0m);
+        result.MarkupPercentage.Should().Be(5.0m);
     }
 } 

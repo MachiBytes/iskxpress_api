@@ -14,7 +14,7 @@ public static class ProductMappingExtensions
             PictureId = product.PictureId,
             PictureUrl = product.Picture?.ObjectUrl,
             BasePrice = product.BasePrice,
-            CalculatedMarkupPrice = Math.Ceiling(product.BasePrice * 1.1m),
+            CalculatedMarkupPrice = CalculateMarkupPrice(product.BasePrice),
             PriceWithMarkup = product.PriceWithMarkup,
             PriceWithDelivery = product.PriceWithDelivery,
             Availability = product.Availability,
@@ -53,7 +53,7 @@ public static class ProductMappingExtensions
 
     public static VendorProductPricingResponse ToVendorProductPricingResponse(this Product product)
     {
-        var calculatedMarkupPrice = Math.Ceiling(product.BasePrice * 1.1m);
+        var calculatedMarkupPrice = CalculateMarkupPrice(product.BasePrice);
         var markupAmount = calculatedMarkupPrice - product.BasePrice;
 
         return new VendorProductPricingResponse
@@ -63,7 +63,7 @@ public static class ProductMappingExtensions
             BasePrice = product.BasePrice,
             CalculatedMarkupPrice = calculatedMarkupPrice,
             MarkupAmount = markupAmount,
-            MarkupPercentage = 10.0m,
+            MarkupPercentage = 5.0m,
             Availability = product.Availability,
             AvailabilityText = product.Availability.ToString(),
             SectionName = product.Section?.Name ?? string.Empty,
@@ -72,18 +72,19 @@ public static class ProductMappingExtensions
     }
 
     /// <summary>
-    /// Calculates the markup price by adding 10% to the base price and rounding up using Math.Ceiling
+    /// Calculates the markup price by adding 5% to the base price
     /// </summary>
     private static decimal CalculateMarkupPrice(decimal basePrice)
     {
-        return Math.Ceiling(basePrice * 1.10m);
+        return basePrice + (basePrice * 0.05m);
     }
 
     /// <summary>
-    /// Calculates the delivery price by adding $3.00 to the markup price
+    /// Calculates the delivery price by adding ₱10.00 to the markup price and rounding up
     /// </summary>
     private static decimal CalculateDeliveryPrice(decimal basePrice)
     {
-        return CalculateMarkupPrice(basePrice) + 3.00m;
+        var markupPrice = CalculateMarkupPrice(basePrice);
+        return Math.Ceiling(markupPrice + 10.00m);
     }
 } 

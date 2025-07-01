@@ -1,0 +1,63 @@
+@iskxpress_api_HostAddress = http://localhost:5083
+
+### Cart API Examples
+
+# Get user's cart
+GET {{iskxpress_api_HostAddress}}/api/cart/user/1
+Content-Type: application/json
+
+###
+
+# Add product to cart (new item)
+POST {{iskxpress_api_HostAddress}}/api/cart/user/1/add
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 2
+}
+
+###
+
+# Add product to cart (existing item - will increase quantity)
+POST {{iskxpress_api_HostAddress}}/api/cart/user/1/add
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "quantity": 1
+}
+
+###
+
+# Update cart item quantity
+PUT {{iskxpress_api_HostAddress}}/api/cart/user/1/items/1/quantity
+Content-Type: application/json
+
+{
+  "quantity": 5
+}
+
+###
+
+# Remove cart item (set quantity to 0)
+PUT {{iskxpress_api_HostAddress}}/api/cart/user/1/items/1/quantity
+Content-Type: application/json
+
+{
+  "quantity": 0
+}
+
+###
+
+# Remove cart item directly
+DELETE {{iskxpress_api_HostAddress}}/api/cart/user/1/items/1
+Content-Type: application/json
+
+###
+
+# Clear entire cart
+DELETE {{iskxpress_api_HostAddress}}/api/cart/user/1/clear
+Content-Type: application/json
+
+### 

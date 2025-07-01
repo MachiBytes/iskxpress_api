@@ -177,19 +177,20 @@ public class ProductService : IProductService
     }
 
     /// <summary>
-    /// Calculates the markup price by adding 10% to the base price and rounding up using Math.Ceiling
+    /// Calculates the markup price by adding 5% to the base price
     /// </summary>
     private static decimal CalculateMarkupPrice(decimal basePrice)
     {
-        return Math.Ceiling(basePrice * 1.10m);
+        return basePrice + (basePrice * 0.05m);
     }
 
     /// <summary>
-    /// Calculates the delivery price by adding $3.00 to the markup price
+    /// Calculates the delivery price by adding ₱10.00 to the markup price and rounding up
     /// </summary>
     private static decimal CalculateDeliveryPrice(decimal basePrice)
     {
-        return CalculateMarkupPrice(basePrice) + 3.00m;
+        var markupPrice = CalculateMarkupPrice(basePrice);
+        return Math.Ceiling(markupPrice + 10.00m);
     }
 
     public async Task<ProductResponse?> UploadProductPictureAsync(int productId, IFormFile file)
