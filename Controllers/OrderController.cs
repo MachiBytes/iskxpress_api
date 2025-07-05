@@ -128,4 +128,51 @@ public class OrderController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    /// <summary>
+    /// Updates the status of an order
+    /// </summary>
+    /// <param name="orderId">The order ID</param>
+    /// <param name="request">The status update request</param>
+    /// <returns>The updated order</returns>
+    [HttpPut("{orderId}/status")]
+    public async Task<ActionResult<OrderResponse>> UpdateOrderStatus(int orderId, [FromBody] UpdateOrderStatusRequest request)
+    {
+        try
+        {
+            var order = await _orderService.UpdateOrderStatusAsync(orderId, request.Status);
+            return Ok(order);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Confirms order delivery by the user
+    /// </summary>
+    /// <param name="orderId">The order ID</param>
+    /// <returns>The order confirmation details</returns>
+    [HttpPost("{orderId}/confirm")]
+    public async Task<ActionResult<OrderConfirmationResponse>> ConfirmOrderDelivery(int orderId)
+    {
+        try
+        {
+            var confirmation = await _orderService.ConfirmOrderDeliveryAsync(orderId);
+            return Ok(confirmation);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 } 

@@ -1,0 +1,62 @@
+@iskxpress_api_HostAddress = http://localhost:5083
+
+### Get Available Delivery Requests
+GET {{iskxpress_api_HostAddress}}/api/Delivery/requests
+
+### Get Delivery Partner Requests
+GET {{iskxpress_api_HostAddress}}/api/Delivery/partner/1/requests
+
+### Get Specific Delivery Request
+GET {{iskxpress_api_HostAddress}}/api/Delivery/requests/1
+
+### Assign Delivery Request to Partner
+POST {{iskxpress_api_HostAddress}}/api/Delivery/requests/1/assign
+Content-Type: application/json
+
+{
+  "deliveryPartnerId": 1
+}
+
+### Update Delivery Request Status
+PUT {{iskxpress_api_HostAddress}}/api/Delivery/requests/1/status?status=2
+
+### Update Order Status (Vendor/Stall)
+PUT {{iskxpress_api_HostAddress}}/api/Order/1/status
+Content-Type: application/json
+
+{
+  "status": 1
+}
+
+### Update Order Status to ToPrepare
+PUT {{iskxpress_api_HostAddress}}/api/Order/1/status
+Content-Type: application/json
+
+{
+  "status": 1
+}
+
+### Update Order Status to ToDeliver
+PUT {{iskxpress_api_HostAddress}}/api/Order/1/status
+Content-Type: application/json
+
+{
+  "status": 2
+}
+
+### Update Order Status to ToReceive
+PUT {{iskxpress_api_HostAddress}}/api/Order/1/status
+Content-Type: application/json
+
+{
+  "status": 3
+}
+
+### Confirm Order Delivery (User)
+POST {{iskxpress_api_HostAddress}}/api/Order/1/confirm
+
+### Update Stall Delivery Availability
+PUT {{iskxpress_api_HostAddress}}/api/stalls/1/delivery-availability?hasDeliveryPartner=true&deliveryAvailable=true
+
+### Update Stall Delivery Availability (No Partner)
+PUT {{iskxpress_api_HostAddress}}/api/stalls/1/delivery-availability?hasDeliveryPartner=false&deliveryAvailable=false 

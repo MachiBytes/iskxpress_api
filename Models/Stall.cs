@@ -20,6 +20,16 @@ public class Stall
     [ForeignKey("Vendor")]
     public int VendorId { get; set; }
 
+    /// <summary>
+    /// Indicates if the stall has a delivery partner available
+    /// </summary>
+    public bool HasDeliveryPartner { get; set; } = false;
+
+    /// <summary>
+    /// Indicates if delivery service is currently available
+    /// </summary>
+    public bool DeliveryAvailable { get; set; } = false;
+
     // Navigation properties
     public virtual FileRecord? Picture { get; set; }
     public virtual User Vendor { get; set; } = null!;

@@ -180,4 +180,33 @@ public class StallController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    /// <summary>
+    /// Updates the delivery availability for a stall
+    /// </summary>
+    /// <param name="stallId">The stall ID</param>
+    /// <param name="hasDeliveryPartner">Whether the stall has a delivery partner</param>
+    /// <param name="deliveryAvailable">Whether delivery is currently available</param>
+    /// <returns>The updated stall information</returns>
+    [HttpPut("{stallId}/delivery-availability")]
+    public async Task<ActionResult<StallResponse>> UpdateDeliveryAvailability(
+        int stallId,
+        [FromQuery] bool hasDeliveryPartner,
+        [FromQuery] bool deliveryAvailable)
+    {
+        try
+        {
+            var updatedStall = await _stallService.UpdateDeliveryAvailabilityAsync(stallId, hasDeliveryPartner, deliveryAvailable);
+            return Ok(updatedStall);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating delivery availability for stall {StallId}", stallId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 } 

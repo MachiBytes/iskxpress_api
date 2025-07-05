@@ -138,4 +138,19 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
             .OrderBy(s => s.Name)
             .ToListAsync();
     }
+
+    public async Task<Stall> UpdateDeliveryAvailabilityAsync(int stallId, bool hasDeliveryPartner, bool deliveryAvailable)
+    {
+        var stall = await _context.Stalls.FindAsync(stallId);
+        if (stall == null)
+        {
+            throw new ArgumentException($"Stall with ID {stallId} not found");
+        }
+
+        stall.HasDeliveryPartner = hasDeliveryPartner;
+        stall.DeliveryAvailable = deliveryAvailable;
+
+        await _context.SaveChangesAsync();
+        return stall;
+    }
 } 

@@ -70,6 +70,9 @@ builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IFileRepository, FileRepository>();
+builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+builder.Services.AddScoped<IDeliveryRequestRepository, DeliveryRequestRepository>();
+builder.Services.AddScoped<IOrderConfirmationRepository, OrderConfirmationRepository>();
 
 // Register AWS S3 services
 builder.Services.AddScoped<IAmazonS3>(provider =>
@@ -87,6 +90,7 @@ builder.Services.AddScoped<ISectionService, SectionService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IDeliveryService, DeliveryService>();
 
 // Register seeder
 builder.Services.AddScoped<DatabaseSeeder>();

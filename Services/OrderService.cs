@@ -12,17 +12,26 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly ICartItemRepository _cartItemRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IStallRepository _stallRepository;
+    private readonly IDeliveryRequestRepository _deliveryRequestRepository;
+    private readonly IOrderConfirmationRepository _orderConfirmationRepository;
 
     public OrderService(
         IskExpressDbContext context,
         IOrderRepository orderRepository,
         ICartItemRepository cartItemRepository,
-        IProductRepository productRepository)
+        IProductRepository productRepository,
+        IStallRepository stallRepository,
+        IDeliveryRequestRepository deliveryRequestRepository,
+        IOrderConfirmationRepository orderConfirmationRepository)
     {
         _context = context;
         _orderRepository = orderRepository;
         _cartItemRepository = cartItemRepository;
         _productRepository = productRepository;
+        _stallRepository = stallRepository;
+        _deliveryRequestRepository = deliveryRequestRepository;
+        _orderConfirmationRepository = orderConfirmationRepository;
     }
 
     public async Task<OrderResponse> CreateOrderAsync(int userId, CreateOrderRequest request)
@@ -76,6 +85,13 @@ public class OrderService : IOrderService
             throw new ArgumentException($"The following products are no longer available: {productNames}");
         }
 
+        // Get stall information to check delivery availability
+        var stall = await _stallRepository.GetByIdAsync(stallId);
+        if (stall == null)
+        {
+            throw new ArgumentException($"Stall with ID {stallId} not found");
+        }
+
         // Create order
         var order = new Order
         {
@@ -87,6 +103,22 @@ public class OrderService : IOrderService
             Notes = request.Notes,
             CreatedAt = DateTime.UtcNow
         };
+
+        // Handle delivery partner assignment based on stall availability
+        if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+        {
+            if (stall.HasDeliveryPartner && stall.DeliveryAvailable)
+            {
+                // Stall has delivery partner available - assign immediately
+                // Note: In a real implementation, you might want to assign to a specific partner
+                // For now, we'll leave it unassigned and let the delivery system handle it
+            }
+            else
+            {
+                // Stall doesn't have delivery partner - order will be created but won't show in stall orders
+                // until a delivery partner is assigned
+            }
+        }
 
         // Create order items and calculate total
         decimal totalPrice = 0;
@@ -152,6 +184,131 @@ public class OrderService : IOrderService
     {
         var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
         return order != null ? MapToOrderResponse(order) : null;
+    }
+
+    public async Task<OrderResponse> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus)
+    {
+        var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        if (order == null)
+        {
+            throw new ArgumentException($"Order with ID {orderId} not found");
+        }
+
+        // Validate status transition
+        if (!IsValidStatusTransition(order.Status, newStatus, order.FulfillmentMethod))
+        {
+            throw new ArgumentException($"Invalid status transition from {order.Status} to {newStatus}");
+        }
+
+        // Handle special cases for status changes
+        if (newStatus == OrderStatus.ToReceive)
+        {
+            // Create order confirmation for user
+            await CreateOrderConfirmationAsync(orderId);
+        }
+
+        order.Status = newStatus;
+        await _context.SaveChangesAsync();
+
+        // Return the updated order
+        var updatedOrder = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        return MapToOrderResponse(updatedOrder!);
+    }
+
+    public async Task<OrderConfirmationResponse> ConfirmOrderDeliveryAsync(int orderId)
+    {
+        var confirmation = await _orderConfirmationRepository.GetByOrderIdAsync(orderId);
+        if (confirmation == null)
+        {
+            throw new ArgumentException($"No confirmation request found for order {orderId}");
+        }
+
+        if (confirmation.IsConfirmed || confirmation.IsAutoConfirmed)
+        {
+            throw new ArgumentException("Order has already been confirmed");
+        }
+
+        confirmation.IsConfirmed = true;
+        confirmation.ConfirmedAt = DateTime.UtcNow;
+
+        // Update order status to accomplished
+        var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        if (order != null)
+        {
+            order.Status = OrderStatus.Accomplished;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new OrderConfirmationResponse
+        {
+            Id = confirmation.Id,
+            OrderId = confirmation.OrderId,
+            CreatedAt = confirmation.CreatedAt,
+            ConfirmationDeadline = confirmation.ConfirmationDeadline,
+            IsConfirmed = confirmation.IsConfirmed,
+            ConfirmedAt = confirmation.ConfirmedAt,
+            IsAutoConfirmed = confirmation.IsAutoConfirmed,
+            AutoConfirmedAt = confirmation.AutoConfirmedAt
+        };
+    }
+
+    public async Task ProcessAutoConfirmationsAsync()
+    {
+        var pendingConfirmations = await _orderConfirmationRepository.GetPendingAutoConfirmationsAsync();
+        
+        foreach (var confirmation in pendingConfirmations)
+        {
+            confirmation.IsAutoConfirmed = true;
+            confirmation.AutoConfirmedAt = DateTime.UtcNow;
+
+            // Update order status to accomplished
+            var order = await _orderRepository.GetOrderWithItemsAsync(confirmation.OrderId);
+            if (order != null)
+            {
+                order.Status = OrderStatus.Accomplished;
+            }
+        }
+
+        if (pendingConfirmations.Any())
+        {
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    private async Task CreateOrderConfirmationAsync(int orderId)
+    {
+        // Check if confirmation already exists
+        var existingConfirmation = await _orderConfirmationRepository.GetByOrderIdAsync(orderId);
+        if (existingConfirmation != null)
+        {
+            return; // Confirmation already exists
+        }
+
+        var confirmation = new OrderConfirmation
+        {
+            OrderId = orderId,
+            CreatedAt = DateTime.UtcNow,
+            ConfirmationDeadline = DateTime.UtcNow.AddMinutes(5), // 5 minutes deadline
+            IsConfirmed = false,
+            IsAutoConfirmed = false
+        };
+
+        await _orderConfirmationRepository.AddAsync(confirmation);
+        await _context.SaveChangesAsync();
+    }
+
+    private static bool IsValidStatusTransition(OrderStatus currentStatus, OrderStatus newStatus, FulfillmentMethod fulfillmentMethod)
+    {
+        return currentStatus switch
+        {
+            OrderStatus.Pending => newStatus == OrderStatus.ToPrepare,
+            OrderStatus.ToPrepare => newStatus == OrderStatus.ToDeliver || newStatus == OrderStatus.ToReceive,
+            OrderStatus.ToDeliver => newStatus == OrderStatus.ToReceive,
+            OrderStatus.ToReceive => newStatus == OrderStatus.Accomplished,
+            OrderStatus.Accomplished => false, // Cannot change from accomplished
+            _ => false
+        };
     }
 
     public async Task<MultiOrderResponse> CreateMultiOrderAsync(int userId, CreateOrderRequest request)

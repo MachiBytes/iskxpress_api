@@ -15,6 +15,9 @@ public class OrderServiceTests
     private readonly IOrderRepository _orderRepository;
     private readonly ICartItemRepository _cartItemRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IStallRepository _stallRepository;
+    private readonly IDeliveryRequestRepository _deliveryRequestRepository;
+    private readonly IOrderConfirmationRepository _orderConfirmationRepository;
 
     public OrderServiceTests()
     {
@@ -26,7 +29,10 @@ public class OrderServiceTests
         _orderRepository = new OrderRepository(_context);
         _cartItemRepository = new CartItemRepository(_context);
         _productRepository = new ProductRepository(_context);
-        _orderService = new OrderService(_context, _orderRepository, _cartItemRepository, _productRepository);
+        _stallRepository = new StallRepository(_context);
+        _deliveryRequestRepository = new DeliveryRequestRepository(_context);
+        _orderConfirmationRepository = new OrderConfirmationRepository(_context);
+        _orderService = new OrderService(_context, _orderRepository, _cartItemRepository, _productRepository, _stallRepository, _deliveryRequestRepository, _orderConfirmationRepository);
     }
 
     [Fact]

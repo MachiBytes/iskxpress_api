@@ -47,4 +47,13 @@ public interface IStallRepository : IGenericRepository<Stall>
     /// <param name="searchTerm">The search term to match against stall names or product names</param>
     /// <returns>Collection of stalls matching the search term</returns>
     Task<IEnumerable<Stall>> SearchStallsAsync(string searchTerm);
+
+    /// <summary>
+    /// Updates the delivery availability for a stall
+    /// </summary>
+    /// <param name="stallId">The stall ID</param>
+    /// <param name="hasDeliveryPartner">Whether the stall has a delivery partner</param>
+    /// <param name="deliveryAvailable">Whether delivery is currently available</param>
+    /// <returns>The updated stall</returns>
+    Task<Stall> UpdateDeliveryAvailabilityAsync(int stallId, bool hasDeliveryPartner, bool deliveryAvailable);
 } 

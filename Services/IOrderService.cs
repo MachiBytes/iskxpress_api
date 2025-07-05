@@ -10,4 +10,7 @@ public interface IOrderService
     Task<IEnumerable<OrderResponse>> GetUserOrdersAsync(int userId, OrderStatus? status = null);
     Task<IEnumerable<OrderResponse>> GetStallOrdersAsync(int stallId, OrderStatus? status = null);
     Task<OrderResponse?> GetOrderAsync(int orderId);
+    Task<OrderResponse> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus);
+    Task<OrderConfirmationResponse> ConfirmOrderDeliveryAsync(int orderId);
+    Task ProcessAutoConfirmationsAsync();
 } 
