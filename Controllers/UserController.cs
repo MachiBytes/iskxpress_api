@@ -42,6 +42,37 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
+    /// Get all Google accounts registered in Firebase Auth
+    /// </summary>
+    /// <remarks>
+    /// This endpoint connects directly to Firebase Authentication and returns all users who have signed up using Google as their authentication provider.
+    /// 
+    /// Requires firebase-key.json file in the project root.
+    /// </remarks>
+    /// <returns>List of Google users from Firebase Auth</returns>
+    /// <response code="200">Returns the list of Google users</response>
+    /// <response code="500">Internal server error or Firebase connection issue</response>
+    [HttpGet("google")]
+    [ProducesResponseType(typeof(IEnumerable<GoogleUserResponse>), 200)]
+    [ProducesResponseType(500)]
+    public async Task<ActionResult<IEnumerable<GoogleUserResponse>>> GetGoogleUsers()
+    {
+        try
+        {
+            var googleUsers = await _userService.GetGoogleUsersAsync();
+            
+            _logger.LogInformation("Retrieved {Count} Google users from Firebase Auth", googleUsers.Count());
+
+            return Ok(googleUsers);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving Google users from Firebase Auth");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
     /// Get user by ID
     /// </summary>
     /// <param name="id">The user ID</param>

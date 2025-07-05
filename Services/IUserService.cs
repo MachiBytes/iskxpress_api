@@ -14,6 +14,7 @@ public interface IUserService
     Task<SyncResultDto> SyncAllFirebaseUsersAsync();
     Task<IEnumerable<UserResponse>> GetAllUsersAsync();
     Task<UserResponse?> UploadProfilePictureAsync(int userId, IFormFile file);
+    Task<IEnumerable<GoogleUserResponse>> GetGoogleUsersAsync();
 }
 
  

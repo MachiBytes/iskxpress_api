@@ -211,4 +211,47 @@ public class UserService : IUserService
 
         return updatedUser.ToResponse();
     }
+
+    public async Task<IEnumerable<GoogleUserResponse>> GetGoogleUsersAsync()
+    {
+        var googleUsers = new List<GoogleUserResponse>();
+
+        try
+        {
+            // Initialize Firebase if not already done
+            FirebaseInitializer.InitializeFirebase();
+
+            // Get all users from Firebase
+            var pagedEnumerable = FirebaseAuth.DefaultInstance.ListUsersAsync(null);
+            
+            await foreach (var user in pagedEnumerable)
+            {
+                // Check if user has Google as a provider
+                if (user.ProviderData.Any(p => p.ProviderId == "google.com"))
+                {
+                    var googleUser = new GoogleUserResponse
+                    {
+                        Uid = user.Uid,
+                        Email = user.Email ?? string.Empty,
+                        DisplayName = user.DisplayName,
+                        PhotoUrl = user.PhotoUrl,
+                        EmailVerified = user.EmailVerified,
+                        CreatedAt = user.UserMetaData.CreationTimestamp ?? DateTime.UtcNow,
+                        LastSignInAt = user.UserMetaData.LastSignInTimestamp,
+                        Disabled = user.Disabled
+                    };
+                    
+                    googleUsers.Add(googleUser);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't throw to avoid breaking the API
+            // In a production environment, you might want to use a proper logger
+            Console.WriteLine($"Error retrieving Google users: {ex.Message}");
+        }
+
+        return googleUsers;
+    }
 } 
