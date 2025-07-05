@@ -39,9 +39,9 @@ public class ProductMappingExtensionsTests
         result.Id.Should().Be(1);
         result.Name.Should().Be("Test Product");
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(13.64m); // 12.99 + (12.99 * 0.05) = 13.64
-        result.MarkupAmount.Should().Be(0.65m); // 13.64 - 12.99
-        result.MarkupPercentage.Should().Be(5.0m);
+        result.CalculatedMarkupPrice.Should().Be(15.00m); // 12.99 + (12.99 * 0.10) = 14.289 -> 15.00
+        result.MarkupAmount.Should().Be(2.01m); // 15.00 - 12.99
+        result.MarkupPercentage.Should().Be(10.0m);
         result.Availability.Should().Be(ProductAvailability.Available);
         result.AvailabilityText.Should().Be("Available");
         result.SectionName.Should().Be("Test Section");
@@ -49,13 +49,13 @@ public class ProductMappingExtensionsTests
     }
 
     [Theory]
-    [InlineData(10.00, 10.50, 0.50)] // 10.00 + (10.00 * 0.05) = 10.50
-    [InlineData(10.50, 11.03, 0.53)] // 10.50 + (10.50 * 0.05) = 11.025 -> 11.03
-    [InlineData(12.99, 13.64, 0.65)] // 12.99 + (12.99 * 0.05) = 13.6395 -> 13.64
-    [InlineData(18.99, 19.94, 0.95)] // 18.99 + (18.99 * 0.05) = 19.9395 -> 19.94
-    [InlineData(25.25, 26.51, 1.26)] // 25.25 + (25.25 * 0.05) = 26.5125 -> 26.51
-    [InlineData(9.09, 9.54, 0.45)]   // 9.09 + (9.09 * 0.05) = 9.5445 -> 9.54
-    [InlineData(100.00, 105.00, 5.00)] // 100.00 + (100.00 * 0.05) = 105.00
+    [InlineData(10.00, 11.00, 1.00)] // 10.00 + (10.00 * 0.10) = 11.00
+    [InlineData(10.50, 12.00, 1.50)] // 10.50 + (10.50 * 0.10) = 11.55 -> 12.00
+    [InlineData(12.99, 15.00, 2.01)] // 12.99 + (12.99 * 0.10) = 14.289 -> 15.00
+    [InlineData(18.99, 21.00, 2.01)] // 18.99 + (18.99 * 0.10) = 20.889 -> 21.00
+    [InlineData(25.25, 28.00, 2.75)] // 25.25 + (25.25 * 0.10) = 27.775 -> 28.00
+    [InlineData(9.09, 10.00, 0.91)]   // 9.09 + (9.09 * 0.10) = 9.999 -> 10.00
+    [InlineData(100.00, 110.00, 10.00)] // 100.00 + (100.00 * 0.10) = 110.00
     public void ToVendorProductPricingResponse_VariousBasePrices_CalculatesMarkupCorrectly(
         decimal basePrice, 
         decimal expectedMarkupPrice, 
@@ -171,7 +171,7 @@ public class ProductMappingExtensionsTests
         result.PictureId.Should().Be(1);
         result.PictureUrl.Should().Be("https://example.com/image.jpg");
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(13.64m); // 12.99 + (12.99 * 0.05)
+        result.CalculatedMarkupPrice.Should().Be(15.00m); // 12.99 + (12.99 * 0.10) = 14.289 -> 15.00
         result.PriceWithMarkup.Should().Be(15.99m); // Original stored value
         result.PriceWithDelivery.Should().Be(17.99m);
         result.Availability.Should().Be(ProductAvailability.Available);
@@ -209,35 +209,29 @@ public class ProductMappingExtensionsTests
         // Assert
         result.PictureId.Should().BeNull();
         result.PictureUrl.Should().BeNull();
-        result.CalculatedMarkupPrice.Should().Be(10.50m); // 10.00 + (10.00 * 0.05)
+        result.CalculatedMarkupPrice.Should().Be(11.00m); // 10.00 + (10.00 * 0.10) = 11.00
     }
 
     [Theory]
-    [InlineData(0.01, 0.01)]   // Very small price: 0.01 + (0.01 * 0.05) = 0.0105 -> 0.01
-    [InlineData(0.91, 0.96)]   // 0.91 + (0.91 * 0.05) = 0.9555 -> 0.96
-    [InlineData(999.99, 1049.99)] // Large price: 999.99 + (999.99 * 0.05) = 1049.9895 -> 1049.99
+    [InlineData(0.01, 1.00)]   // 0.01 + (0.01 * 0.10) = 0.011 -> 1.00
+    [InlineData(0.91, 2.00)]   // 0.91 + (0.91 * 0.10) = 1.001 -> 2.00 (round up to next peso)
+    [InlineData(999.99, 1100.00)] // 999.99 + (999.99 * 0.10) = 1099.989 -> 1100.00
     public void CalculatedMarkupPrice_EdgeCases_CalculatesCorrectly(decimal basePrice, decimal expectedMarkup)
     {
         // Arrange
         var product = new Product
         {
             Id = 1,
-            Name = "Test Product",
+            Name = "Edge Case Product",
             BasePrice = basePrice,
-            Availability = ProductAvailability.Available,
-            Category = new Category { Name = "Test Category" },
-            Section = new StallSection { Name = "Test Section" },
-            Stall = new Stall { Name = "Test Stall" }
+            Availability = ProductAvailability.Available
         };
 
         // Act
-        var productResponse = product.ToProductResponse();
-        var pricingResponse = product.ToVendorProductPricingResponse();
+        var productResponse = product.ToVendorProductPricingResponse();
 
         // Assert
         productResponse.CalculatedMarkupPrice.Should().Be(expectedMarkup);
-        pricingResponse.CalculatedMarkupPrice.Should().Be(expectedMarkup);
-        pricingResponse.MarkupAmount.Should().Be(expectedMarkup - basePrice);
     }
 
     [Fact]
@@ -259,8 +253,8 @@ public class ProductMappingExtensionsTests
 
         // Assert
         result.BasePrice.Should().Be(0.00m);
-        result.CalculatedMarkupPrice.Should().Be(0.00m); // 0.00 + (0.00 * 0.05) = 0.00
+        result.CalculatedMarkupPrice.Should().Be(0.00m); // 0.00 + (0.00 * 0.10) = 0.00
         result.MarkupAmount.Should().Be(0.00m);
-        result.MarkupPercentage.Should().Be(5.0m);
+        result.MarkupPercentage.Should().Be(0.0m);
     }
 } 

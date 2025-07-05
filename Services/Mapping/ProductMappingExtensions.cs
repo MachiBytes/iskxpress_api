@@ -55,6 +55,7 @@ public static class ProductMappingExtensions
     {
         var calculatedMarkupPrice = CalculateMarkupPrice(product.BasePrice);
         var markupAmount = calculatedMarkupPrice - product.BasePrice;
+        var markupPercentage = product.BasePrice == 0 ? 0.0m : 10.0m;
 
         return new VendorProductPricingResponse
         {
@@ -63,7 +64,7 @@ public static class ProductMappingExtensions
             BasePrice = product.BasePrice,
             CalculatedMarkupPrice = calculatedMarkupPrice,
             MarkupAmount = markupAmount,
-            MarkupPercentage = 5.0m,
+            MarkupPercentage = markupPercentage,
             Availability = product.Availability,
             AvailabilityText = product.Availability.ToString(),
             SectionName = product.Section?.Name ?? string.Empty,
@@ -72,11 +73,11 @@ public static class ProductMappingExtensions
     }
 
     /// <summary>
-    /// Calculates the markup price by adding 5% to the base price
+    /// Calculates the markup price by adding 10% to the base price and rounding up to the nearest peso
     /// </summary>
     private static decimal CalculateMarkupPrice(decimal basePrice)
     {
-        return basePrice + (basePrice * 0.05m);
+        return Math.Ceiling(basePrice + (basePrice * 0.10m));
     }
 
     /// <summary>

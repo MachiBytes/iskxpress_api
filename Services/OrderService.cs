@@ -142,9 +142,37 @@ public class OrderService : IOrderService
         order.OrderItems = orderItems;
 
         // Save order and remove cart items in a transaction
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
+        var providerName = _context.Database.ProviderName;
+        if (providerName != "Microsoft.EntityFrameworkCore.InMemory")
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _orderRepository.AddAsync(order);
+                await _context.SaveChangesAsync();
+
+                // Remove cart items
+                foreach (var cartItem in stallCartItems)
+                {
+                    await _cartItemRepository.DeleteAsync(cartItem.Id);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                // Return the created order
+                var createdOrder = await _orderRepository.GetOrderWithItemsAsync(order.Id);
+                return MapToOrderResponse(createdOrder!);
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        else
+        {
+            // InMemory provider does not support transactions
             await _orderRepository.AddAsync(order);
             await _context.SaveChangesAsync();
 
@@ -155,16 +183,10 @@ public class OrderService : IOrderService
             }
 
             await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
 
             // Return the created order
             var createdOrder = await _orderRepository.GetOrderWithItemsAsync(order.Id);
             return MapToOrderResponse(createdOrder!);
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
         }
     }
 

@@ -40,7 +40,8 @@ public class OrderServiceTests
     {
         // Arrange
         var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
-        var stall = new Stall { Id = 1, Name = "Test Stall" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
         var category = new Category { Id = 1, Name = "Test Category" };
         var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
         var product = new Product 
@@ -63,12 +64,18 @@ public class OrderServiceTests
         };
 
         await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.StallSections.AddAsync(section);
         await _context.Products.AddAsync(product);
         await _context.CartItems.AddAsync(cartItem);
         await _context.SaveChangesAsync();
+
+        // Debug: Verify stall was saved
+        var savedStall = await _stallRepository.GetByIdAsync(1);
+        Assert.NotNull(savedStall);
+        Assert.Equal("Test Stall", savedStall.Name);
 
         var request = new CreateOrderRequest
         {
@@ -139,7 +146,8 @@ public class OrderServiceTests
     {
         // Arrange
         var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
-        var stall = new Stall { Id = 1, Name = "Test Stall" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
         var category = new Category { Id = 1, Name = "Test Category" };
         var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
         var product = new Product 
@@ -162,12 +170,18 @@ public class OrderServiceTests
         };
 
         await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
         await _context.Stalls.AddAsync(stall);
         await _context.Categories.AddAsync(category);
         await _context.StallSections.AddAsync(section);
         await _context.Products.AddAsync(product);
         await _context.CartItems.AddAsync(cartItem);
         await _context.SaveChangesAsync();
+
+        // Debug: Verify stall was saved
+        var savedStall = await _stallRepository.GetByIdAsync(1);
+        Assert.NotNull(savedStall);
+        Assert.Equal("Test Stall", savedStall.Name);
 
         var request = new CreateOrderRequest
         {
