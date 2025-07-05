@@ -20,7 +20,7 @@ public class ProductMappingExtensionsTests
             Id = 1,
             Name = "Test Product",
             BasePrice = 12.99m,
-            PriceWithMarkup = 15.99m,
+            PriceWithMarkup = 15.99m, // Stored value (calculated as 12.99 + 10% = 14.289 -> 15.99)
             PriceWithDelivery = 17.99m,
             Availability = ProductAvailability.Available,
             CategoryId = category.Id,
@@ -39,8 +39,8 @@ public class ProductMappingExtensionsTests
         result.Id.Should().Be(1);
         result.Name.Should().Be("Test Product");
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(15.00m); // 12.99 + (12.99 * 0.10) = 14.289 -> 15.00
-        result.MarkupAmount.Should().Be(2.01m); // 15.00 - 12.99
+        result.CalculatedMarkupPrice.Should().Be(15.99m); // Uses stored PriceWithMarkup value
+        result.MarkupAmount.Should().Be(3.00m); // 15.99 - 12.99
         result.MarkupPercentage.Should().Be(10.0m);
         result.Availability.Should().Be(ProductAvailability.Available);
         result.AvailabilityText.Should().Be("Available");
@@ -49,16 +49,16 @@ public class ProductMappingExtensionsTests
     }
 
     [Theory]
-    [InlineData(10.00, 11.00, 1.00)] // 10.00 + (10.00 * 0.10) = 11.00
-    [InlineData(10.50, 12.00, 1.50)] // 10.50 + (10.50 * 0.10) = 11.55 -> 12.00
-    [InlineData(12.99, 15.00, 2.01)] // 12.99 + (12.99 * 0.10) = 14.289 -> 15.00
-    [InlineData(18.99, 21.00, 2.01)] // 18.99 + (18.99 * 0.10) = 20.889 -> 21.00
-    [InlineData(25.25, 28.00, 2.75)] // 25.25 + (25.25 * 0.10) = 27.775 -> 28.00
-    [InlineData(9.09, 10.00, 0.91)]   // 9.09 + (9.09 * 0.10) = 9.999 -> 10.00
-    [InlineData(100.00, 110.00, 10.00)] // 100.00 + (100.00 * 0.10) = 110.00
-    public void ToVendorProductPricingResponse_VariousBasePrices_CalculatesMarkupCorrectly(
+    [InlineData(10.00, 12.00, 2.00)] // Stored PriceWithMarkup = 12.00, MarkupAmount = 12.00 - 10.00
+    [InlineData(10.50, 12.60, 2.10)] // Stored PriceWithMarkup = 12.60, MarkupAmount = 12.60 - 10.50
+    [InlineData(12.99, 15.99, 3.00)] // Stored PriceWithMarkup = 15.99, MarkupAmount = 15.99 - 12.99
+    [InlineData(18.99, 22.79, 3.80)] // Stored PriceWithMarkup = 22.79, MarkupAmount = 22.79 - 18.99
+    [InlineData(25.25, 30.30, 5.05)] // Stored PriceWithMarkup = 30.30, MarkupAmount = 30.30 - 25.25
+    [InlineData(9.09, 10.91, 1.82)]   // Stored PriceWithMarkup = 10.91, MarkupAmount = 10.91 - 9.09
+    [InlineData(100.00, 120.00, 20.00)] // Stored PriceWithMarkup = 120.00, MarkupAmount = 120.00 - 100.00
+    public void ToVendorProductPricingResponse_VariousBasePrices_UsesStoredValues(
         decimal basePrice, 
-        decimal expectedMarkupPrice, 
+        decimal storedMarkupPrice, 
         decimal expectedMarkupAmount)
     {
         // Arrange
@@ -70,8 +70,8 @@ public class ProductMappingExtensionsTests
             Id = 1,
             Name = "Test Product",
             BasePrice = basePrice,
-            PriceWithMarkup = basePrice * 1.2m, // Different markup for testing
-            PriceWithDelivery = basePrice * 1.3m,
+            PriceWithMarkup = storedMarkupPrice, // Use stored values instead of calculating
+            PriceWithDelivery = storedMarkupPrice + 10.00m,
             Availability = ProductAvailability.Available,
             Category = category,
             Section = section
@@ -82,7 +82,7 @@ public class ProductMappingExtensionsTests
 
         // Assert
         result.BasePrice.Should().Be(basePrice);
-        result.CalculatedMarkupPrice.Should().Be(expectedMarkupPrice);
+        result.CalculatedMarkupPrice.Should().Be(storedMarkupPrice); // Uses stored value
         result.MarkupAmount.Should().Be(expectedMarkupAmount);
         result.MarkupPercentage.Should().Be(10.0m);
     }
@@ -96,6 +96,7 @@ public class ProductMappingExtensionsTests
             Id = 1,
             Name = "Sold Out Product",
             BasePrice = 15.99m,
+            PriceWithMarkup = 18.99m, // Stored value
             Availability = ProductAvailability.SoldOut,
             Category = new Category { Name = "Test Category" },
             Section = new StallSection { Name = "Test Section" }
@@ -118,6 +119,7 @@ public class ProductMappingExtensionsTests
             Id = 1,
             Name = "Test Product",
             BasePrice = 12.99m,
+            PriceWithMarkup = 15.99m, // Stored value
             Availability = ProductAvailability.Available,
             Category = null, // Null navigation property
             Section = null   // Null navigation property
@@ -131,7 +133,7 @@ public class ProductMappingExtensionsTests
         result.CategoryName.Should().Be(string.Empty);
         result.SectionName.Should().Be(string.Empty);
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(15.00m);
+        result.CalculatedMarkupPrice.Should().Be(15.99m); // Uses stored value
     }
 
     [Fact]
@@ -171,7 +173,7 @@ public class ProductMappingExtensionsTests
         result.PictureId.Should().Be(1);
         result.PictureUrl.Should().Be("https://example.com/image.jpg");
         result.BasePrice.Should().Be(12.99m);
-        result.CalculatedMarkupPrice.Should().Be(15.00m); // 12.99 + (12.99 * 0.10) = 14.289 -> 15.00
+        result.CalculatedMarkupPrice.Should().Be(15.99m); // Uses stored PriceWithMarkup value
         result.PriceWithMarkup.Should().Be(15.99m); // Original stored value
         result.PriceWithDelivery.Should().Be(17.99m);
         result.Availability.Should().Be(ProductAvailability.Available);
@@ -195,7 +197,7 @@ public class ProductMappingExtensionsTests
             PictureId = null,
             Picture = null,
             BasePrice = 10.00m,
-            PriceWithMarkup = 12.00m,
+            PriceWithMarkup = 12.00m, // Stored value
             PriceWithDelivery = 14.00m,
             Availability = ProductAvailability.Available,
             Category = new Category { Name = "Test Category" },
@@ -209,14 +211,14 @@ public class ProductMappingExtensionsTests
         // Assert
         result.PictureId.Should().BeNull();
         result.PictureUrl.Should().BeNull();
-        result.CalculatedMarkupPrice.Should().Be(11.00m); // 10.00 + (10.00 * 0.10) = 11.00
+        result.CalculatedMarkupPrice.Should().Be(12.00m); // Uses stored PriceWithMarkup value
     }
 
     [Theory]
-    [InlineData(0.01, 1.00)]   // 0.01 + (0.01 * 0.10) = 0.011 -> 1.00
-    [InlineData(0.91, 2.00)]   // 0.91 + (0.91 * 0.10) = 1.001 -> 2.00 (round up to next peso)
-    [InlineData(999.99, 1100.00)] // 999.99 + (999.99 * 0.10) = 1099.989 -> 1100.00
-    public void CalculatedMarkupPrice_EdgeCases_CalculatesCorrectly(decimal basePrice, decimal expectedMarkup)
+    [InlineData(0.01, 1.00)]   // Stored PriceWithMarkup = 1.00
+    [InlineData(0.91, 2.00)]   // Stored PriceWithMarkup = 2.00
+    [InlineData(999.99, 1100.00)] // Stored PriceWithMarkup = 1100.00
+    public void CalculatedMarkupPrice_EdgeCases_UsesStoredValues(decimal basePrice, decimal storedMarkupPrice)
     {
         // Arrange
         var product = new Product
@@ -224,6 +226,7 @@ public class ProductMappingExtensionsTests
             Id = 1,
             Name = "Edge Case Product",
             BasePrice = basePrice,
+            PriceWithMarkup = storedMarkupPrice, // Use stored values
             Availability = ProductAvailability.Available
         };
 
@@ -231,7 +234,7 @@ public class ProductMappingExtensionsTests
         var productResponse = product.ToVendorProductPricingResponse();
 
         // Assert
-        productResponse.CalculatedMarkupPrice.Should().Be(expectedMarkup);
+        productResponse.CalculatedMarkupPrice.Should().Be(storedMarkupPrice);
     }
 
     [Fact]
@@ -243,6 +246,7 @@ public class ProductMappingExtensionsTests
             Id = 1,
             Name = "Free Product",
             BasePrice = 0.00m,
+            PriceWithMarkup = 0.00m, // Stored value
             Availability = ProductAvailability.Available,
             Category = new Category { Name = "Free Items" },
             Section = new StallSection { Name = "Promotions" }
@@ -253,7 +257,7 @@ public class ProductMappingExtensionsTests
 
         // Assert
         result.BasePrice.Should().Be(0.00m);
-        result.CalculatedMarkupPrice.Should().Be(0.00m); // 0.00 + (0.00 * 0.10) = 0.00
+        result.CalculatedMarkupPrice.Should().Be(0.00m); // Uses stored value
         result.MarkupAmount.Should().Be(0.00m);
         result.MarkupPercentage.Should().Be(0.0m);
     }

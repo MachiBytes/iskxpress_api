@@ -127,15 +127,21 @@ public class OrderService : IOrderService
         foreach (var cartItem in stallCartItems)
         {
             var product = products.First(p => p.Id == cartItem.ProductId);
+            
+            // Use appropriate pricing based on fulfillment method
+            decimal pricePerItem = request.FulfillmentMethod == FulfillmentMethod.Delivery 
+                ? product.PriceWithDelivery 
+                : product.PriceWithMarkup;
+            
             var orderItem = new OrderItem
             {
                 ProductId = cartItem.ProductId,
                 Quantity = cartItem.Quantity,
-                PriceEach = product.PriceWithMarkup
+                PriceEach = pricePerItem
             };
 
             orderItems.Add(orderItem);
-            totalPrice += product.PriceWithMarkup * cartItem.Quantity;
+            totalPrice += pricePerItem * cartItem.Quantity;
         }
 
         order.TotalPrice = totalPrice;
@@ -395,14 +401,20 @@ public class OrderService : IOrderService
                 foreach (var cartItem in stallCartItems)
                 {
                     var product = products.First(p => p.Id == cartItem.ProductId);
+                    
+                    // Use appropriate pricing based on fulfillment method
+                    decimal pricePerItem = request.FulfillmentMethod == FulfillmentMethod.Delivery 
+                        ? product.PriceWithDelivery 
+                        : product.PriceWithMarkup;
+                    
                     var orderItem = new OrderItem
                     {
                         ProductId = cartItem.ProductId,
                         Quantity = cartItem.Quantity,
-                        PriceEach = product.PriceWithMarkup
+                        PriceEach = pricePerItem
                     };
                     orderItems.Add(orderItem);
-                    totalPrice += product.PriceWithMarkup * cartItem.Quantity;
+                    totalPrice += pricePerItem * cartItem.Quantity;
                 }
 
                 order.TotalPrice = totalPrice;

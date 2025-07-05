@@ -14,7 +14,7 @@ public static class ProductMappingExtensions
             PictureId = product.PictureId,
             PictureUrl = product.Picture?.ObjectUrl,
             BasePrice = product.BasePrice,
-            CalculatedMarkupPrice = CalculateMarkupPrice(product.BasePrice),
+            CalculatedMarkupPrice = product.PriceWithMarkup, // Use stored value instead of calculating
             PriceWithMarkup = product.PriceWithMarkup,
             PriceWithDelivery = product.PriceWithDelivery,
             Availability = product.Availability,
@@ -37,13 +37,17 @@ public static class ProductMappingExtensions
 
     public static Product ToEntity(this CreateProductRequest request)
     {
+        // Calculate prices using the same logic as ProductService
+        var markupPrice = Math.Ceiling(request.BasePrice + (request.BasePrice * 0.10m));
+        var deliveryPrice = Math.Ceiling(markupPrice + 10.00m);
+        
         return new Product
         {
             Name = request.Name,
             PictureId = null, // Picture will be set via upload endpoint
             BasePrice = request.BasePrice,
-            PriceWithMarkup = CalculateMarkupPrice(request.BasePrice),
-            PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice),
+            PriceWithMarkup = markupPrice,
+            PriceWithDelivery = deliveryPrice,
             Availability = ProductAvailability.Available, // Default to available
             CategoryId = request.CategoryId,
             SectionId = request.SectionId
@@ -53,8 +57,7 @@ public static class ProductMappingExtensions
 
     public static VendorProductPricingResponse ToVendorProductPricingResponse(this Product product)
     {
-        var calculatedMarkupPrice = CalculateMarkupPrice(product.BasePrice);
-        var markupAmount = calculatedMarkupPrice - product.BasePrice;
+        var markupAmount = product.PriceWithMarkup - product.BasePrice;
         var markupPercentage = product.BasePrice == 0 ? 0.0m : 10.0m;
 
         return new VendorProductPricingResponse
@@ -62,7 +65,7 @@ public static class ProductMappingExtensions
             Id = product.Id,
             Name = product.Name,
             BasePrice = product.BasePrice,
-            CalculatedMarkupPrice = calculatedMarkupPrice,
+            CalculatedMarkupPrice = product.PriceWithMarkup, // Use stored value instead of calculating
             MarkupAmount = markupAmount,
             MarkupPercentage = markupPercentage,
             Availability = product.Availability,
@@ -72,20 +75,5 @@ public static class ProductMappingExtensions
         };
     }
 
-    /// <summary>
-    /// Calculates the markup price by adding 10% to the base price and rounding up to the nearest peso
-    /// </summary>
-    private static decimal CalculateMarkupPrice(decimal basePrice)
-    {
-        return Math.Ceiling(basePrice + (basePrice * 0.10m));
-    }
 
-    /// <summary>
-    /// Calculates the delivery price by adding ₱10.00 to the markup price and rounding up
-    /// </summary>
-    private static decimal CalculateDeliveryPrice(decimal basePrice)
-    {
-        var markupPrice = CalculateMarkupPrice(basePrice);
-        return Math.Ceiling(markupPrice + 10.00m);
-    }
 } 

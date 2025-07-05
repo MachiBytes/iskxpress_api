@@ -177,15 +177,15 @@ public class ProductService : IProductService
     }
 
     /// <summary>
-    /// Calculates the markup price by adding 5% to the base price
+    /// Calculates the markup price by adding 10% to the base price and rounding up to the nearest peso
     /// </summary>
     private static decimal CalculateMarkupPrice(decimal basePrice)
     {
-        return basePrice + (basePrice * 0.05m);
+        return Math.Ceiling(basePrice + (basePrice * 0.10m));
     }
 
     /// <summary>
-    /// Calculates the delivery price by adding ₱10.00 to the markup price and rounding up
+    /// Calculates the delivery price by adding ₱10.00 to the markup price and rounding up to the nearest peso
     /// </summary>
     private static decimal CalculateDeliveryPrice(decimal basePrice)
     {
