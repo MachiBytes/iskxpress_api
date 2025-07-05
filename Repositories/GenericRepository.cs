@@ -20,6 +20,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await _dbSet.FindAsync(id);
     }
 
+    public virtual async Task<IEnumerable<T>> GetByIdsAsync(IEnumerable<int> ids)
+    {
+        return await _dbSet.Where(e => ids.Contains(EF.Property<int>(e, "Id"))).ToListAsync();
+    }
+
     public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
         return await _dbSet.ToListAsync();

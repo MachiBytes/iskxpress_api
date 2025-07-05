@@ -55,4 +55,8 @@ public interface IOrderRepository : IGenericRepository<Order>
     /// <param name="endDate">End date</param>
     /// <returns>Collection of orders within the date range</returns>
     Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
+
+    Task<IEnumerable<Order>> GetUserOrdersAsync(int userId, OrderStatus? status = null);
+    Task<IEnumerable<Order>> GetStallOrdersAsync(int stallId, OrderStatus? status = null);
+    Task<Order?> GetOrderWithItemsAsync(int orderId);
 } 

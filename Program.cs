@@ -86,6 +86,7 @@ builder.Services.AddScoped<IStallService, StallService>();
 builder.Services.AddScoped<ISectionService, SectionService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 // Register seeder
 builder.Services.AddScoped<DatabaseSeeder>();

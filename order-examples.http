@@ -1,0 +1,54 @@
+@iskxpress_api_HostAddress = http://localhost:5083
+
+### Multi-Stall Checkout
+POST {{iskxpress_api_HostAddress}}/api/Order/user/1/multi-checkout
+Content-Type: application/json
+
+{
+  "cartItemIds": [1, 2, 3, 4, 5],
+  "fulfillmentMethod": 1,
+  "deliveryAddress": "123 Main St, City, Country",
+  "notes": "Please deliver to the front door"
+}
+
+### Checkout - Create Order from Cart Items
+POST {{iskxpress_api_HostAddress}}/api/Order/user/1/checkout
+Content-Type: application/json
+
+{
+  "cartItemIds": [1, 2, 3],
+  "fulfillmentMethod": 1,
+  "deliveryAddress": "123 Main St, City, Country",
+  "notes": "Please deliver to the front door"
+}
+
+### Checkout - Pickup Order
+POST {{iskxpress_api_HostAddress}}/api/Order/user/1/checkout
+Content-Type: application/json
+
+{
+  "cartItemIds": [4, 5],
+  "fulfillmentMethod": 0,
+  "notes": "Extra spicy please"
+}
+
+### Get User Orders
+GET {{iskxpress_api_HostAddress}}/api/Order/user/1
+
+### Get User Orders - Filter by Status (Pending)
+GET {{iskxpress_api_HostAddress}}/api/Order/user/1?status=0
+
+### Get User Orders - Filter by Status (Accomplished)
+GET {{iskxpress_api_HostAddress}}/api/Order/user/1?status=4
+
+### Get Stall Orders
+GET {{iskxpress_api_HostAddress}}/api/Order/stall/1
+
+### Get Stall Orders - Filter by Status (ToPrepare)
+GET {{iskxpress_api_HostAddress}}/api/Order/stall/1?status=1
+
+### Get Stall Orders - Filter by Status (ToDeliver)
+GET {{iskxpress_api_HostAddress}}/api/Order/stall/1?status=2
+
+### Get Specific Order
+GET {{iskxpress_api_HostAddress}}/api/Order/1 

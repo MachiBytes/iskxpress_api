@@ -13,6 +13,52 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
     }
 
+    public async Task<IEnumerable<Order>> GetUserOrdersAsync(int userId, OrderStatus? status = null)
+    {
+        var query = _context.Orders
+            .Include(o => o.Stall)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.UserId == userId);
+
+        if (status.HasValue)
+        {
+            query = query.Where(o => o.Status == status.Value);
+        }
+
+        return await query
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Order>> GetStallOrdersAsync(int stallId, OrderStatus? status = null)
+    {
+        var query = _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.StallId == stallId);
+
+        if (status.HasValue)
+        {
+            query = query.Where(o => o.Status == status.Value);
+        }
+
+        return await query
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<Order?> GetOrderWithItemsAsync(int orderId)
+    {
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Stall)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
+
     public async Task<IEnumerable<Order>> GetByUserIdAsync(int userId)
     {
         return await _context.Orders
