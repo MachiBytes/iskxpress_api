@@ -185,18 +185,16 @@ public class StallController : ControllerBase
     /// Updates the delivery availability for a stall
     /// </summary>
     /// <param name="stallId">The stall ID</param>
-    /// <param name="hasDelivery">Whether the stall has delivery service</param>
     /// <param name="deliveryAvailable">Whether delivery is currently available</param>
     /// <returns>The updated stall information</returns>
     [HttpPut("{stallId}/delivery-availability")]
     public async Task<ActionResult<StallResponse>> UpdateDeliveryAvailability(
         int stallId,
-        [FromQuery] bool hasDelivery,
         [FromQuery] bool deliveryAvailable)
     {
         try
         {
-            var updatedStall = await _stallService.UpdateDeliveryAvailabilityAsync(stallId, hasDelivery, deliveryAvailable);
+            var updatedStall = await _stallService.UpdateDeliveryAvailabilityAsync(stallId, deliveryAvailable);
             return Ok(updatedStall);
         }
         catch (ArgumentException ex)

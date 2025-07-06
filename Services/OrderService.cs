@@ -101,15 +101,15 @@ public class OrderService : IOrderService
         // Handle delivery partner assignment based on stall availability
         if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
         {
-            if (stall.hasDelivery && stall.DeliveryAvailable)
+            if (stall.DeliveryAvailable)
             {
-                // Stall has delivery partner available - assign immediately
+                // Stall has delivery available - assign immediately
                 // Note: In a real implementation, you might want to assign to a specific partner
                 // For now, we'll leave it unassigned and let the delivery system handle it
             }
             else
             {
-                // Stall doesn't have delivery partner - order will be created but won't show in stall orders
+                // Stall doesn't have delivery available - order will be created but won't show in stall orders
                 // until a delivery partner is assigned
             }
         }
@@ -204,6 +204,24 @@ public class OrderService : IOrderService
     public async Task<IEnumerable<OrderResponse>> GetStallOrdersAsync(int stallId, OrderStatus? status = null)
     {
         var orders = await _orderRepository.GetStallOrdersAsync(stallId, status);
+        return orders.Select(MapToOrderResponse);
+    }
+
+    public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync(bool? hasDeliveryPartner = null)
+    {
+        var orders = await _orderRepository.GetAllOrdersAsync(hasDeliveryPartner);
+        return orders.Select(MapToOrderResponse);
+    }
+
+    public async Task<IEnumerable<OrderResponse>> GetStallOrdersWithDeliveryPartnerAsync(int stallId)
+    {
+        var orders = await _orderRepository.GetStallOrdersWithDeliveryPartnerAsync(stallId);
+        return orders.Select(MapToOrderResponse);
+    }
+
+    public async Task<IEnumerable<OrderResponse>> GetDeliveryPartnerOrdersAsync(int deliveryPartnerId, bool? isFinished = null)
+    {
+        var orders = await _orderRepository.GetDeliveryPartnerOrdersAsync(deliveryPartnerId, isFinished);
         return orders.Select(MapToOrderResponse);
     }
 

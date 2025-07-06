@@ -51,4 +51,25 @@ GET {{iskxpress_api_HostAddress}}/api/Order/stall/1?status=1
 GET {{iskxpress_api_HostAddress}}/api/Order/stall/1?status=2
 
 ### Get Specific Order
-GET {{iskxpress_api_HostAddress}}/api/Order/1 
+GET {{iskxpress_api_HostAddress}}/api/Order/1
+
+### Get all orders in the system
+GET {{iskxpress_api_HostAddress}}/api/order
+
+### Get all orders with delivery partner assigned
+GET {{iskxpress_api_HostAddress}}/api/order?hasDeliveryPartner=true
+
+### Get all orders without delivery partner assigned
+GET {{iskxpress_api_HostAddress}}/api/order?hasDeliveryPartner=false
+
+### Get all orders for stall 1 that have delivery partner assigned
+GET {{iskxpress_api_HostAddress}}/api/order/stall/1/with-delivery-partner
+
+### Get all orders for delivery partner 1
+GET {{iskxpress_api_HostAddress}}/api/order/delivery-partner/1
+
+### Get all ongoing orders for delivery partner 1
+GET {{iskxpress_api_HostAddress}}/api/order/delivery-partner/1?isFinished=false
+
+### Get all finished orders for delivery partner 1
+GET {{iskxpress_api_HostAddress}}/api/order/delivery-partner/1?isFinished=true 

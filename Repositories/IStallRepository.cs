@@ -52,8 +52,7 @@ public interface IStallRepository : IGenericRepository<Stall>
     /// Updates the delivery availability for a stall
     /// </summary>
     /// <param name="stallId">The stall ID</param>
-    /// <param name="hasDelivery">Whether the stall has delivery service</param>
     /// <param name="deliveryAvailable">Whether delivery is currently available</param>
     /// <returns>The updated stall</returns>
-    Task<Stall> UpdateDeliveryAvailabilityAsync(int stallId, bool hasDelivery, bool deliveryAvailable);
+    Task<Stall> UpdateDeliveryAvailabilityAsync(int stallId, bool deliveryAvailable);
 } 

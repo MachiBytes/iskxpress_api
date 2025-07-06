@@ -112,9 +112,9 @@ public class StallService : IStallService
         return stalls.Select(s => s.ToStallResponse());
     }
 
-    public async Task<StallResponse> UpdateDeliveryAvailabilityAsync(int stallId, bool hasDelivery, bool deliveryAvailable)
+    public async Task<StallResponse> UpdateDeliveryAvailabilityAsync(int stallId, bool deliveryAvailable)
     {
-        var updatedStall = await _stallRepository.UpdateDeliveryAvailabilityAsync(stallId, hasDelivery, deliveryAvailable);
+        var updatedStall = await _stallRepository.UpdateDeliveryAvailabilityAsync(stallId, deliveryAvailable);
         return updatedStall.ToStallResponse();
     }
 } 

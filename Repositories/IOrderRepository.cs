@@ -59,4 +59,7 @@ public interface IOrderRepository : IGenericRepository<Order>
     Task<IEnumerable<Order>> GetUserOrdersAsync(int userId, OrderStatus? status = null);
     Task<IEnumerable<Order>> GetStallOrdersAsync(int stallId, OrderStatus? status = null);
     Task<Order?> GetOrderWithItemsAsync(int orderId);
+    Task<IEnumerable<Order>> GetAllOrdersAsync(bool? hasDeliveryPartner = null);
+    Task<IEnumerable<Order>> GetStallOrdersWithDeliveryPartnerAsync(int stallId);
+    Task<IEnumerable<Order>> GetDeliveryPartnerOrdersAsync(int deliveryPartnerId, bool? isFinished = null);
 } 

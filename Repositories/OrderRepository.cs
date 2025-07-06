@@ -231,4 +231,71 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .ThenInclude(oi => oi.Product)
             .FirstOrDefaultAsync(o => o.VendorOrderId == vendorOrderId);
     }
+
+    public async Task<IEnumerable<Order>> GetAllOrdersAsync(bool? hasDeliveryPartner = null)
+    {
+        var query = _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Stall)
+            .Include(o => o.DeliveryPartner)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .AsQueryable();
+
+        if (hasDeliveryPartner.HasValue)
+        {
+            if (hasDeliveryPartner.Value)
+            {
+                query = query.Where(o => o.DeliveryPartnerId != null);
+            }
+            else
+            {
+                query = query.Where(o => o.DeliveryPartnerId == null);
+            }
+        }
+
+        return await query
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Order>> GetStallOrdersWithDeliveryPartnerAsync(int stallId)
+    {
+        return await _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.DeliveryPartner)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.StallId == stallId && o.DeliveryPartnerId != null)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Order>> GetDeliveryPartnerOrdersAsync(int deliveryPartnerId, bool? isFinished = null)
+    {
+        var query = _context.Orders
+            .Include(o => o.User)
+            .Include(o => o.Stall)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.DeliveryPartnerId == deliveryPartnerId);
+
+        if (isFinished.HasValue)
+        {
+            if (isFinished.Value)
+            {
+                // Finished orders: Accomplished or Rejected
+                query = query.Where(o => o.Status == OrderStatus.Accomplished || o.Status == OrderStatus.Rejected);
+            }
+            else
+            {
+                // Ongoing orders: All statuses except Accomplished and Rejected
+                query = query.Where(o => o.Status != OrderStatus.Accomplished && o.Status != OrderStatus.Rejected);
+            }
+        }
+
+        return await query
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
 } 

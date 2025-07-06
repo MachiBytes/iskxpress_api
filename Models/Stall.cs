@@ -21,11 +21,6 @@ public class Stall
     public int VendorId { get; set; }
 
     /// <summary>
-    /// Indicates if the stall has delivery service available
-    /// </summary>
-    public bool hasDelivery { get; set; } = false;
-
-    /// <summary>
     /// Indicates if delivery service is currently available
     /// </summary>
     public bool DeliveryAvailable { get; set; } = false;

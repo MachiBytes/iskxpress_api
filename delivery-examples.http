@@ -55,8 +55,8 @@ Content-Type: application/json
 ### Confirm Order Delivery (User)
 POST {{iskxpress_api_HostAddress}}/api/Order/1/confirm
 
-### Update Stall Delivery Availability
-PUT {{iskxpress_api_HostAddress}}/api/stalls/1/delivery-availability?hasDeliveryPartner=true&deliveryAvailable=true
+### Update Stall Delivery Availability (Enable)
+PUT {{iskxpress_api_HostAddress}}/api/stalls/1/delivery-availability?deliveryAvailable=true
 
-### Update Stall Delivery Availability (No Partner)
-PUT {{iskxpress_api_HostAddress}}/api/stalls/1/delivery-availability?hasDeliveryPartner=false&deliveryAvailable=false 
+### Update Stall Delivery Availability (Disable)
+PUT {{iskxpress_api_HostAddress}}/api/stalls/1/delivery-availability?deliveryAvailable=false 

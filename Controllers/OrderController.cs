@@ -105,6 +105,64 @@ public class OrderController : ControllerBase
     }
 
     /// <summary>
+    /// Gets all orders in the system
+    /// </summary>
+    /// <param name="hasDeliveryPartner">Optional filter for orders with/without delivery partner</param>
+    /// <returns>Collection of all orders</returns>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrders([FromQuery] bool? hasDeliveryPartner = null)
+    {
+        try
+        {
+            var orders = await _orderService.GetAllOrdersAsync(hasDeliveryPartner);
+            return Ok(orders);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Gets all orders for a stall that have a delivery partner assigned
+    /// </summary>
+    /// <param name="stallId">The stall ID</param>
+    /// <returns>Collection of stall orders with delivery partner</returns>
+    [HttpGet("stall/{stallId}/with-delivery-partner")]
+    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetStallOrdersWithDeliveryPartner(int stallId)
+    {
+        try
+        {
+            var orders = await _orderService.GetStallOrdersWithDeliveryPartnerAsync(stallId);
+            return Ok(orders);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Gets all orders for a delivery partner
+    /// </summary>
+    /// <param name="deliveryPartnerId">The delivery partner ID</param>
+    /// <param name="isFinished">Optional filter for finished (accomplished/rejected) or ongoing orders</param>
+    /// <returns>Collection of delivery partner orders</returns>
+    [HttpGet("delivery-partner/{deliveryPartnerId}")]
+    public async Task<ActionResult<IEnumerable<OrderResponse>>> GetDeliveryPartnerOrders(int deliveryPartnerId, [FromQuery] bool? isFinished = null)
+    {
+        try
+        {
+            var orders = await _orderService.GetDeliveryPartnerOrdersAsync(deliveryPartnerId, isFinished);
+            return Ok(orders);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
     /// Gets a specific order by ID
     /// </summary>
     /// <param name="orderId">The order ID</param>

@@ -139,7 +139,7 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
             .ToListAsync();
     }
 
-    public async Task<Stall> UpdateDeliveryAvailabilityAsync(int stallId, bool hasDelivery, bool deliveryAvailable)
+    public async Task<Stall> UpdateDeliveryAvailabilityAsync(int stallId, bool deliveryAvailable)
     {
         var stall = await _context.Stalls.FindAsync(stallId);
         if (stall == null)
@@ -147,7 +147,6 @@ public class StallRepository : GenericRepository<Stall>, IStallRepository
             throw new ArgumentException($"Stall with ID {stallId} not found");
         }
 
-        stall.hasDelivery = hasDelivery;
         stall.DeliveryAvailable = deliveryAvailable;
 
         await _context.SaveChangesAsync();
