@@ -11,6 +11,7 @@ public static class StallMappingExtensions
         {
             Id = stall.Id,
             Name = stall.Name,
+            StallNumber = stall.StallNumber,
             ShortDescription = stall.ShortDescription,
             PictureId = stall.PictureId,
             PictureUrl = stall.Picture?.ObjectUrl,

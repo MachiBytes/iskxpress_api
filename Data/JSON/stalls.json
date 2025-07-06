@@ -1,0 +1,216 @@
+[
+    {
+      "stall_name": "TRINAS",
+      "stall_number": "3",
+      "description": "Serving affordable Filipino rice meals and refreshing drinks.",
+      "vendor": "trinas.foodstall@gmail.com",
+      "avatar": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/stall_avatars/TRINAS.png",
+      "products": [
+        {
+          "name": "Chicken Curry",
+          "price": 70,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/CHICKEN%20CURRY.jpg"
+        },
+        {
+          "name": "Chicken Chops",
+          "price": 75,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/CHICKEN%20CHOP.webp"
+        },
+        {
+          "name": "Pork BBQ",
+          "price": 75,
+          "section": "Products",
+          "category": "Street Bites",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/PORK%20BBQ.jpg"
+        },
+        {
+          "name": "Chicken Sisig",
+          "price": 75,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/CHICKEN%20SISIG.webp"
+        },
+        {
+          "name": "Bangus Sisig",
+          "price": 75,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/BANGUS%20SISIG.jpg"
+        },
+        {
+          "name": "Blue Lemonade",
+          "price": 40,
+          "section": "Products",
+          "category": "Iced Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/BLUE%20LEMONADE.webp"
+        },
+        {
+          "name": "Iced Tea",
+          "price": 40,
+          "section": "Products",
+          "category": "Iced Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/ICED%20TEA.webp"
+        }
+      ]
+    },
+    {
+      "stall_name": "WAFFLE TIME",
+      "stall_number": "7",
+      "description": "Quick snack stop for sweet and savory waffles.",
+      "vendor": "waffletime.stall7@gmail.com",
+      "avatar": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/stall_avatars/WAFFLE_TIME.png",
+      "products": [
+        {
+          "name": "Belgian Waffle",
+          "price": 35,
+          "section": "Products",
+          "category": "Desserts",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/BELGIAN.jpg"
+        },
+        {
+          "name": "Bacon and Cheese",
+          "price": 30,
+          "section": "Products",
+          "category": "Fried Snacks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/BACON%20AND%20CHEESE.jpg"
+        },
+        {
+          "name": "Ube Waffle",
+          "price": 26,
+          "section": "Products",
+          "category": "Desserts",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/UBE.jpg"
+        },
+        {
+          "name": "Cheese Waffle",
+          "price": 30,
+          "section": "Products",
+          "category": "Fried Snacks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/CHEESE.jpg"
+        },
+        {
+          "name": "Hotdog Waffle",
+          "price": 26,
+          "section": "Products",
+          "category": "Street Bites",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/HOTDOG.jpg"
+        }
+      ]
+    },
+    {
+      "stall_name": "KAPE KURIPOT",
+      "stall_number": "8",
+      "description": "Budget-friendly cafe offering quirky coffee flavors.",
+      "vendor": "kapekuripot.cafe@gmail.com",
+      "avatar": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/stall_avatars/KAPE+KURIPOT.jpg",
+      "products": [
+        {
+          "name": "Kape Banana",
+          "price": 38,
+          "section": "Products",
+          "category": "Hot Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE%20BANANA.png"
+        },
+        {
+          "name": "Kape Choco-Nut",
+          "price": 42,
+          "section": "Products",
+          "category": "Hot Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE+CHOCO-NUT.png"
+        },
+        {
+          "name": "Kape Seasalt",
+          "price": 48,
+          "section": "Products",
+          "category": "Hot Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE%20SEASALT.png"
+        },
+        {
+          "name": "Kape Ube",
+          "price": 42,
+          "section": "Products",
+          "category": "Hot Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE%20UBE.png"
+        },
+        {
+          "name": "Strawberry Latte",
+          "price": 42,
+          "section": "Products",
+          "category": "Hot Drinks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/STRAWBERRY%20LATTE.png"
+        }
+      ]
+    },
+    {
+      "stall_name": "BAGNET, BBQ, ATBP",
+      "stall_number": "10",
+      "description": "Specializes in grilled meals and Filipino comfort food.",
+      "vendor": "bagnetbbqatbp@gmail.com",
+      "avatar": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/stall_avatars/BAGNET%2C.png",
+      "products": [
+        {
+          "name": "Cheesy Corn",
+          "price": 50,
+          "section": "Products",
+          "category": "Fried Snacks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/CHEESY%20CORN.jpg"
+        },
+        {
+          "name": "Pork Sisig Barkada",
+          "price": 120,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/PORK%20SISIG%20BARKADA.jpg"
+        },
+        {
+          "name": "Beef Enoki w/ Rice",
+          "price": 70,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/BEEF+ENOKI+W_+RICE.png"
+        },
+        {
+          "name": "Krema De Leche",
+          "price": 40,
+          "section": "Products",
+          "category": "Desserts",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KREMA%20DE%20LECHE.jpg"
+        }
+      ]
+    },
+    {
+      "stall_name": "Pepper's Food Stall",
+      "stall_number": "6",
+      "description": "Offers hearty meals and pasta dishes for every craving.",
+      "vendor": "peppers.foodstall@gmail.com",
+      "avatar": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/stall_avatars/PEPPER'S.jpg",
+      "products": [
+        {
+          "name": "Burger Steak",
+          "price": 80,
+          "section": "Products",
+          "category": "Rice Meals",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/BURGER%20STEAK.jpg"
+        },
+        {
+          "name": "Tofu Squares",
+          "price": 50,
+          "section": "Products",
+          "category": "Fried Snacks",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/TOFU%20SQUARES.jpg"
+        },
+        {
+          "name": "Alfredo Pasta",
+          "price": 60,
+          "section": "Products",
+          "category": "Noodles & Pasta",
+          "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/ALFREDO%20PASTA.jpg"
+        }
+      ]
+    }
+  ]
+  

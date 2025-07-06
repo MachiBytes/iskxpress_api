@@ -11,6 +11,12 @@ public class Stall
     [Required]
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Physical store number that serves as the stall's physical address
+    /// </summary>
+    [Required]
+    public int StallNumber { get; set; }
+
     public string ShortDescription { get; set; } = string.Empty;
 
     [ForeignKey("Picture")]

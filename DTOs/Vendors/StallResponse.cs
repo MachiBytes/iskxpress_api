@@ -4,6 +4,7 @@ public class StallResponse
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public int StallNumber { get; set; }
     public string ShortDescription { get; set; } = string.Empty;
     public int? PictureId { get; set; }
     public string? PictureUrl { get; set; }

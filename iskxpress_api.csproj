@@ -33,4 +33,10 @@
     <PackageReference Include="FluentAssertions" Version="6.12.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Data\JSON\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

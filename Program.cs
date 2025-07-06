@@ -132,9 +132,10 @@ using (var scope = app.Services.CreateScope())
         }
         else
         {
-            // Seed only essential production data (categories)
-            logger.LogInformation("Production environment detected - seeding essential data only");
+            // Seed essential production data (categories) and always add missing stalls from JSON
+            logger.LogInformation("Production environment detected - seeding essential data and always adding missing stalls from JSON");
             await seeder.SeedProductionAsync();
+            await seeder.SeedStallsFromJsonAsync();
         }
     }
     catch (Exception ex)
