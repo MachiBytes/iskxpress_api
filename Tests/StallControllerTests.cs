@@ -29,8 +29,8 @@ public class StallControllerTests
         // Arrange
         var expectedStalls = new List<StallResponse>
         {
-            new StallResponse { Id = 1, Name = "Stall 1", ShortDescription = "Description 1" },
-            new StallResponse { Id = 2, Name = "Stall 2", ShortDescription = "Description 2" }
+            new StallResponse { Id = 1, Name = "Stall 1", ShortDescription = "Description 1", DeliveryAvailable = false },
+            new StallResponse { Id = 2, Name = "Stall 2", ShortDescription = "Description 2", DeliveryAvailable = true }
         };
 
         _mockStallService.Setup(service => service.GetAllStallsAsync())
@@ -54,7 +54,8 @@ public class StallControllerTests
         {
             Id = stallId,
             Name = "Test Stall",
-            ShortDescription = "Test Description"
+            ShortDescription = "Test Description",
+            DeliveryAvailable = false
         };
 
         _mockStallService.Setup(service => service.GetStallByIdAsync(stallId))
@@ -95,7 +96,8 @@ public class StallControllerTests
         {
             Id = 1,
             Name = "Vendor's Stall",
-            VendorId = vendorId
+            VendorId = vendorId,
+            DeliveryAvailable = true
         };
 
         _mockStallService.Setup(service => service.GetStallByVendorIdAsync(vendorId))
@@ -141,7 +143,8 @@ public class StallControllerTests
         {
             Id = 1,
             Name = request.Name,
-            ShortDescription = request.ShortDescription
+            ShortDescription = request.ShortDescription,
+            DeliveryAvailable = false
         };
 
         _mockStallService.Setup(service => service.CreateStallAsync(vendorId, request))
@@ -196,7 +199,8 @@ public class StallControllerTests
         {
             Id = stallId,
             Name = request.Name,
-            ShortDescription = request.ShortDescription
+            ShortDescription = request.ShortDescription,
+            DeliveryAvailable = true
         };
 
         _mockStallService.Setup(service => service.UpdateStallAsync(stallId, request))
@@ -231,6 +235,52 @@ public class StallControllerTests
         // Assert
         var notFoundResult = result.Result.Should().BeOfType<NotFoundObjectResult>().Subject;
         notFoundResult.Value.Should().Be($"Stall with ID {stallId} not found");
+    }
+
+    [Fact]
+    public async Task UpdateDeliveryAvailability_ValidRequest_ReturnsOkWithUpdatedStall()
+    {
+        // Arrange
+        var stallId = 1;
+        var deliveryAvailable = true;
+
+        var updatedStall = new StallResponse
+        {
+            Id = stallId,
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            DeliveryAvailable = deliveryAvailable
+        };
+
+        _mockStallService.Setup(service => service.UpdateDeliveryAvailabilityAsync(stallId, deliveryAvailable))
+            .ReturnsAsync(updatedStall);
+
+        // Act
+        var result = await _controller.UpdateDeliveryAvailability(stallId, deliveryAvailable);
+
+        // Assert
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var stall = okResult.Value.Should().BeOfType<StallResponse>().Subject;
+        stall.DeliveryAvailable.Should().Be(deliveryAvailable);
+        stall.Id.Should().Be(stallId);
+    }
+
+    [Fact]
+    public async Task UpdateDeliveryAvailability_StallNotFound_ReturnsBadRequest()
+    {
+        // Arrange
+        var stallId = 999;
+        var deliveryAvailable = true;
+
+        _mockStallService.Setup(service => service.UpdateDeliveryAvailabilityAsync(stallId, deliveryAvailable))
+            .ThrowsAsync(new ArgumentException($"Stall with ID {stallId} not found"));
+
+        // Act
+        var result = await _controller.UpdateDeliveryAvailability(stallId, deliveryAvailable);
+
+        // Assert
+        var badRequestResult = result.Result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        badRequestResult.Value.Should().Be($"Stall with ID {stallId} not found");
     }
 }
 

@@ -16,6 +16,7 @@ public static class StallMappingExtensions
             PictureUrl = stall.Picture?.ObjectUrl,
             VendorId = stall.VendorId,
             VendorName = stall.Vendor?.Name ?? string.Empty,
+            DeliveryAvailable = stall.DeliveryAvailable,
             CreatedAt = DateTime.UtcNow, // TODO: Add CreatedAt to Stall model if needed
             UpdatedAt = DateTime.UtcNow, // TODO: Add UpdatedAt to Stall model if needed
             Categories = stall.Products
