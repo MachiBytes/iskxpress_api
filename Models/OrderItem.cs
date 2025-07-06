@@ -24,6 +24,10 @@ public class OrderItem
     [Column(TypeName = "decimal(18,2)")]
     public decimal PriceEach { get; set; }
 
+    [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal CommissionFee { get; set; }
+
     // Navigation properties
     public virtual Order Order { get; set; } = null!;
     public virtual Product Product { get; set; } = null!;

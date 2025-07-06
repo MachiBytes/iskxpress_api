@@ -43,6 +43,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -149,6 +150,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -204,6 +206,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -247,9 +250,9 @@ public class OrderServiceTests
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Equal(FulfillmentMethod.Delivery, result.FulfillmentMethod);
         Assert.Equal("123 Test Street, Test City", result.DeliveryAddress);
-        Assert.Equal(20.00m, result.TotalSellingPrice); // Total Selling Price (2 * 10.00 = 20.00)
+        Assert.Equal(20.00m, result.TotalPrice); // Total Price (2 * 10.00 = 20.00)
+        Assert.Equal(4.00m, result.TotalCommissionFee); // Commission Fee (2 * (10.00 - 8.00) = 4.00)
         Assert.Equal(10.00m, result.DeliveryFee); // Delivery Fee (10.00)
-        Assert.Equal(30.00m, result.TotalPrice); // Total Price (20.00 + 10.00 = 30.00)
         Assert.Single(result.OrderItems);
         Assert.Equal("Test Product", result.OrderItems[0].ProductName);
         Assert.Equal(2, result.OrderItems[0].Quantity);
@@ -274,6 +277,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -315,9 +319,9 @@ public class OrderServiceTests
         Assert.Equal("Test Stall", result.StallName);
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Equal(FulfillmentMethod.Pickup, result.FulfillmentMethod);
-        Assert.Equal(20.00m, result.TotalSellingPrice); // Total Selling Price (2 * 10.00 = 20.00)
+        Assert.Equal(20.00m, result.TotalPrice); // Total Price (2 * 10.00 = 20.00)
+        Assert.Equal(4.00m, result.TotalCommissionFee); // Commission Fee (2 * (10.00 - 8.00) = 4.00)
         Assert.Equal(0.00m, result.DeliveryFee); // Delivery Fee (0.00 for pickup)
-        Assert.Equal(20.00m, result.TotalPrice); // Total Price (20.00 + 0.00 = 20.00)
         Assert.Single(result.OrderItems);
         Assert.Equal("Test Product", result.OrderItems[0].ProductName);
         Assert.Equal(2, result.OrderItems[0].Quantity);
@@ -343,6 +347,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -401,6 +406,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -456,6 +462,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -510,6 +517,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -566,6 +574,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -622,6 +631,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -678,6 +688,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -736,6 +747,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -803,6 +815,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,
@@ -870,6 +883,7 @@ public class OrderServiceTests
         { 
             Id = 1, 
             Name = "Test Product", 
+            BasePrice = 8.00m,
             PriceWithMarkup = 10.00m,
             CategoryId = 1,
             SectionId = 1,

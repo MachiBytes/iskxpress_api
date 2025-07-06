@@ -119,8 +119,9 @@ public class OrderService : IOrderService
             }
         }
 
-        // Create order items and calculate total
-        decimal totalSellingPrice = 0;
+        // Create order items and calculate totals
+        decimal totalPrice = 0;
+        decimal totalCommissionFee = 0;
         var orderItems = new List<OrderItem>();
 
         foreach (var cartItem in stallCartItems)
@@ -129,25 +130,26 @@ public class OrderService : IOrderService
             
             // Always use PriceWithMarkup for products
             decimal pricePerItem = product.PriceWithMarkup;
+            decimal commissionPerItem = product.PriceWithMarkup - product.BasePrice;
             
             var orderItem = new OrderItem
             {
                 ProductId = cartItem.ProductId,
                 Quantity = cartItem.Quantity,
-                PriceEach = pricePerItem
+                PriceEach = pricePerItem,
+                CommissionFee = commissionPerItem * cartItem.Quantity
             };
 
             orderItems.Add(orderItem);
-            totalSellingPrice += pricePerItem * cartItem.Quantity;
+            totalPrice += pricePerItem * cartItem.Quantity;
+            totalCommissionFee += commissionPerItem * cartItem.Quantity;
         }
 
         // Calculate delivery fee
         decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
-        
-        // Calculate total price
-        decimal totalPrice = totalSellingPrice + deliveryFee;
 
         order.TotalPrice = totalPrice;
+        order.TotalCommissionFee = totalCommissionFee;
         order.DeliveryFee = deliveryFee;
         order.OrderItems = orderItems;
 
@@ -360,7 +362,8 @@ public class OrderService : IOrderService
                         }
                     }
 
-                    decimal totalSellingPrice = 0;
+                    decimal totalPrice = 0;
+                    decimal totalCommissionFee = 0;
                     var orderItems = new List<OrderItem>();
 
                     foreach (var cartItem in stallCartItems)
@@ -369,24 +372,25 @@ public class OrderService : IOrderService
                         
                         // Always use PriceWithMarkup for products
                         decimal pricePerItem = product.PriceWithMarkup;
+                        decimal commissionPerItem = product.PriceWithMarkup - product.BasePrice;
                         
                         var orderItem = new OrderItem
                         {
                             ProductId = cartItem.ProductId,
                             Quantity = cartItem.Quantity,
-                            PriceEach = pricePerItem
+                            PriceEach = pricePerItem,
+                            CommissionFee = commissionPerItem * cartItem.Quantity
                         };
                         orderItems.Add(orderItem);
-                        totalSellingPrice += pricePerItem * cartItem.Quantity;
+                        totalPrice += pricePerItem * cartItem.Quantity;
+                        totalCommissionFee += commissionPerItem * cartItem.Quantity;
                     }
 
                     // Calculate delivery fee
                     decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
-                    
-                    // Calculate total price
-                    decimal totalPrice = totalSellingPrice + deliveryFee;
 
                     order.TotalPrice = totalPrice;
+                    order.TotalCommissionFee = totalCommissionFee;
                     order.DeliveryFee = deliveryFee;
                     order.OrderItems = orderItems;
 
@@ -473,7 +477,8 @@ public class OrderService : IOrderService
                     }
                 }
 
-                decimal totalSellingPrice = 0;
+                decimal totalPrice = 0;
+                decimal totalCommissionFee = 0;
                 var orderItems = new List<OrderItem>();
 
                 foreach (var cartItem in stallCartItems)
@@ -482,24 +487,25 @@ public class OrderService : IOrderService
                     
                     // Always use PriceWithMarkup for products
                     decimal pricePerItem = product.PriceWithMarkup;
+                    decimal commissionPerItem = product.PriceWithMarkup - product.BasePrice;
                     
                     var orderItem = new OrderItem
                     {
                         ProductId = cartItem.ProductId,
                         Quantity = cartItem.Quantity,
-                        PriceEach = pricePerItem
+                        PriceEach = pricePerItem,
+                        CommissionFee = commissionPerItem * cartItem.Quantity
                     };
                     orderItems.Add(orderItem);
-                    totalSellingPrice += pricePerItem * cartItem.Quantity;
+                    totalPrice += pricePerItem * cartItem.Quantity;
+                    totalCommissionFee += commissionPerItem * cartItem.Quantity;
                 }
 
                 // Calculate delivery fee
                 decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
-                
-                // Calculate total price
-                decimal totalPrice = totalSellingPrice + deliveryFee;
 
                 order.TotalPrice = totalPrice;
+                order.TotalCommissionFee = totalCommissionFee;
                 order.DeliveryFee = deliveryFee;
                 order.OrderItems = orderItems;
 
@@ -522,9 +528,6 @@ public class OrderService : IOrderService
 
     private static OrderResponse MapToOrderResponse(Order order)
     {
-        // Calculate pricing breakdown
-        decimal totalSellingPrice = order.OrderItems.Sum(oi => oi.PriceEach * oi.Quantity);
-        
         return new OrderResponse
         {
             Id = order.Id,
@@ -536,9 +539,9 @@ public class OrderService : IOrderService
             DeliveryAddress = order.DeliveryAddress,
             Notes = order.Notes,
             DeliveryPartnerId = order.DeliveryPartnerId,
-            TotalSellingPrice = totalSellingPrice,
-            DeliveryFee = order.DeliveryFee,
             TotalPrice = order.TotalPrice,
+            TotalCommissionFee = order.TotalCommissionFee,
+            DeliveryFee = order.DeliveryFee,
             RejectionReason = order.RejectionReason,
             CreatedAt = order.CreatedAt,
             OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
@@ -550,6 +553,7 @@ public class OrderService : IOrderService
                 ProductPictureUrl = oi.Product.Picture?.ObjectUrl ?? string.Empty,
                 Quantity = oi.Quantity,
                 PriceEach = oi.PriceEach,
+                CommissionFee = oi.CommissionFee,
                 TotalPrice = oi.PriceEach * oi.Quantity
             }).ToList()
         };

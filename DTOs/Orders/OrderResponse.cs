@@ -13,9 +13,9 @@ public class OrderResponse
     public string? DeliveryAddress { get; set; }
     public string? Notes { get; set; }
     public int? DeliveryPartnerId { get; set; }
-    public decimal TotalSellingPrice { get; set; }
-    public decimal DeliveryFee { get; set; }
     public decimal TotalPrice { get; set; }
+    public decimal TotalCommissionFee { get; set; }
+    public decimal DeliveryFee { get; set; }
     public string? RejectionReason { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
@@ -30,5 +30,6 @@ public class OrderItemResponse
     public string? ProductPictureUrl { get; set; }
     public int Quantity { get; set; }
     public decimal PriceEach { get; set; }
+    public decimal CommissionFee { get; set; }
     public decimal TotalPrice { get; set; }
 } 

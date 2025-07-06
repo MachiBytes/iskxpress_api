@@ -38,6 +38,10 @@ public class Order
 
     [Required]
     [Column(TypeName = "decimal(18,2)")]
+    public decimal TotalCommissionFee { get; set; }
+
+    [Required]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal DeliveryFee { get; set; }
 
     public string? RejectionReason { get; set; }
