@@ -252,8 +252,22 @@ public class OrderService : IOrderService
             throw new ArgumentException($"Invalid status transition from {order.Status} to {newStatus}");
         }
 
+        // Check if order is being completed (status changing to Accomplished)
+        bool isOrderBeingCompleted = order.Status != OrderStatus.Accomplished && newStatus == OrderStatus.Accomplished;
+
         order.Status = newStatus;
         await _context.SaveChangesAsync();
+
+        // If order is being completed, add commission fees to stall's pending fees
+        if (isOrderBeingCompleted)
+        {
+            var stall = await _stallRepository.GetByIdAsync(order.StallId);
+            if (stall != null)
+            {
+                stall.PendingFees += order.TotalCommissionFee;
+                await _stallRepository.UpdateAsync(stall);
+            }
+        }
 
         // Return the updated order
         var updatedOrder = await _orderRepository.GetOrderWithItemsAsync(orderId);

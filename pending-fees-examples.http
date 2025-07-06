@@ -1,0 +1,41 @@
+### Get Pending Fees for a Stall
+GET {{baseUrl}}/api/stalls/1/pending-fees
+Content-Type: application/json
+
+###
+
+### Subtract Amount from Pending Fees
+PUT {{baseUrl}}/api/stalls/1/pending-fees/subtract
+Content-Type: application/json
+
+{
+  "amount": 50.00
+}
+
+###
+
+### Subtract Amount from Pending Fees (Invalid - insufficient funds)
+PUT {{baseUrl}}/api/stalls/1/pending-fees/subtract
+Content-Type: application/json
+
+{
+  "amount": 1000.00
+}
+
+###
+
+### Subtract Amount from Pending Fees (Invalid - zero amount)
+PUT {{baseUrl}}/api/stalls/1/pending-fees/subtract
+Content-Type: application/json
+
+{
+  "amount": 0
+}
+
+###
+
+### Get Stall Details (includes PendingFees)
+GET {{baseUrl}}/api/stalls/1
+Content-Type: application/json
+
+### 

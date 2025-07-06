@@ -15,4 +15,7 @@ public interface IStallService
     Task<IEnumerable<StallResponse>> GetStallsByProductNameAsync(string productSearchTerm);
     Task<IEnumerable<StallResponse>> SearchStallsAsync(string searchTerm);
     Task<StallResponse> UpdateDeliveryAvailabilityAsync(int stallId, bool deliveryAvailable);
+    Task<PendingFeesResponse?> GetPendingFeesAsync(int stallId);
+    Task<PendingFeesResponse> SubtractPendingFeesAsync(int stallId, decimal amount);
+    Task AddToPendingFeesAsync(int stallId, decimal amount);
 } 

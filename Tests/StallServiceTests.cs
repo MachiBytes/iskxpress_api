@@ -259,6 +259,224 @@ public class StallServiceTests : IDisposable
         result.Should().BeNull();
     }
 
+    [Fact]
+    public async Task GetPendingFeesAsync_WithValidStallId_ReturnsPendingFees()
+    {
+        // Arrange
+        var vendor = new User 
+        { 
+            Email = "vendor@example.com", 
+            Name = "Test Vendor", 
+            Role = UserRole.Vendor, 
+            AuthProvider = AuthProvider.Google,
+            Verified = true
+        };
+        var stall = new Stall
+        {
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            VendorId = vendor.Id,
+            Vendor = vendor,
+            PendingFees = 150.50m
+        };
+
+        _context.Users.Add(vendor);
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var result = await _stallService.GetPendingFeesAsync(stall.Id);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(stall.Id, result.StallId);
+        Assert.Equal(stall.Name, result.StallName);
+        Assert.Equal(stall.PendingFees, result.PendingFees);
+    }
+
+    [Fact]
+    public async Task GetPendingFeesAsync_WithInvalidStallId_ReturnsNull()
+    {
+        // Act
+        var result = await _stallService.GetPendingFeesAsync(999);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task SubtractPendingFeesAsync_WithValidAmount_SubtractsCorrectly()
+    {
+        // Arrange
+        var vendor = new User 
+        { 
+            Email = "vendor@example.com", 
+            Name = "Test Vendor", 
+            Role = UserRole.Vendor, 
+            AuthProvider = AuthProvider.Google,
+            Verified = true
+        };
+        var stall = new Stall
+        {
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            VendorId = vendor.Id,
+            Vendor = vendor,
+            PendingFees = 200.00m
+        };
+
+        _context.Users.Add(vendor);
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+
+        var subtractAmount = 50.00m;
+
+        // Act
+        var result = await _stallService.SubtractPendingFeesAsync(stall.Id, subtractAmount);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(stall.Id, result.StallId);
+        Assert.Equal(150.00m, result.PendingFees);
+
+        // Verify the stall was updated in the database
+        var updatedStall = await _context.Stalls.FindAsync(stall.Id);
+        Assert.Equal(150.00m, updatedStall!.PendingFees);
+    }
+
+    [Fact]
+    public async Task SubtractPendingFeesAsync_WithInsufficientFunds_ThrowsException()
+    {
+        // Arrange
+        var vendor = new User 
+        { 
+            Email = "vendor@example.com", 
+            Name = "Test Vendor", 
+            Role = UserRole.Vendor, 
+            AuthProvider = AuthProvider.Google,
+            Verified = true
+        };
+        var stall = new Stall
+        {
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            VendorId = vendor.Id,
+            Vendor = vendor,
+            PendingFees = 100.00m
+        };
+
+        _context.Users.Add(vendor);
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+
+        var subtractAmount = 150.00m;
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _stallService.SubtractPendingFeesAsync(stall.Id, subtractAmount));
+        
+        Assert.Contains("Insufficient funds", exception.Message);
+    }
+
+    [Fact]
+    public async Task SubtractPendingFeesAsync_WithZeroAmount_ThrowsException()
+    {
+        // Arrange
+        var vendor = new User 
+        { 
+            Email = "vendor@example.com", 
+            Name = "Test Vendor", 
+            Role = UserRole.Vendor, 
+            AuthProvider = AuthProvider.Google,
+            Verified = true
+        };
+        var stall = new Stall
+        {
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            VendorId = vendor.Id,
+            Vendor = vendor,
+            PendingFees = 100.00m
+        };
+
+        _context.Users.Add(vendor);
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _stallService.SubtractPendingFeesAsync(stall.Id, 0));
+        
+        Assert.Contains("Amount must be greater than 0", exception.Message);
+    }
+
+    [Fact]
+    public async Task AddToPendingFeesAsync_WithValidAmount_AddsCorrectly()
+    {
+        // Arrange
+        var vendor = new User 
+        { 
+            Email = "vendor@example.com", 
+            Name = "Test Vendor", 
+            Role = UserRole.Vendor, 
+            AuthProvider = AuthProvider.Google,
+            Verified = true
+        };
+        var stall = new Stall
+        {
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            VendorId = vendor.Id,
+            Vendor = vendor,
+            PendingFees = 100.00m
+        };
+
+        _context.Users.Add(vendor);
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+
+        var addAmount = 50.00m;
+
+        // Act
+        await _stallService.AddToPendingFeesAsync(stall.Id, addAmount);
+
+        // Assert
+        var updatedStall = await _context.Stalls.FindAsync(stall.Id);
+        Assert.Equal(150.00m, updatedStall!.PendingFees);
+    }
+
+    [Fact]
+    public async Task AddToPendingFeesAsync_WithZeroAmount_ThrowsException()
+    {
+        // Arrange
+        var vendor = new User 
+        { 
+            Email = "vendor@example.com", 
+            Name = "Test Vendor", 
+            Role = UserRole.Vendor, 
+            AuthProvider = AuthProvider.Google,
+            Verified = true
+        };
+        var stall = new Stall
+        {
+            Name = "Test Stall",
+            ShortDescription = "Test Description",
+            VendorId = vendor.Id,
+            Vendor = vendor,
+            PendingFees = 100.00m
+        };
+
+        _context.Users.Add(vendor);
+        _context.Stalls.Add(stall);
+        await _context.SaveChangesAsync();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _stallService.AddToPendingFeesAsync(stall.Id, 0));
+        
+        Assert.Contains("Amount must be greater than 0", exception.Message);
+    }
+
     public void Dispose()
     {
         _context.Dispose();

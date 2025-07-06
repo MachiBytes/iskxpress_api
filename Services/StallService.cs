@@ -64,7 +64,8 @@ public class StallService : IStallService
             Name = request.Name,
             ShortDescription = request.ShortDescription,
             PictureId = null, // Picture will be set via upload endpoint
-            VendorId = vendorId
+            VendorId = vendorId,
+            PendingFees = 0.00m
         };
 
         var createdStall = await _stallRepository.AddAsync(newStall);
@@ -116,5 +117,69 @@ public class StallService : IStallService
     {
         var updatedStall = await _stallRepository.UpdateDeliveryAvailabilityAsync(stallId, deliveryAvailable);
         return updatedStall.ToStallResponse();
+    }
+
+    public async Task<PendingFeesResponse?> GetPendingFeesAsync(int stallId)
+    {
+        var stall = await _stallRepository.GetByIdWithDetailsAsync(stallId);
+        if (stall == null)
+        {
+            return null;
+        }
+
+        return new PendingFeesResponse
+        {
+            StallId = stall.Id,
+            StallName = stall.Name,
+            PendingFees = stall.PendingFees,
+            LastUpdated = DateTime.UtcNow // TODO: Use actual UpdatedAt when available
+        };
+    }
+
+    public async Task<PendingFeesResponse> SubtractPendingFeesAsync(int stallId, decimal amount)
+    {
+        var stall = await _stallRepository.GetByIdAsync(stallId);
+        if (stall == null)
+        {
+            throw new ArgumentException($"Stall with ID {stallId} not found");
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentException("Amount must be greater than 0");
+        }
+
+        if (stall.PendingFees < amount)
+        {
+            throw new ArgumentException($"Cannot subtract {amount} from pending fees of {stall.PendingFees}. Insufficient funds.");
+        }
+
+        stall.PendingFees -= amount;
+        var updatedStall = await _stallRepository.UpdateAsync(stall);
+
+        return new PendingFeesResponse
+        {
+            StallId = updatedStall.Id,
+            StallName = updatedStall.Name,
+            PendingFees = updatedStall.PendingFees,
+            LastUpdated = DateTime.UtcNow // TODO: Use actual UpdatedAt when available
+        };
+    }
+
+    public async Task AddToPendingFeesAsync(int stallId, decimal amount)
+    {
+        var stall = await _stallRepository.GetByIdAsync(stallId);
+        if (stall == null)
+        {
+            throw new ArgumentException($"Stall with ID {stallId} not found");
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentException("Amount must be greater than 0");
+        }
+
+        stall.PendingFees += amount;
+        await _stallRepository.UpdateAsync(stall);
     }
 } 

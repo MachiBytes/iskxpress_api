@@ -25,6 +25,13 @@ public class Stall
     /// </summary>
     public bool DeliveryAvailable { get; set; } = false;
 
+    /// <summary>
+    /// Accumulated commission fees from completed orders
+    /// </summary>
+    [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal PendingFees { get; set; } = 0.00m;
+
     // Navigation properties
     public virtual FileRecord? Picture { get; set; }
     public virtual User Vendor { get; set; } = null!;

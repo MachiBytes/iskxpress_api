@@ -207,4 +207,61 @@ public class StallController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    /// <summary>
+    /// Get pending fees for a stall
+    /// </summary>
+    /// <param name="stallId">The stall ID</param>
+    /// <returns>The pending fees information</returns>
+    [HttpGet("{stallId}/pending-fees")]
+    public async Task<ActionResult<PendingFeesResponse>> GetPendingFees(int stallId)
+    {
+        try
+        {
+            var pendingFees = await _stallService.GetPendingFeesAsync(stallId);
+            if (pendingFees == null)
+            {
+                return NotFound($"Stall with ID {stallId} not found");
+            }
+
+            return Ok(pendingFees);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting pending fees for stall {StallId}", stallId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    /// <summary>
+    /// Subtract amount from pending fees for a stall
+    /// </summary>
+    /// <param name="stallId">The stall ID</param>
+    /// <param name="request">The amount to subtract</param>
+    /// <returns>The updated pending fees information</returns>
+    [HttpPut("{stallId}/pending-fees/subtract")]
+    public async Task<ActionResult<PendingFeesResponse>> SubtractPendingFees(
+        int stallId,
+        [FromBody] SubtractPendingFeesRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var updatedPendingFees = await _stallService.SubtractPendingFeesAsync(stallId, request.Amount);
+            return Ok(updatedPendingFees);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error subtracting pending fees for stall {StallId}", stallId);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 } 

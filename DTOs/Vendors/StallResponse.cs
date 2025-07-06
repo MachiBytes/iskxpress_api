@@ -10,6 +10,7 @@ public class StallResponse
     public int VendorId { get; set; }
     public string VendorName { get; set; } = string.Empty;
     public bool DeliveryAvailable { get; set; }
+    public decimal PendingFees { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public List<CategoryDto> Categories { get; set; } = new List<CategoryDto>();
