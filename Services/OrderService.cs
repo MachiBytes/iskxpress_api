@@ -98,19 +98,24 @@ public class OrderService : IOrderService
             CreatedAt = DateTime.UtcNow
         };
 
-        // Handle delivery partner assignment based on stall availability
-        if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+        // Handle delivery partner assignment
+        if (request.FulfillmentMethod == FulfillmentMethod.Pickup)
+        {
+            // For pickup orders, assign the stall vendor as the delivery partner
+            // since they're responsible for handling the pickup
+            order.DeliveryPartnerId = stall.VendorId;
+        }
+        else if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
         {
             if (stall.DeliveryAvailable)
             {
-                // Stall has delivery available - assign immediately
-                // Note: In a real implementation, you might want to assign to a specific partner
-                // For now, we'll leave it unassigned and let the delivery system handle it
+                // For delivery orders, if stall has delivery available, assign the vendor as delivery partner
+                order.DeliveryPartnerId = stall.VendorId;
             }
             else
             {
-                // Stall doesn't have delivery available - order will be created but won't show in stall orders
-                // until a delivery partner is assigned
+                // Stall doesn't have delivery available - leave delivery partner unassigned
+                // Order will need manual delivery partner assignment later
             }
         }
 
@@ -290,9 +295,126 @@ public class OrderService : IOrderService
         var cartItemsByStall = userCartItems.GroupBy(ci => ci.StallId).ToList();
         var createdOrders = new List<OrderResponse>();
 
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
+        // Save orders and remove cart items in a transaction
+        var providerName = _context.Database.ProviderName;
+        if (providerName != "Microsoft.EntityFrameworkCore.InMemory")
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach (var stallGroup in cartItemsByStall)
+                {
+                    var stallId = stallGroup.Key;
+                    var stallCartItems = stallGroup.ToList();
+                    var productIds = stallCartItems.Select(ci => ci.ProductId).ToList();
+                    var products = await _productRepository.GetByIdsAsync(productIds);
+
+                    if (products.Count() != productIds.Count)
+                    {
+                        throw new ArgumentException("Some products no longer exist");
+                    }
+
+                    var unavailableProducts = products.Where(p => p.Availability != ProductAvailability.Available).ToList();
+                    if (unavailableProducts.Any())
+                    {
+                        var productNames = string.Join(", ", unavailableProducts.Select(p => p.Name));
+                        throw new ArgumentException($"The following products are no longer available: {productNames}");
+                    }
+
+                    // Get stall information to assign delivery partner for pickup orders
+                    var stall = await _stallRepository.GetByIdAsync(stallId);
+                    if (stall == null)
+                    {
+                        throw new ArgumentException($"Stall with ID {stallId} not found");
+                    }
+
+                    var order = new Order
+                    {
+                        UserId = userId,
+                        StallId = stallId,
+                        Status = OrderStatus.Pending,
+                        FulfillmentMethod = request.FulfillmentMethod,
+                        DeliveryAddress = request.DeliveryAddress,
+                        Notes = request.Notes,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    // Handle delivery partner assignment
+                    if (request.FulfillmentMethod == FulfillmentMethod.Pickup)
+                    {
+                        // For pickup orders, assign the stall vendor as the delivery partner
+                        // since they're responsible for handling the pickup
+                        order.DeliveryPartnerId = stall.VendorId;
+                    }
+                    else if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+                    {
+                        if (stall.DeliveryAvailable)
+                        {
+                            // For delivery orders, if stall has delivery available, assign the vendor as delivery partner
+                            order.DeliveryPartnerId = stall.VendorId;
+                        }
+                        else
+                        {
+                            // Stall doesn't have delivery available - leave delivery partner unassigned
+                            // Order will need manual delivery partner assignment later
+                        }
+                    }
+
+                    decimal totalSellingPrice = 0;
+                    var orderItems = new List<OrderItem>();
+
+                    foreach (var cartItem in stallCartItems)
+                    {
+                        var product = products.First(p => p.Id == cartItem.ProductId);
+                        
+                        // Always use PriceWithMarkup for products
+                        decimal pricePerItem = product.PriceWithMarkup;
+                        
+                        var orderItem = new OrderItem
+                        {
+                            ProductId = cartItem.ProductId,
+                            Quantity = cartItem.Quantity,
+                            PriceEach = pricePerItem
+                        };
+                        orderItems.Add(orderItem);
+                        totalSellingPrice += pricePerItem * cartItem.Quantity;
+                    }
+
+                    // Calculate delivery fee
+                    decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+                    
+                    // Calculate total price
+                    decimal totalPrice = totalSellingPrice + deliveryFee;
+
+                    order.TotalPrice = totalPrice;
+                    order.DeliveryFee = deliveryFee;
+                    order.OrderItems = orderItems;
+
+                    await _orderRepository.AddAsync(order);
+                    await _context.SaveChangesAsync();
+
+                    foreach (var cartItem in stallCartItems)
+                    {
+                        await _cartItemRepository.DeleteAsync(cartItem.Id);
+                    }
+                    await _context.SaveChangesAsync();
+
+                    var createdOrder = await _orderRepository.GetOrderWithItemsAsync(order.Id);
+                    createdOrders.Add(MapToOrderResponse(createdOrder!));
+                }
+
+                await transaction.CommitAsync();
+                return new MultiOrderResponse { Orders = createdOrders };
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        else
+        {
+            // InMemory provider does not support transactions
             foreach (var stallGroup in cartItemsByStall)
             {
                 var stallId = stallGroup.Key;
@@ -312,6 +434,13 @@ public class OrderService : IOrderService
                     throw new ArgumentException($"The following products are no longer available: {productNames}");
                 }
 
+                // Get stall information to assign delivery partner for pickup orders
+                var stall = await _stallRepository.GetByIdAsync(stallId);
+                if (stall == null)
+                {
+                    throw new ArgumentException($"Stall with ID {stallId} not found");
+                }
+
                 var order = new Order
                 {
                     UserId = userId,
@@ -322,6 +451,27 @@ public class OrderService : IOrderService
                     Notes = request.Notes,
                     CreatedAt = DateTime.UtcNow
                 };
+
+                // Handle delivery partner assignment
+                if (request.FulfillmentMethod == FulfillmentMethod.Pickup)
+                {
+                    // For pickup orders, assign the stall vendor as the delivery partner
+                    // since they're responsible for handling the pickup
+                    order.DeliveryPartnerId = stall.VendorId;
+                }
+                else if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+                {
+                    if (stall.DeliveryAvailable)
+                    {
+                        // For delivery orders, if stall has delivery available, assign the vendor as delivery partner
+                        order.DeliveryPartnerId = stall.VendorId;
+                    }
+                    else
+                    {
+                        // Stall doesn't have delivery available - leave delivery partner unassigned
+                        // Order will need manual delivery partner assignment later
+                    }
+                }
 
                 decimal totalSellingPrice = 0;
                 var orderItems = new List<OrderItem>();
@@ -366,13 +516,7 @@ public class OrderService : IOrderService
                 createdOrders.Add(MapToOrderResponse(createdOrder!));
             }
 
-            await transaction.CommitAsync();
             return new MultiOrderResponse { Orders = createdOrders };
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-            throw;
         }
     }
 
@@ -417,6 +561,11 @@ public class OrderService : IOrderService
         if (order == null)
         {
             throw new ArgumentException($"Order with ID {orderId} not found");
+        }
+
+        if (order.FulfillmentMethod == FulfillmentMethod.Pickup)
+        {
+            throw new ArgumentException("Cannot manually assign delivery partner to pickup orders - vendor is automatically assigned");
         }
 
         if (order.FulfillmentMethod != FulfillmentMethod.Delivery)

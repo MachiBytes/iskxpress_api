@@ -389,6 +389,61 @@ public class OrderServiceTests
     }
 
     [Fact]
+    public async Task CreateOrderAsync_WithPickupMethod_ShouldAssignVendorAsDeliveryPartner()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create pickup order
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Pickup,
+            Notes = "Test order"
+        };
+
+        // Act
+        var result = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(FulfillmentMethod.Pickup, result.FulfillmentMethod);
+        Assert.Equal(2, result.DeliveryPartnerId); // Vendor ID should be assigned
+        Assert.Equal(0.00m, result.DeliveryFee); // No delivery fee for pickup
+    }
+
+    [Fact]
     public async Task AssignDeliveryPartnerAsync_WithPickupOrder_ShouldThrowException()
     {
         // Arrange
@@ -439,7 +494,7 @@ public class OrderServiceTests
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _orderService.AssignDeliveryPartnerAsync(createdOrder.Id, 3));
         
-        Assert.Contains("Can only assign delivery partner to delivery orders", exception.Message);
+        Assert.Contains("Cannot manually assign delivery partner to pickup orders - vendor is automatically assigned", exception.Message);
     }
 
     [Fact]
@@ -496,6 +551,175 @@ public class OrderServiceTests
         Assert.NotNull(result);
         Assert.Equal(OrderStatus.Rejected, result.Status);
         Assert.Equal("Out of stock", result.RejectionReason);
+    }
+
+    [Fact]
+    public async Task CreateOrderAsync_WithDeliveryMethodAndAvailableDelivery_ShouldAssignVendorAsDeliveryPartner()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2, DeliveryAvailable = true };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create delivery order
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Delivery,
+            DeliveryAddress = "123 Test Street",
+            Notes = "Test order"
+        };
+
+        // Act
+        var result = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(FulfillmentMethod.Delivery, result.FulfillmentMethod);
+        Assert.Equal(2, result.DeliveryPartnerId); // Vendor ID should be assigned
+        Assert.Equal(10.00m, result.DeliveryFee); // Delivery fee for delivery
+    }
+
+    [Fact]
+    public async Task CreateOrderAsync_WithDeliveryMethodAndUnavailableDelivery_ShouldNotAssignDeliveryPartner()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2, DeliveryAvailable = false };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create delivery order
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Delivery,
+            DeliveryAddress = "123 Test Street",
+            Notes = "Test order"
+        };
+
+        // Act
+        var result = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(FulfillmentMethod.Delivery, result.FulfillmentMethod);
+        Assert.Null(result.DeliveryPartnerId); // No delivery partner should be assigned
+        Assert.Equal(10.00m, result.DeliveryFee); // Delivery fee for delivery
+    }
+
+    [Fact]
+    public async Task CreateMultiOrderAsync_WithPickupMethod_ShouldAssignVendorAsDeliveryPartner()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create pickup order
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Pickup,
+            Notes = "Test order"
+        };
+
+        // Act
+        var result = await _orderService.CreateMultiOrderAsync(1, createRequest);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result.Orders);
+        var order = result.Orders.First();
+        Assert.Equal(FulfillmentMethod.Pickup, order.FulfillmentMethod);
+        Assert.Equal(2, order.DeliveryPartnerId); // Vendor ID should be assigned
+        Assert.Equal(0.00m, order.DeliveryFee); // No delivery fee for pickup
     }
 
     [Fact]
