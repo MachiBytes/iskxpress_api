@@ -112,35 +112,35 @@
           "name": "Kape Banana",
           "price": 38,
           "section": "Products",
-          "category": "Hot Drinks",
+          "category": "Iced Drinks",
           "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE%20BANANA.png"
         },
         {
           "name": "Kape Choco-Nut",
           "price": 42,
           "section": "Products",
-          "category": "Hot Drinks",
+          "category": "Iced Drinks",
           "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE+CHOCO-NUT.png"
         },
         {
           "name": "Kape Seasalt",
           "price": 48,
           "section": "Products",
-          "category": "Hot Drinks",
+          "category": "Iced Drinks",
           "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE%20SEASALT.png"
         },
         {
           "name": "Kape Ube",
           "price": 42,
           "section": "Products",
-          "category": "Hot Drinks",
+          "category": "Iced Drinks",
           "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/KAPE%20UBE.png"
         },
         {
           "name": "Strawberry Latte",
           "price": 42,
           "section": "Products",
-          "category": "Hot Drinks",
+          "category": "Iced Drinks",
           "picture": "https://s3.ap-southeast-1.amazonaws.com/aki.iskxpress/product_pictures/STRAWBERRY%20LATTE.png"
         }
       ]
