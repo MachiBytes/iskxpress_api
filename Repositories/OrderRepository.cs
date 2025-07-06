@@ -19,6 +19,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.Stall)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
             .Where(o => o.UserId == userId);
 
         if (status.HasValue)
@@ -35,8 +36,10 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
         var query = _context.Orders
             .Include(o => o.User)
+            .Include(o => o.Stall)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
             .Where(o => o.StallId == stallId);
 
         if (status.HasValue)
@@ -56,6 +59,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.Stall)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
@@ -219,6 +223,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.DeliveryPartner)
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Product)
+                .ThenInclude(p => p.Picture)
             .FirstOrDefaultAsync(o => o.Id == orderId);
     }
 
@@ -229,6 +234,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.Stall)
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Product)
+                .ThenInclude(p => p.Picture)
             .FirstOrDefaultAsync(o => o.VendorOrderId == vendorOrderId);
     }
 
@@ -240,6 +246,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.DeliveryPartner)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
             .AsQueryable();
 
         if (hasDeliveryPartner.HasValue)
@@ -266,6 +273,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.DeliveryPartner)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
             .Where(o => o.StallId == stallId && o.DeliveryPartnerId != null)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
@@ -278,6 +286,7 @@ public class OrderRepository : GenericRepository<Order>, IOrderRepository
             .Include(o => o.Stall)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                    .ThenInclude(p => p.Picture)
             .Where(o => o.DeliveryPartnerId == deliveryPartnerId);
 
         if (isFinished.HasValue)

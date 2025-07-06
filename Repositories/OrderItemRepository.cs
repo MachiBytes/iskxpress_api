@@ -18,6 +18,7 @@ public class OrderItemRepository : GenericRepository<OrderItem>, IOrderItemRepos
         return await _context.OrderItems
             .Include(oi => oi.Order)
             .Include(oi => oi.Product)
+                .ThenInclude(p => p.Picture)
             .Where(oi => oi.OrderId == orderId)
             .OrderBy(oi => oi.Id)
             .ToListAsync();
@@ -28,6 +29,7 @@ public class OrderItemRepository : GenericRepository<OrderItem>, IOrderItemRepos
         return await _context.OrderItems
             .Include(oi => oi.Order)
             .Include(oi => oi.Product)
+                .ThenInclude(p => p.Picture)
             .Where(oi => oi.ProductId == productId)
             .OrderBy(oi => oi.Id)
             .ToListAsync();
@@ -38,6 +40,7 @@ public class OrderItemRepository : GenericRepository<OrderItem>, IOrderItemRepos
         return await _context.OrderItems
             .Include(oi => oi.Order)
             .Include(oi => oi.Product)
+                .ThenInclude(p => p.Picture)
             .OrderBy(oi => oi.Id)
             .ToListAsync();
     }
@@ -47,6 +50,7 @@ public class OrderItemRepository : GenericRepository<OrderItem>, IOrderItemRepos
         return await _context.OrderItems
             .Include(oi => oi.Order)
             .Include(oi => oi.Product)
+                .ThenInclude(p => p.Picture)
             .FirstOrDefaultAsync(oi => oi.Id == id);
     }
 } 
