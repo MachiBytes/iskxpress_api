@@ -583,6 +583,15 @@ public class OrderService : IOrderService
             throw new ArgumentException("Can only assign delivery partner to pending orders");
         }
 
+        // Check if delivery partner already has maximum ongoing orders (3)
+        var ongoingOrders = await _orderRepository.GetDeliveryPartnerOrdersAsync(deliveryPartnerId, isFinished: false);
+        var ongoingOrderCount = ongoingOrders.Count();
+        
+        if (ongoingOrderCount >= 3)
+        {
+            throw new ArgumentException($"Delivery partner already has {ongoingOrderCount} ongoing orders. Maximum allowed is 3.");
+        }
+
         order.DeliveryPartnerId = deliveryPartnerId;
         await _context.SaveChangesAsync();
 

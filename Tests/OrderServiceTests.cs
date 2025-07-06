@@ -723,6 +723,141 @@ public class OrderServiceTests
     }
 
     [Fact]
+    public async Task AssignDeliveryPartnerAsync_WithMaximumOngoingOrders_ShouldThrowException()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var deliveryPartner = new User { Id = 3, Name = "Test Delivery Partner", Email = "delivery@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2, DeliveryAvailable = false };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+
+        // Create 3 existing orders for the delivery partner
+        var existingOrders = new List<Order>
+        {
+            new Order { Id = 1, UserId = 1, StallId = 1, Status = OrderStatus.Pending, FulfillmentMethod = FulfillmentMethod.Delivery, DeliveryPartnerId = 3, TotalPrice = 10.00m, DeliveryFee = 10.00m, CreatedAt = DateTime.UtcNow },
+            new Order { Id = 2, UserId = 1, StallId = 1, Status = OrderStatus.Preparing, FulfillmentMethod = FulfillmentMethod.Delivery, DeliveryPartnerId = 3, TotalPrice = 10.00m, DeliveryFee = 10.00m, CreatedAt = DateTime.UtcNow },
+            new Order { Id = 3, UserId = 1, StallId = 1, Status = OrderStatus.ToDeliver, FulfillmentMethod = FulfillmentMethod.Delivery, DeliveryPartnerId = 3, TotalPrice = 10.00m, DeliveryFee = 10.00m, CreatedAt = DateTime.UtcNow }
+        };
+
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Users.AddAsync(deliveryPartner);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        _context.Orders.AddRange(existingOrders);
+        await _context.SaveChangesAsync();
+
+        // Create a new order without delivery partner
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Delivery,
+            DeliveryAddress = "123 Test Street",
+            Notes = "Test order"
+        };
+
+        var createdOrder = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _orderService.AssignDeliveryPartnerAsync(createdOrder.Id, 3));
+        
+        Assert.Contains("Delivery partner already has 3 ongoing orders", exception.Message);
+    }
+
+    [Fact]
+    public async Task AssignDeliveryPartnerAsync_WithLessThanMaximumOngoingOrders_ShouldSucceed()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var deliveryPartner = new User { Id = 3, Name = "Test Delivery Partner", Email = "delivery@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2, DeliveryAvailable = false };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+
+        // Create only 2 existing orders for the delivery partner
+        var existingOrders = new List<Order>
+        {
+            new Order { Id = 1, UserId = 1, StallId = 1, Status = OrderStatus.Pending, FulfillmentMethod = FulfillmentMethod.Delivery, DeliveryPartnerId = 3, TotalPrice = 10.00m, DeliveryFee = 10.00m, CreatedAt = DateTime.UtcNow },
+            new Order { Id = 2, UserId = 1, StallId = 1, Status = OrderStatus.Preparing, FulfillmentMethod = FulfillmentMethod.Delivery, DeliveryPartnerId = 3, TotalPrice = 10.00m, DeliveryFee = 10.00m, CreatedAt = DateTime.UtcNow }
+        };
+
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Users.AddAsync(deliveryPartner);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        _context.Orders.AddRange(existingOrders);
+        await _context.SaveChangesAsync();
+
+        // Create a new order without delivery partner
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Delivery,
+            DeliveryAddress = "123 Test Street",
+            Notes = "Test order"
+        };
+
+        var createdOrder = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Act
+        var result = await _orderService.AssignDeliveryPartnerAsync(createdOrder.Id, 3);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(3, result.DeliveryPartnerId);
+        Assert.Equal(OrderStatus.Pending, result.Status);
+    }
+
+    [Fact]
     public async Task RejectOrderAsync_WithEmptyReason_ShouldThrowException()
     {
         // Arrange
