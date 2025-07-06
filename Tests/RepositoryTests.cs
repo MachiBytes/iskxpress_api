@@ -242,7 +242,7 @@ public class RepositoryTests : IDisposable
         var stall = await CreateTestStall("Test Stall", vendor.Id);
         
         var order1 = new Order { UserId = user.Id, StallId = stall.Id, VendorOrderId = "VO001", Status = OrderStatus.Pending, FulfillmentMethod = FulfillmentMethod.Pickup, TotalPrice = 100 };
-        var order2 = new Order { UserId = user.Id, StallId = stall.Id, VendorOrderId = "VO002", Status = OrderStatus.ToPrepare, FulfillmentMethod = FulfillmentMethod.Delivery, TotalPrice = 200 };
+        var order2 = new Order { UserId = user.Id, StallId = stall.Id, VendorOrderId = "VO002", Status = OrderStatus.Preparing, FulfillmentMethod = FulfillmentMethod.Delivery, TotalPrice = 200 };
         var order3 = new Order { UserId = user.Id, StallId = stall.Id, VendorOrderId = "VO003", Status = OrderStatus.Pending, FulfillmentMethod = FulfillmentMethod.Pickup, TotalPrice = 150 };
         
         await _orderRepository.AddAsync(order1);
@@ -251,7 +251,7 @@ public class RepositoryTests : IDisposable
 
         // Act
         var pendingOrders = await _orderRepository.GetByStatusAsync(OrderStatus.Pending);
-        var toPrepareOrders = await _orderRepository.GetByStatusAsync(OrderStatus.ToPrepare);
+        var toPrepareOrders = await _orderRepository.GetByStatusAsync(OrderStatus.Preparing);
 
         // Assert
         pendingOrders.Should().HaveCount(2);

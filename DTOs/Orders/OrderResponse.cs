@@ -12,9 +12,11 @@ public class OrderResponse
     public FulfillmentMethod FulfillmentMethod { get; set; }
     public string? DeliveryAddress { get; set; }
     public string? Notes { get; set; }
+    public int? DeliveryPartnerId { get; set; }
     public decimal TotalSellingPrice { get; set; }
     public decimal DeliveryFee { get; set; }
     public decimal TotalPrice { get; set; }
+    public string? RejectionReason { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<OrderItemResponse> OrderItems { get; set; } = new List<OrderItemResponse>();
 }

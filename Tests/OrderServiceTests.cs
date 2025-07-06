@@ -328,4 +328,227 @@ public class OrderServiceTests
         var remainingCartItems = await _cartItemRepository.GetByUserIdAsync(1);
         Assert.Empty(remainingCartItems);
     }
+
+    [Fact]
+    public async Task AssignDeliveryPartnerAsync_WithValidOrder_ShouldAssignDeliveryPartner()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var deliveryPartner = new User { Id = 3, Name = "Test Delivery Partner", Email = "delivery@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Users.AddAsync(deliveryPartner);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create order first
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Delivery,
+            DeliveryAddress = "123 Test Street",
+            Notes = "Test order"
+        };
+
+        var createdOrder = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Act
+        var result = await _orderService.AssignDeliveryPartnerAsync(createdOrder.Id, 3);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(3, result.DeliveryPartnerId);
+        Assert.Equal(OrderStatus.Pending, result.Status);
+    }
+
+    [Fact]
+    public async Task AssignDeliveryPartnerAsync_WithPickupOrder_ShouldThrowException()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create pickup order
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Pickup,
+            Notes = "Test order"
+        };
+
+        var createdOrder = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _orderService.AssignDeliveryPartnerAsync(createdOrder.Id, 3));
+        
+        Assert.Contains("Can only assign delivery partner to delivery orders", exception.Message);
+    }
+
+    [Fact]
+    public async Task RejectOrderAsync_WithValidOrder_ShouldRejectOrder()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create order first
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Pickup,
+            Notes = "Test order"
+        };
+
+        var createdOrder = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Act
+        var result = await _orderService.RejectOrderAsync(createdOrder.Id, "Out of stock");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(OrderStatus.Rejected, result.Status);
+        Assert.Equal("Out of stock", result.RejectionReason);
+    }
+
+    [Fact]
+    public async Task RejectOrderAsync_WithEmptyReason_ShouldThrowException()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 1 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        // Create order first
+        var createRequest = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Pickup,
+            Notes = "Test order"
+        };
+
+        var createdOrder = await _orderService.CreateOrderAsync(1, createRequest);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _orderService.RejectOrderAsync(createdOrder.Id, ""));
+        
+        Assert.Contains("Rejection reason is required", exception.Message);
+    }
 } 

@@ -152,4 +152,52 @@ public class OrderController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    /// <summary>
+    /// Assigns a delivery partner to an order
+    /// </summary>
+    /// <param name="orderId">The order ID</param>
+    /// <param name="request">The delivery partner assignment request</param>
+    /// <returns>The updated order</returns>
+    [HttpPut("{orderId}/assign-delivery-partner")]
+    public async Task<ActionResult<OrderResponse>> AssignDeliveryPartner(int orderId, [FromBody] AssignDeliveryPartnerRequest request)
+    {
+        try
+        {
+            var order = await _orderService.AssignDeliveryPartnerAsync(orderId, request.DeliveryPartnerId);
+            return Ok(order);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Rejects an order with a reason
+    /// </summary>
+    /// <param name="orderId">The order ID</param>
+    /// <param name="request">The order rejection request</param>
+    /// <returns>The updated order</returns>
+    [HttpPut("{orderId}/reject")]
+    public async Task<ActionResult<OrderResponse>> RejectOrder(int orderId, [FromBody] RejectOrderRequest request)
+    {
+        try
+        {
+            var order = await _orderService.RejectOrderAsync(orderId, request.RejectionReason);
+            return Ok(order);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 } 

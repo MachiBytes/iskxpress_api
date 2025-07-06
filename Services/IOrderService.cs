@@ -11,4 +11,6 @@ public interface IOrderService
     Task<IEnumerable<OrderResponse>> GetStallOrdersAsync(int stallId, OrderStatus? status = null);
     Task<OrderResponse?> GetOrderAsync(int orderId);
     Task<OrderResponse> UpdateOrderStatusAsync(int orderId, OrderStatus newStatus);
+    Task<OrderResponse> AssignDeliveryPartnerAsync(int orderId, int deliveryPartnerId);
+    Task<OrderResponse> RejectOrderAsync(int orderId, string rejectionReason);
 } 

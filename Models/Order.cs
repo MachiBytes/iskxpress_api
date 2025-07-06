@@ -40,6 +40,8 @@ public class Order
     [Column(TypeName = "decimal(18,2)")]
     public decimal DeliveryFee { get; set; }
 
+    public string? RejectionReason { get; set; }
+
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -53,10 +55,11 @@ public class Order
 public enum OrderStatus
 {
     Pending,
-    ToPrepare,
+    Preparing,
     ToDeliver,
     ToReceive,
-    Accomplished
+    Accomplished,
+    Rejected
 }
 
 public enum FulfillmentMethod

@@ -239,11 +239,12 @@ public class OrderService : IOrderService
     {
         return currentStatus switch
         {
-            OrderStatus.Pending => newStatus == OrderStatus.ToPrepare,
-            OrderStatus.ToPrepare => newStatus == OrderStatus.ToDeliver || newStatus == OrderStatus.ToReceive,
+            OrderStatus.Pending => newStatus == OrderStatus.Preparing || newStatus == OrderStatus.Rejected,
+            OrderStatus.Preparing => newStatus == OrderStatus.ToDeliver || newStatus == OrderStatus.ToReceive || newStatus == OrderStatus.Rejected,
             OrderStatus.ToDeliver => newStatus == OrderStatus.ToReceive,
             OrderStatus.ToReceive => newStatus == OrderStatus.Accomplished,
             OrderStatus.Accomplished => false, // Cannot change from accomplished
+            OrderStatus.Rejected => false, // Cannot change from rejected
             _ => false
         };
     }
@@ -372,9 +373,11 @@ public class OrderService : IOrderService
             FulfillmentMethod = order.FulfillmentMethod,
             DeliveryAddress = order.DeliveryAddress,
             Notes = order.Notes,
+            DeliveryPartnerId = order.DeliveryPartnerId,
             TotalSellingPrice = totalSellingPrice,
             DeliveryFee = order.DeliveryFee,
             TotalPrice = order.TotalPrice,
+            RejectionReason = order.RejectionReason,
             CreatedAt = order.CreatedAt,
             OrderItems = order.OrderItems.Select(oi => new OrderItemResponse
             {
@@ -388,5 +391,63 @@ public class OrderService : IOrderService
                 TotalPrice = oi.PriceEach * oi.Quantity
             }).ToList()
         };
+    }
+
+    public async Task<OrderResponse> AssignDeliveryPartnerAsync(int orderId, int deliveryPartnerId)
+    {
+        var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        if (order == null)
+        {
+            throw new ArgumentException($"Order with ID {orderId} not found");
+        }
+
+        if (order.FulfillmentMethod != FulfillmentMethod.Delivery)
+        {
+            throw new ArgumentException("Can only assign delivery partner to delivery orders");
+        }
+
+        if (order.DeliveryPartnerId.HasValue)
+        {
+            throw new ArgumentException("Order already has a delivery partner assigned");
+        }
+
+        if (order.Status != OrderStatus.Pending)
+        {
+            throw new ArgumentException("Can only assign delivery partner to pending orders");
+        }
+
+        order.DeliveryPartnerId = deliveryPartnerId;
+        await _context.SaveChangesAsync();
+
+        // Return the updated order
+        var updatedOrder = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        return MapToOrderResponse(updatedOrder!);
+    }
+
+    public async Task<OrderResponse> RejectOrderAsync(int orderId, string rejectionReason)
+    {
+        var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        if (order == null)
+        {
+            throw new ArgumentException($"Order with ID {orderId} not found");
+        }
+
+        if (order.Status == OrderStatus.Accomplished || order.Status == OrderStatus.Rejected)
+        {
+            throw new ArgumentException($"Cannot reject order with status {order.Status}");
+        }
+
+        if (string.IsNullOrWhiteSpace(rejectionReason))
+        {
+            throw new ArgumentException("Rejection reason is required");
+        }
+
+        order.Status = OrderStatus.Rejected;
+        order.RejectionReason = rejectionReason;
+        await _context.SaveChangesAsync();
+
+        // Return the updated order
+        var updatedOrder = await _orderRepository.GetOrderWithItemsAsync(orderId);
+        return MapToOrderResponse(updatedOrder!);
     }
 } 
