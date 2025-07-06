@@ -23,6 +23,10 @@ public class Product
     public decimal PriceWithMarkup { get; set; }
 
     [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal PremiumUserPrice { get; set; }
+
+    [Required]
     [ForeignKey("Category")]
     public int CategoryId { get; set; }
 

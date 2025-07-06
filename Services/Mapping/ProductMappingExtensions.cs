@@ -16,6 +16,7 @@ public static class ProductMappingExtensions
             BasePrice = product.BasePrice,
             CalculatedMarkupPrice = product.PriceWithMarkup, // Use stored value instead of calculating
             PriceWithMarkup = product.PriceWithMarkup,
+            PremiumUserPrice = product.PremiumUserPrice,
             Availability = product.Availability,
             AvailabilityText = product.Availability.ToString(),
             CategoryId = product.CategoryId,
@@ -38,6 +39,7 @@ public static class ProductMappingExtensions
     {
         // Calculate prices using the same logic as ProductService
         var markupPrice = Math.Ceiling(request.BasePrice + (request.BasePrice * 0.10m));
+        var premiumPrice = Math.Round(markupPrice * 0.90m, 0); // 10% discount rounded to nearest whole number
         
         return new Product
         {
@@ -45,6 +47,7 @@ public static class ProductMappingExtensions
             PictureId = null, // Picture will be set via upload endpoint
             BasePrice = request.BasePrice,
             PriceWithMarkup = markupPrice,
+            PremiumUserPrice = premiumPrice,
             Availability = ProductAvailability.Available, // Default to available
             CategoryId = request.CategoryId,
             SectionId = request.SectionId

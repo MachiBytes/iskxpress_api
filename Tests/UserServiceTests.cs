@@ -32,7 +32,7 @@ public class UserServiceTests
             Id = userId,
             Name = "Test User",
             Email = "test@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.Vendor,
             ProfilePictureId = null
@@ -78,7 +78,7 @@ public class UserServiceTests
             Id = 1,
             Name = "Test User",
             Email = email,
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Microsoft,
             Role = UserRole.User
         };
@@ -129,7 +129,7 @@ public class UserServiceTests
             Id = 1,
             Name = createRequest.Name,
             Email = createRequest.Email,
-            Verified = false,
+            Premium = false,
             AuthProvider = createRequest.AuthProvider,
             Role = UserRole.User // Role inferred from Microsoft AuthProvider
         };
@@ -164,7 +164,7 @@ public class UserServiceTests
             Id = userId,
             Name = "Original User",
             Email = "original@example.com",
-            Verified = false,
+            Premium = false,
             AuthProvider = AuthProvider.Microsoft,
             Role = UserRole.User
         };
@@ -174,7 +174,7 @@ public class UserServiceTests
             Id = userId,
             Name = updateRequest.Name,
             Email = existingUser.Email,
-            Verified = existingUser.Verified,
+            Premium = existingUser.Premium,
             AuthProvider = existingUser.AuthProvider,
             Role = existingUser.Role,
             ProfilePictureId = updateRequest.ProfilePictureId
@@ -193,7 +193,7 @@ public class UserServiceTests
         result.Id.Should().Be(userId);
         result.Name.Should().Be(updateRequest.Name);
         result.Email.Should().Be(existingUser.Email);
-        result.Verified.Should().Be(existingUser.Verified);
+        result.Premium.Should().Be(existingUser.Premium);
         result.AuthProvider.Should().Be(existingUser.AuthProvider);
         result.Role.Should().Be(existingUser.Role);
         result.ProfilePictureId.Should().Be(updateRequest.ProfilePictureId);

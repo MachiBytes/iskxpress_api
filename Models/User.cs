@@ -30,7 +30,7 @@ public class User
     [Required]
     public string Email { get; set; } = string.Empty;
 
-    public bool Verified { get; set; } = false;
+    public bool Premium { get; set; } = false;
 
     [Required]
     public AuthProvider AuthProvider { get; set; }

@@ -126,6 +126,7 @@ public class ProductService : IProductService
             existingProduct.Name = request.Name;
             existingProduct.BasePrice = request.BasePrice;
             existingProduct.PriceWithMarkup = CalculateMarkupPrice(request.BasePrice);
+            existingProduct.PremiumUserPrice = CalculatePremiumPrice(CalculateMarkupPrice(request.BasePrice));
             existingProduct.CategoryId = request.CategoryId;
             existingProduct.SectionId = request.SectionId;
             // PictureId stays the same (can be updated via upload endpoint)
@@ -179,6 +180,14 @@ public class ProductService : IProductService
     private static decimal CalculateMarkupPrice(decimal basePrice)
     {
         return Math.Ceiling(basePrice + (basePrice * 0.10m));
+    }
+
+    /// <summary>
+    /// Calculates the premium user price by applying 10% discount to the markup price and rounding to nearest peso
+    /// </summary>
+    private static decimal CalculatePremiumPrice(decimal markupPrice)
+    {
+        return Math.Round(markupPrice * 0.90m, 0);
     }
 
     public async Task<ProductResponse?> UploadProductPictureAsync(int productId, IFormFile file)

@@ -39,5 +39,5 @@ public class FirebaseUserSyncRequest
     /// <summary>
     /// Whether the user's email is verified in Firebase
     /// </summary>
-    public bool Verified { get; set; } = true;
+    public bool EmailVerified { get; set; } = true;
 } 

@@ -86,7 +86,7 @@ public class DatabaseSeeder
             {
                 Name = "Mark Achiles Flores",
                 Email = "markachilesflores2004@gmail.com",
-                Verified = true,
+                Premium = true,
                 AuthProvider = AuthProvider.Google,
                 Role = UserRole.Vendor,
                 ProfilePictureId = null
@@ -96,7 +96,7 @@ public class DatabaseSeeder
             {
                 Name = "Sarah Johnson",
                 Email = "sarah.johnson@email.com",
-                Verified = true,
+                Premium = false,
                 AuthProvider = AuthProvider.Google,
                 Role = UserRole.Vendor,
                 ProfilePictureId = null
@@ -106,7 +106,7 @@ public class DatabaseSeeder
             {
                 Name = "Carlos Rodriguez",
                 Email = "carlos.rodriguez@email.com",
-                Verified = true,
+                Premium = true,
                 AuthProvider = AuthProvider.Google,
                 Role = UserRole.Vendor,
                 ProfilePictureId = null
@@ -116,7 +116,7 @@ public class DatabaseSeeder
             {
                 Name = "Emily Chen",
                 Email = "emily.chen@email.com",
-                Verified = true,
+                Premium = false,
                 AuthProvider = AuthProvider.Google,
                 Role = UserRole.Vendor,
                 ProfilePictureId = null
@@ -126,7 +126,7 @@ public class DatabaseSeeder
             {
                 Name = "John Doe",
                 Email = "john.doe@email.com",
-                Verified = true,
+                Premium = true,
                 AuthProvider = AuthProvider.Google,
                 Role = UserRole.Vendor,
                 ProfilePictureId = null
@@ -137,7 +137,7 @@ public class DatabaseSeeder
             {
                 Name = "Jane Smith",
                 Email = "jane.smith@email.com",
-                Verified = true,
+                Premium = true,
                 AuthProvider = AuthProvider.Microsoft,
                 Role = UserRole.User,
                 ProfilePictureId = null
@@ -147,7 +147,7 @@ public class DatabaseSeeder
             {
                 Name = "Michael Davis",
                 Email = "michael.davis@email.com",
-                Verified = true,
+                Premium = false,
                 AuthProvider = AuthProvider.Microsoft,
                 Role = UserRole.User,
                 ProfilePictureId = null
@@ -157,7 +157,7 @@ public class DatabaseSeeder
             {
                 Name = "Lisa Wilson",
                 Email = "lisa.wilson@email.com",
-                Verified = true,
+                Premium = true,
                 AuthProvider = AuthProvider.Microsoft,
                 Role = UserRole.User,
                 ProfilePictureId = null

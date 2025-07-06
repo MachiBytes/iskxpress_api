@@ -23,9 +23,9 @@ public class UserResponse
     public string Email { get; set; } = string.Empty;
 
     /// <summary>
-    /// Whether the user's email is verified
+    /// Whether the user has premium status
     /// </summary>
-    public bool Verified { get; set; }
+    public bool Premium { get; set; }
 
     /// <summary>
     /// Authentication provider used by the user

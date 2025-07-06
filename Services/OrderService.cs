@@ -36,6 +36,13 @@ public class OrderService : IOrderService
             throw new ArgumentException("Delivery address is required when fulfillment method is Delivery");
         }
 
+        // Load user
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            throw new ArgumentException($"User with ID {userId} not found");
+        }
+
         // Get cart items and validate they belong to the user
         var cartItems = await _cartItemRepository.GetByIdsAsync(request.CartItemIds);
         var userCartItems = cartItems.Where(ci => ci.UserId == userId).ToList();
@@ -128,9 +135,9 @@ public class OrderService : IOrderService
         {
             var product = products.First(p => p.Id == cartItem.ProductId);
             
-            // Always use PriceWithMarkup for products
-            decimal pricePerItem = product.PriceWithMarkup;
-            decimal commissionPerItem = product.PriceWithMarkup - product.BasePrice;
+            // Use PremiumUserPrice for premium users, otherwise PriceWithMarkup
+            decimal pricePerItem = user.Premium ? product.PremiumUserPrice : product.PriceWithMarkup;
+            decimal commissionPerItem = pricePerItem - product.BasePrice;
             
             var orderItem = new OrderItem
             {
@@ -146,7 +153,11 @@ public class OrderService : IOrderService
         }
 
         // Calculate delivery fee
-        decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+        decimal deliveryFee = 0.00m;
+        if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+        {
+            deliveryFee = user.Premium ? 0.00m : 10.00m;
+        }
 
         order.TotalPrice = totalPrice;
         order.TotalCommissionFee = totalCommissionFee;
@@ -295,6 +306,13 @@ public class OrderService : IOrderService
             throw new ArgumentException("Delivery address is required when fulfillment method is Delivery");
         }
 
+        // Load user
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            throw new ArgumentException($"User with ID {userId} not found");
+        }
+
         var cartItems = await _cartItemRepository.GetByIdsAsync(request.CartItemIds);
         var userCartItems = cartItems.Where(ci => ci.UserId == userId).ToList();
 
@@ -384,9 +402,9 @@ public class OrderService : IOrderService
                     {
                         var product = products.First(p => p.Id == cartItem.ProductId);
                         
-                        // Always use PriceWithMarkup for products
-                        decimal pricePerItem = product.PriceWithMarkup;
-                        decimal commissionPerItem = product.PriceWithMarkup - product.BasePrice;
+                        // Use PremiumUserPrice for premium users, otherwise PriceWithMarkup
+                        decimal pricePerItem = user.Premium ? product.PremiumUserPrice : product.PriceWithMarkup;
+                        decimal commissionPerItem = pricePerItem - product.BasePrice;
                         
                         var orderItem = new OrderItem
                         {
@@ -401,7 +419,11 @@ public class OrderService : IOrderService
                     }
 
                     // Calculate delivery fee
-                    decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+                    decimal deliveryFee = 0.00m;
+                    if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+                    {
+                        deliveryFee = user.Premium ? 0.00m : 10.00m;
+                    }
 
                     order.TotalPrice = totalPrice;
                     order.TotalCommissionFee = totalCommissionFee;
@@ -499,9 +521,9 @@ public class OrderService : IOrderService
                 {
                     var product = products.First(p => p.Id == cartItem.ProductId);
                     
-                    // Always use PriceWithMarkup for products
-                    decimal pricePerItem = product.PriceWithMarkup;
-                    decimal commissionPerItem = product.PriceWithMarkup - product.BasePrice;
+                    // Use PremiumUserPrice for premium users, otherwise PriceWithMarkup
+                    decimal pricePerItem = user.Premium ? product.PremiumUserPrice : product.PriceWithMarkup;
+                    decimal commissionPerItem = pricePerItem - product.BasePrice;
                     
                     var orderItem = new OrderItem
                     {
@@ -516,7 +538,11 @@ public class OrderService : IOrderService
                 }
 
                 // Calculate delivery fee
-                decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+                decimal deliveryFee = 0.00m;
+                if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+                {
+                    deliveryFee = user.Premium ? 0.00m : 10.00m;
+                }
 
                 order.TotalPrice = totalPrice;
                 order.TotalCommissionFee = totalCommissionFee;

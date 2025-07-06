@@ -117,9 +117,8 @@ public class UserService : IUserService
 
         if (existingUser != null)
         {
-            // Only update verification status for existing users, preserve name and picture
-            existingUser.Verified = firebaseUser.EmailVerified;
-            
+            // Only update email verification status for existing users, preserve name, picture, and premium status
+            // Note: Premium status is not synced from Firebase, only email verification
             await _userRepository.UpdateAsync(existingUser);
             result.UpdatedUsers++;
         }
@@ -140,7 +139,7 @@ public class UserService : IUserService
                 Name = firebaseUser.DisplayName ?? firebaseUser.Email,
                 Email = firebaseUser.Email,
                 // Firebase picture URL will need to be handled separately to create FileRecord
-                Verified = firebaseUser.EmailVerified,
+                Premium = false, // Premium status is not synced from Firebase
                 AuthProvider = authProvider.Value,
                 Role = MapUserRole(authProvider.Value)
             };
@@ -253,5 +252,20 @@ public class UserService : IUserService
         }
 
         return googleUsers;
+    }
+
+    public async Task<UserResponse?> TogglePremiumStatusAsync(int userId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            return null;
+        }
+
+        // Toggle premium status
+        user.Premium = !user.Premium;
+        
+        var updatedUser = await _userRepository.UpdateAsync(user);
+        return updatedUser.ToResponse();
     }
 } 

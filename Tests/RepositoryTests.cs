@@ -57,7 +57,7 @@ public class RepositoryTests : IDisposable
         {
             Name = "Test User",
             Email = "test@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User
         };
@@ -80,7 +80,7 @@ public class RepositoryTests : IDisposable
         {
             Name = "Test User",
             Email = "exists@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User
         };
@@ -99,9 +99,9 @@ public class RepositoryTests : IDisposable
     public async Task UserRepository_Should_Filter_By_Role()
     {
         // Arrange
-        var user1 = new User { Name = "User 1", Email = "user1@example.com", Verified = true, AuthProvider = AuthProvider.Google, Role = UserRole.User };
-        var user2 = new User { Name = "User 2", Email = "user2@example.com", Verified = true, AuthProvider = AuthProvider.Google, Role = UserRole.User };
-        var vendor1 = new User { Name = "Vendor 1", Email = "vendor1@example.com", Verified = true, AuthProvider = AuthProvider.Google, Role = UserRole.Vendor };
+        var user1 = new User { Name = "User 1", Email = "user1@example.com", Premium = true, AuthProvider = AuthProvider.Google, Role = UserRole.User };
+        var user2 = new User { Name = "User 2", Email = "user2@example.com", Premium = true, AuthProvider = AuthProvider.Google, Role = UserRole.User };
+        var vendor1 = new User { Name = "Vendor 1", Email = "vendor1@example.com", Premium = true, AuthProvider = AuthProvider.Google, Role = UserRole.Vendor };
         
         await _userRepository.AddAsync(user1);
         await _userRepository.AddAsync(user2);
@@ -321,7 +321,7 @@ public class RepositoryTests : IDisposable
         {
             Name = "Test User",
             Email = email,
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User
         };
@@ -334,7 +334,7 @@ public class RepositoryTests : IDisposable
         {
             Name = "Test Vendor",
             Email = email,
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.Vendor
         };

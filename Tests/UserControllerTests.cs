@@ -70,7 +70,7 @@ public class UserControllerTests
             Id = userId,
             Name = "Test User",
             Email = "test@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.Vendor
         };
@@ -113,7 +113,7 @@ public class UserControllerTests
             Id = 1,
             Name = "Test User",
             Email = email,
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Microsoft,
             Role = UserRole.User
         };
@@ -203,7 +203,7 @@ public class UserControllerTests
             Id = 1,
             Name = createRequest.Name,
             Email = createRequest.Email,
-            Verified = false,
+            Premium = false,
             AuthProvider = createRequest.AuthProvider,
             Role = UserRole.User // Role inferred from Microsoft AuthProvider
         };
@@ -238,7 +238,7 @@ public class UserControllerTests
             Id = userId,
             Name = updateRequest.Name,
             Email = "existing@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Microsoft,
             Role = UserRole.User,
             ProfilePictureId = updateRequest.ProfilePictureId

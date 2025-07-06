@@ -319,4 +319,33 @@ public class UserController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+
+    /// <summary>
+    /// Toggle premium status for a user
+    /// </summary>
+    /// <param name="id">The user ID</param>
+    /// <returns>Updated user details</returns>
+    /// <response code="200">Premium status toggled successfully</response>
+    /// <response code="404">User not found</response>
+    /// <response code="500">Internal server error</response>
+    [HttpPost("{id}/toggle-premium")]
+    [ProducesResponseType(typeof(UserResponse), 200)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
+    public async Task<ActionResult<UserResponse>> TogglePremiumStatus(int id)
+    {
+        try
+        {
+            var updatedUser = await _userService.TogglePremiumStatusAsync(id);
+            if (updatedUser == null)
+                return NotFound($"User with ID {id} not found");
+
+            return Ok(updatedUser);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error toggling premium status for user with ID {UserId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 } 

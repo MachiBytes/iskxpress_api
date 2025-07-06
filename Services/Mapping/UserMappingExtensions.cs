@@ -18,7 +18,7 @@ public static class UserMappingExtensions
             Id = user.Id,
             Name = user.Name,
             Email = user.Email,
-            Verified = user.Verified,
+            Premium = user.Premium,
             AuthProvider = user.AuthProvider,
             Role = user.Role,
             ProfilePictureId = user.ProfilePictureId,
@@ -35,7 +35,7 @@ public static class UserMappingExtensions
         {
             Name = request.Name,
             Email = request.Email,
-            Verified = false, // Default to false as requested
+            Premium = false, // Default to false as requested
             AuthProvider = request.AuthProvider,
             Role = MapUserRole(request.AuthProvider),
             ProfilePictureId = request.ProfilePictureId
@@ -74,7 +74,7 @@ public static class UserMappingExtensions
         {
             Name = request.Name,
             Email = request.Email,
-            Verified = request.Verified,
+            Premium = false, // Premium status is not synced from Firebase
             AuthProvider = authProvider,
             Role = role
             // Note: PictureURL from Firebase will need to be handled separately to create FileRecord
