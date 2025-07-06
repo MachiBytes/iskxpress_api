@@ -155,31 +155,31 @@ public class OrderService : IOrderService
         var providerName = _context.Database.ProviderName;
         if (providerName != "Microsoft.EntityFrameworkCore.InMemory")
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            await _orderRepository.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            // Remove cart items
+            foreach (var cartItem in stallCartItems)
             {
-                await _orderRepository.AddAsync(order);
-                await _context.SaveChangesAsync();
-
-                // Remove cart items
-                foreach (var cartItem in stallCartItems)
-                {
-                    await _cartItemRepository.DeleteAsync(cartItem.Id);
-                }
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                // Return the created order
-                var createdOrder = await _orderRepository.GetOrderWithItemsAsync(order.Id);
-                return MapToOrderResponse(createdOrder!);
+                await _cartItemRepository.DeleteAsync(cartItem.Id);
             }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
-            }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            // Return the created order
+            var createdOrder = await _orderRepository.GetOrderWithItemsAsync(order.Id);
+            return MapToOrderResponse(createdOrder!);
         }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
         else
         {
             // InMemory provider does not support transactions
