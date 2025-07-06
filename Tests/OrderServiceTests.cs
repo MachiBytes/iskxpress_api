@@ -48,7 +48,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -124,6 +125,10 @@ public class OrderServiceTests
     public async Task CreateOrderAsync_WithInvalidCartItemIds_ShouldThrowException()
     {
         // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com", Premium = false, AuthProvider = AuthProvider.Microsoft, Role = UserRole.User };
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
         var request = new CreateOrderRequest
         {
             CartItemIds = new List<int> { 999 }, // Non-existent cart item
@@ -155,7 +160,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.SoldOut // Unavailable
+            Availability = ProductAvailability.SoldOut, // Unavailable
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -211,7 +217,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -282,7 +289,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -352,7 +360,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -411,7 +420,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -467,7 +477,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -522,7 +533,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -579,7 +591,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -636,7 +649,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -693,7 +707,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 
@@ -752,7 +767,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
 
         // Create 3 existing orders for the delivery partner
@@ -820,7 +836,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
 
         // Create only 2 existing orders for the delivery partner
@@ -888,7 +905,8 @@ public class OrderServiceTests
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
-            Availability = ProductAvailability.Available
+            Availability = ProductAvailability.Available,
+            PremiumUserPrice = Math.Round(10.00m * 0.90m, 0)
         };
         var cartItem = new CartItem 
         { 

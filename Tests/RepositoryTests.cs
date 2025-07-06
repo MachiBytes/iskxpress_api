@@ -156,9 +156,9 @@ public class RepositoryTests : IDisposable
         var section1 = await CreateTestStallSection("Section 1", stall1.Id);
         var section2 = await CreateTestStallSection("Section 2", stall2.Id);
         
-        var product1 = new Product { Name = "Product 1", BasePrice = 100, PriceWithMarkup = 110, CategoryId = category1.Id, SectionId = section1.Id, StallId = stall1.Id };
-        var product2 = new Product { Name = "Product 2", BasePrice = 200, PriceWithMarkup = 220, CategoryId = category1.Id, SectionId = section1.Id, StallId = stall1.Id };
-        var product3 = new Product { Name = "Product 3", BasePrice = 300, PriceWithMarkup = 330, CategoryId = category2.Id, SectionId = section2.Id, StallId = stall2.Id };
+        var product1 = new Product { Name = "Product 1", BasePrice = 100, PriceWithMarkup = 110, PremiumUserPrice = 99, CategoryId = category1.Id, SectionId = section1.Id, StallId = stall1.Id };
+        var product2 = new Product { Name = "Product 2", BasePrice = 200, PriceWithMarkup = 220, PremiumUserPrice = 198, CategoryId = category1.Id, SectionId = section1.Id, StallId = stall1.Id };
+        var product3 = new Product { Name = "Product 3", BasePrice = 300, PriceWithMarkup = 330, PremiumUserPrice = 297, CategoryId = category2.Id, SectionId = section2.Id, StallId = stall2.Id };
         
         await _productRepository.AddAsync(product1);
         await _productRepository.AddAsync(product2);
@@ -375,6 +375,7 @@ public class RepositoryTests : IDisposable
             Name = name,
             BasePrice = 100,
             PriceWithMarkup = 110,
+            PremiumUserPrice = 99,
             CategoryId = categoryId,
             SectionId = sectionId,
             StallId = stallId

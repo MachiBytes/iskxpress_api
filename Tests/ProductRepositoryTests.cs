@@ -41,6 +41,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id,
@@ -88,6 +89,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 1", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -97,6 +99,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 2", 
             BasePrice = 20.00m,
             PriceWithMarkup = 22.00m,
+            PremiumUserPrice = Math.Round(22.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -137,6 +140,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 1", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -146,6 +150,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 2", 
             BasePrice = 20.00m,
             PriceWithMarkup = 22.00m,
+            PremiumUserPrice = Math.Round(22.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -186,6 +191,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 1", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -225,6 +231,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Apple Pie", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -234,6 +241,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Apple Juice", 
             BasePrice = 5.00m,
             PriceWithMarkup = 6.00m,
+            PremiumUserPrice = Math.Round(6.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -243,6 +251,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Orange Juice", 
             BasePrice = 5.00m,
             PriceWithMarkup = 6.00m,
+            PremiumUserPrice = Math.Round(6.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -283,6 +292,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Cheap Product", 
             BasePrice = 5.00m,
             PriceWithMarkup = 6.00m,
+            PremiumUserPrice = Math.Round(6.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -292,6 +302,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Expensive Product", 
             BasePrice = 20.00m,
             PriceWithMarkup = 22.00m,
+            PremiumUserPrice = Math.Round(22.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -333,6 +344,7 @@ public class ProductRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -379,6 +391,8 @@ public class ProductRepositoryTests : IDisposable
         {
             Name = "Test Product",
             BasePrice = 10.00m,
+            PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -418,6 +432,8 @@ public class ProductRepositoryTests : IDisposable
         {
             Name = "Test Product",
             BasePrice = 10.00m,
+            PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -459,6 +475,8 @@ public class ProductRepositoryTests : IDisposable
         {
             Name = "Original Product",
             BasePrice = 10.00m,
+            PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -470,12 +488,16 @@ public class ProductRepositoryTests : IDisposable
         // Act
         product.Name = "Updated Product";
         product.BasePrice = 15.00m;
+        product.PriceWithMarkup = 16.00m;
+        product.PremiumUserPrice = Math.Round(16.00m * 0.90m, 0);
         var result = await _repository.UpdateAsync(product);
 
         // Assert
         result.Should().NotBeNull();
         result.Name.Should().Be("Updated Product");
         result.BasePrice.Should().Be(15.00m);
+        result.PriceWithMarkup.Should().Be(16.00m);
+        result.PremiumUserPrice.Should().Be(Math.Round(16.00m * 0.90m, 0));
     }
 
     [Fact]
@@ -504,6 +526,8 @@ public class ProductRepositoryTests : IDisposable
         {
             Name = "Product to Delete",
             BasePrice = 10.00m,
+            PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -552,6 +576,8 @@ public class ProductRepositoryTests : IDisposable
         {
             Name = "Product 1",
             BasePrice = 10.00m,
+            PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -561,6 +587,8 @@ public class ProductRepositoryTests : IDisposable
         {
             Name = "Product 2",
             BasePrice = 15.00m,
+            PriceWithMarkup = 16.00m,
+            PremiumUserPrice = Math.Round(16.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id

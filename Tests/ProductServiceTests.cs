@@ -56,7 +56,8 @@ public class ProductServiceTests
             CategoryId = category.Id,
             Category = category,
             StallId = stall.Id,
-            Stall = stall
+            Stall = stall,
+            PremiumUserPrice = Math.Round(15.00m * 0.90m, 0)
         };
 
         _mockProductRepository.Setup(repo => repo.GetByIdWithDetailsAsync(productId))
@@ -95,8 +96,8 @@ public class ProductServiceTests
         var stallId = 1;
         var products = new List<Product>
         {
-            new Product { Id = 1, Name = "Product 1", BasePrice = 10.00m },
-            new Product { Id = 2, Name = "Product 2", BasePrice = 15.00m }
+            new Product { Id = 1, Name = "Product 1", BasePrice = 10.00m, PriceWithMarkup = 15.00m, PremiumUserPrice = 14.00m },
+            new Product { Id = 2, Name = "Product 2", BasePrice = 15.00m, PriceWithMarkup = 18.00m, PremiumUserPrice = 16.00m }
         };
 
         _mockProductRepository.Setup(repo => repo.GetByStallIdAsync(stallId))
@@ -118,8 +119,8 @@ public class ProductServiceTests
         var sectionId = 1;
         var products = new List<Product>
         {
-            new Product { Id = 1, Name = "Product 1", BasePrice = 10.00m },
-            new Product { Id = 2, Name = "Product 2", BasePrice = 15.00m }
+            new Product { Id = 1, Name = "Product 1", BasePrice = 10.00m, PriceWithMarkup = 15.00m, PremiumUserPrice = 14.00m },
+            new Product { Id = 2, Name = "Product 2", BasePrice = 15.00m, PriceWithMarkup = 18.00m, PremiumUserPrice = 16.00m }
         };
 
         _mockProductRepository.Setup(repo => repo.GetBySectionIdAsync(sectionId))
@@ -141,8 +142,8 @@ public class ProductServiceTests
         var stallId = 1;
         var products = new List<Product>
         {
-            new Product { Id = 1, Name = "Available Product", BasePrice = 10.00m, Availability = ProductAvailability.Available },
-            new Product { Id = 2, Name = "Sold Out Product", BasePrice = 15.00m, Availability = ProductAvailability.SoldOut }
+            new Product { Id = 1, Name = "Available Product", BasePrice = 10.00m, PriceWithMarkup = 15.00m, PremiumUserPrice = 14.00m, Availability = ProductAvailability.Available },
+            new Product { Id = 2, Name = "Sold Out Product", BasePrice = 15.00m, PriceWithMarkup = 18.00m, PremiumUserPrice = 16.00m, Availability = ProductAvailability.SoldOut }
         };
 
         _mockProductRepository.Setup(repo => repo.GetByStallIdAsync(stallId))
@@ -183,7 +184,8 @@ public class ProductServiceTests
             Availability = ProductAvailability.Available,
             CategoryId = request.CategoryId,
             SectionId = request.SectionId,
-            StallId = stallId
+            StallId = stallId,
+            PremiumUserPrice = Math.Round(15.00m * 0.90m, 0)
         };
 
         _mockStallRepository.Setup(repo => repo.GetByIdAsync(stallId))
@@ -239,6 +241,8 @@ public class ProductServiceTests
             Id = productId,
             Name = "Existing Product",
             BasePrice = 10.00m,
+            PriceWithMarkup = 15.00m,
+            PremiumUserPrice = 14.00m,
             StallId = stallId
         };
 
@@ -292,7 +296,7 @@ public class ProductServiceTests
     {
         // Arrange
         var productId = 1;
-        var product = new Product { Id = productId };
+        var product = new Product { Id = productId, PriceWithMarkup = 15.00m, PremiumUserPrice = 14.00m };
 
         _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId))
             .ReturnsAsync(product);

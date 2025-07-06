@@ -52,6 +52,7 @@ public class CartItemRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -101,6 +102,7 @@ public class CartItemRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -150,6 +152,7 @@ public class CartItemRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -199,6 +202,7 @@ public class CartItemRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -244,6 +248,7 @@ public class CartItemRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id

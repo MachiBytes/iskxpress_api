@@ -21,6 +21,7 @@ public class ProductMappingExtensionsTests
             Name = "Test Product",
             BasePrice = 12.99m,
             PriceWithMarkup = 15.99m, // Stored value (calculated as 12.99 + 10% = 14.289 -> 15.99)
+            PremiumUserPrice = Math.Round(15.99m * 0.90m, 0),
             Availability = ProductAvailability.Available,
             CategoryId = category.Id,
             Category = category,
@@ -70,6 +71,7 @@ public class ProductMappingExtensionsTests
             Name = "Test Product",
             BasePrice = basePrice,
             PriceWithMarkup = storedMarkupPrice, // Use stored values instead of calculating
+            PremiumUserPrice = Math.Round(storedMarkupPrice * 0.90m, 0),
             Availability = ProductAvailability.Available,
             Category = category,
             Section = section
@@ -95,6 +97,7 @@ public class ProductMappingExtensionsTests
             Name = "Sold Out Product",
             BasePrice = 15.99m,
             PriceWithMarkup = 18.99m, // Stored value
+            PremiumUserPrice = Math.Round(18.99m * 0.90m, 0),
             Availability = ProductAvailability.SoldOut,
             Category = new Category { Name = "Test Category" },
             Section = new StallSection { Name = "Test Section" }
@@ -118,6 +121,7 @@ public class ProductMappingExtensionsTests
             Name = "Test Product",
             BasePrice = 12.99m,
             PriceWithMarkup = 15.99m, // Stored value
+            PremiumUserPrice = Math.Round(15.99m * 0.90m, 0),
             Availability = ProductAvailability.Available,
             Category = null, // Null navigation property
             Section = null   // Null navigation property
@@ -151,6 +155,7 @@ public class ProductMappingExtensionsTests
             Picture = picture,
             BasePrice = 12.99m,
             PriceWithMarkup = 15.99m,
+            PremiumUserPrice = Math.Round(15.99m * 0.90m, 0),
             Availability = ProductAvailability.Available,
             CategoryId = category.Id,
             Category = category,
@@ -194,6 +199,7 @@ public class ProductMappingExtensionsTests
             Picture = null,
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m, // Stored value
+            PremiumUserPrice = Math.Round(12.00m * 0.90m, 0),
             Availability = ProductAvailability.Available,
             Category = new Category { Name = "Test Category" },
             Section = new StallSection { Name = "Test Section" },
@@ -222,6 +228,7 @@ public class ProductMappingExtensionsTests
             Name = "Edge Case Product",
             BasePrice = basePrice,
             PriceWithMarkup = storedMarkupPrice, // Use stored values
+            PremiumUserPrice = Math.Round(storedMarkupPrice * 0.90m, 0),
             Availability = ProductAvailability.Available
         };
 
@@ -242,6 +249,7 @@ public class ProductMappingExtensionsTests
             Name = "Free Product",
             BasePrice = 0.00m,
             PriceWithMarkup = 0.00m, // Stored value
+            PremiumUserPrice = Math.Round(0.00m * 0.90m, 0),
             Availability = ProductAvailability.Available,
             Category = new Category { Name = "Free Items" },
             Section = new StallSection { Name = "Promotions" }

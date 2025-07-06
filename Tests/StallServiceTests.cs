@@ -46,7 +46,7 @@ public class StallServiceTests : IDisposable
             Name = "Vendor 1", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var vendor2 = new User 
         { 
@@ -54,7 +54,7 @@ public class StallServiceTests : IDisposable
             Name = "Vendor 2", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall1 = new Stall 
         { 
@@ -96,7 +96,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall 
         { 
@@ -167,7 +167,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall 
         { 
@@ -200,7 +200,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
 
         _context.Users.Add(vendor);
@@ -232,7 +232,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var existingStall = new Stall 
         { 
@@ -269,7 +269,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall
         {
@@ -314,7 +314,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall
         {
@@ -354,7 +354,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall
         {
@@ -388,7 +388,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall
         {
@@ -420,7 +420,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall
         {
@@ -455,7 +455,7 @@ public class StallServiceTests : IDisposable
             Name = "Test Vendor", 
             Role = UserRole.Vendor, 
             AuthProvider = AuthProvider.Google,
-            Verified = true
+            Premium = true
         };
         var stall = new Stall
         {

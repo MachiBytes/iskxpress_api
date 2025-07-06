@@ -68,7 +68,7 @@ public class DatabaseMigrationTests : IDisposable
         {
             Name = "Test User",
             Email = "test@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User,
             ProfilePictureId = null
@@ -95,7 +95,7 @@ public class DatabaseMigrationTests : IDisposable
         {
             Name = "Vendor User",
             Email = "vendor@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.Vendor
         };
@@ -141,6 +141,7 @@ public class DatabaseMigrationTests : IDisposable
             PictureId = null,
             BasePrice = 100.00m,
             PriceWithMarkup = 110.00m,
+            PremiumUserPrice = Math.Round(110.00m * 0.90m, 0),
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -259,7 +260,7 @@ public class DatabaseMigrationTests : IDisposable
         {
             Name = "User 1",
             Email = "duplicate@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User
         };
@@ -268,7 +269,7 @@ public class DatabaseMigrationTests : IDisposable
         {
             Name = "User 2",
             Email = "duplicate@example.com", // Same email
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Microsoft,
             Role = UserRole.User
         };
@@ -301,7 +302,7 @@ public class DatabaseMigrationTests : IDisposable
         {
             Name = "Test User",
             Email = $"user_{Guid.NewGuid()}@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.User
         };
@@ -312,17 +313,17 @@ public class DatabaseMigrationTests : IDisposable
 
     private User CreateTestVendor()
     {
-        var vendor = new User
+        var user = new User
         {
             Name = "Test Vendor",
             Email = $"vendor_{Guid.NewGuid()}@example.com",
-            Verified = true,
+            Premium = true,
             AuthProvider = AuthProvider.Google,
             Role = UserRole.Vendor
         };
-        _context.Users.Add(vendor);
+        _context.Users.Add(user);
         _context.SaveChanges();
-        return vendor;
+        return user;
     }
 
     private Stall CreateTestStall(int vendorId)
@@ -365,6 +366,7 @@ public class DatabaseMigrationTests : IDisposable
             Name = name,
             BasePrice = 100.00m,
             PriceWithMarkup = 110.00m,
+            PremiumUserPrice = Math.Round(110.00m * 0.90m, 0),
             CategoryId = categoryId,
             SectionId = sectionId,
             StallId = stallId
