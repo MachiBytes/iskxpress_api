@@ -13,25 +13,19 @@ public class OrderService : IOrderService
     private readonly ICartItemRepository _cartItemRepository;
     private readonly IProductRepository _productRepository;
     private readonly IStallRepository _stallRepository;
-    private readonly IDeliveryRequestRepository _deliveryRequestRepository;
-    private readonly IOrderConfirmationRepository _orderConfirmationRepository;
 
     public OrderService(
         IskExpressDbContext context,
         IOrderRepository orderRepository,
         ICartItemRepository cartItemRepository,
         IProductRepository productRepository,
-        IStallRepository stallRepository,
-        IDeliveryRequestRepository deliveryRequestRepository,
-        IOrderConfirmationRepository orderConfirmationRepository)
+        IStallRepository stallRepository)
     {
         _context = context;
         _orderRepository = orderRepository;
         _cartItemRepository = cartItemRepository;
         _productRepository = productRepository;
         _stallRepository = stallRepository;
-        _deliveryRequestRepository = deliveryRequestRepository;
-        _orderConfirmationRepository = orderConfirmationRepository;
     }
 
     public async Task<OrderResponse> CreateOrderAsync(int userId, CreateOrderRequest request)
@@ -149,6 +143,7 @@ public class OrderService : IOrderService
         decimal totalPrice = totalSellingPrice + deliveryFee;
 
         order.TotalPrice = totalPrice;
+        order.DeliveryFee = deliveryFee;
         order.OrderItems = orderItems;
 
         // Save order and remove cart items in a transaction
@@ -232,102 +227,12 @@ public class OrderService : IOrderService
             throw new ArgumentException($"Invalid status transition from {order.Status} to {newStatus}");
         }
 
-        // Handle special cases for status changes
-        if (newStatus == OrderStatus.ToReceive)
-        {
-            // Create order confirmation for user
-            await CreateOrderConfirmationAsync(orderId);
-        }
-
         order.Status = newStatus;
         await _context.SaveChangesAsync();
 
         // Return the updated order
         var updatedOrder = await _orderRepository.GetOrderWithItemsAsync(orderId);
         return MapToOrderResponse(updatedOrder!);
-    }
-
-    public async Task<OrderConfirmationResponse> ConfirmOrderDeliveryAsync(int orderId)
-    {
-        var confirmation = await _orderConfirmationRepository.GetByOrderIdAsync(orderId);
-        if (confirmation == null)
-        {
-            throw new ArgumentException($"No confirmation request found for order {orderId}");
-        }
-
-        if (confirmation.IsConfirmed || confirmation.IsAutoConfirmed)
-        {
-            throw new ArgumentException("Order has already been confirmed");
-        }
-
-        confirmation.IsConfirmed = true;
-        confirmation.ConfirmedAt = DateTime.UtcNow;
-
-        // Update order status to accomplished
-        var order = await _orderRepository.GetOrderWithItemsAsync(orderId);
-        if (order != null)
-        {
-            order.Status = OrderStatus.Accomplished;
-        }
-
-        await _context.SaveChangesAsync();
-
-        return new OrderConfirmationResponse
-        {
-            Id = confirmation.Id,
-            OrderId = confirmation.OrderId,
-            CreatedAt = confirmation.CreatedAt,
-            ConfirmationDeadline = confirmation.ConfirmationDeadline,
-            IsConfirmed = confirmation.IsConfirmed,
-            ConfirmedAt = confirmation.ConfirmedAt,
-            IsAutoConfirmed = confirmation.IsAutoConfirmed,
-            AutoConfirmedAt = confirmation.AutoConfirmedAt
-        };
-    }
-
-    public async Task ProcessAutoConfirmationsAsync()
-    {
-        var pendingConfirmations = await _orderConfirmationRepository.GetPendingAutoConfirmationsAsync();
-        
-        foreach (var confirmation in pendingConfirmations)
-        {
-            confirmation.IsAutoConfirmed = true;
-            confirmation.AutoConfirmedAt = DateTime.UtcNow;
-
-            // Update order status to accomplished
-            var order = await _orderRepository.GetOrderWithItemsAsync(confirmation.OrderId);
-            if (order != null)
-            {
-                order.Status = OrderStatus.Accomplished;
-            }
-        }
-
-        if (pendingConfirmations.Any())
-        {
-            await _context.SaveChangesAsync();
-        }
-    }
-
-    private async Task CreateOrderConfirmationAsync(int orderId)
-    {
-        // Check if confirmation already exists
-        var existingConfirmation = await _orderConfirmationRepository.GetByOrderIdAsync(orderId);
-        if (existingConfirmation != null)
-        {
-            return; // Confirmation already exists
-        }
-
-        var confirmation = new OrderConfirmation
-        {
-            OrderId = orderId,
-            CreatedAt = DateTime.UtcNow,
-            ConfirmationDeadline = DateTime.UtcNow.AddMinutes(5), // 5 minutes deadline
-            IsConfirmed = false,
-            IsAutoConfirmed = false
-        };
-
-        await _orderConfirmationRepository.AddAsync(confirmation);
-        await _context.SaveChangesAsync();
     }
 
     private static bool IsValidStatusTransition(OrderStatus currentStatus, OrderStatus newStatus, FulfillmentMethod fulfillmentMethod)
@@ -426,6 +331,7 @@ public class OrderService : IOrderService
                 decimal totalPrice = totalSellingPrice + deliveryFee;
 
                 order.TotalPrice = totalPrice;
+                order.DeliveryFee = deliveryFee;
                 order.OrderItems = orderItems;
 
                 await _orderRepository.AddAsync(order);
@@ -455,7 +361,6 @@ public class OrderService : IOrderService
     {
         // Calculate pricing breakdown
         decimal totalSellingPrice = order.OrderItems.Sum(oi => oi.PriceEach * oi.Quantity);
-        decimal deliveryFee = order.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
         
         return new OrderResponse
         {
@@ -468,7 +373,7 @@ public class OrderService : IOrderService
             DeliveryAddress = order.DeliveryAddress,
             Notes = order.Notes,
             TotalSellingPrice = totalSellingPrice,
-            DeliveryFee = deliveryFee,
+            DeliveryFee = order.DeliveryFee,
             TotalPrice = order.TotalPrice,
             CreatedAt = order.CreatedAt,
             OrderItems = order.OrderItems.Select(oi => new OrderItemResponse

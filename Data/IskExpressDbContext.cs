@@ -10,7 +10,6 @@ public class IskExpressDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
-    public DbSet<Delivery> Deliveries { get; set; }
     public DbSet<Stall> Stalls { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<StallSection> StallSections { get; set; }
@@ -19,8 +18,6 @@ public class IskExpressDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<FileRecord> Files { get; set; }
-    public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
-    public DbSet<OrderConfirmation> OrderConfirmations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -197,40 +194,6 @@ public class IskExpressDbContext : DbContext
 
         modelBuilder.Entity<Order>()
             .Property(e => e.FulfillmentMethod)
-            .HasConversion<string>();
-
-        // Configure DeliveryRequest entity
-        modelBuilder.Entity<DeliveryRequest>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.HasOne(dr => dr.Order)
-                .WithMany()
-                .HasForeignKey(dr => dr.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasOne(dr => dr.AssignedDeliveryPartner)
-                .WithMany()
-                .HasForeignKey(dr => dr.AssignedDeliveryPartnerId)
-                .OnDelete(DeleteBehavior.SetNull);
-        });
-
-        // Configure OrderConfirmation entity
-        modelBuilder.Entity<OrderConfirmation>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-
-            entity.HasOne(oc => oc.Order)
-                .WithMany()
-                .HasForeignKey(oc => oc.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            entity.HasIndex(e => e.OrderId).IsUnique(); // One confirmation per order
-        });
-
-        // Configure enum conversions for new entities
-        modelBuilder.Entity<DeliveryRequest>()
-            .Property(e => e.Status)
             .HasConversion<string>();
     }
 } 

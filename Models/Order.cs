@@ -37,6 +37,10 @@ public class Order
     public decimal TotalPrice { get; set; }
 
     [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal DeliveryFee { get; set; }
+
+    [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // Navigation properties

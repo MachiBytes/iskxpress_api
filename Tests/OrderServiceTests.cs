@@ -16,9 +16,6 @@ public class OrderServiceTests
     private readonly ICartItemRepository _cartItemRepository;
     private readonly IProductRepository _productRepository;
     private readonly IStallRepository _stallRepository;
-    private readonly IDeliveryRequestRepository _deliveryRequestRepository;
-    private readonly IOrderConfirmationRepository _orderConfirmationRepository;
-
     public OrderServiceTests()
     {
         var options = new DbContextOptionsBuilder<IskExpressDbContext>()
@@ -30,9 +27,7 @@ public class OrderServiceTests
         _cartItemRepository = new CartItemRepository(_context);
         _productRepository = new ProductRepository(_context);
         _stallRepository = new StallRepository(_context);
-        _deliveryRequestRepository = new DeliveryRequestRepository(_context);
-        _orderConfirmationRepository = new OrderConfirmationRepository(_context);
-        _orderService = new OrderService(_context, _orderRepository, _cartItemRepository, _productRepository, _stallRepository, _deliveryRequestRepository, _orderConfirmationRepository);
+        _orderService = new OrderService(_context, _orderRepository, _cartItemRepository, _productRepository, _stallRepository);
     }
 
     [Fact]
@@ -252,7 +247,9 @@ public class OrderServiceTests
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Equal(FulfillmentMethod.Delivery, result.FulfillmentMethod);
         Assert.Equal("123 Test Street, Test City", result.DeliveryAddress);
-        Assert.Equal(30.00m, result.TotalPrice); // Total Selling Price (2 * 10.00 = 20.00) + Delivery Fee (10.00) = 30.00
+        Assert.Equal(20.00m, result.TotalSellingPrice); // Total Selling Price (2 * 10.00 = 20.00)
+        Assert.Equal(10.00m, result.DeliveryFee); // Delivery Fee (10.00)
+        Assert.Equal(30.00m, result.TotalPrice); // Total Price (20.00 + 10.00 = 30.00)
         Assert.Single(result.OrderItems);
         Assert.Equal("Test Product", result.OrderItems[0].ProductName);
         Assert.Equal(2, result.OrderItems[0].Quantity);
@@ -318,7 +315,9 @@ public class OrderServiceTests
         Assert.Equal("Test Stall", result.StallName);
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Equal(FulfillmentMethod.Pickup, result.FulfillmentMethod);
-        Assert.Equal(20.00m, result.TotalPrice); // Total Selling Price (2 * 10.00 = 20.00) + Delivery Fee (0.00) = 20.00
+        Assert.Equal(20.00m, result.TotalSellingPrice); // Total Selling Price (2 * 10.00 = 20.00)
+        Assert.Equal(0.00m, result.DeliveryFee); // Delivery Fee (0.00 for pickup)
+        Assert.Equal(20.00m, result.TotalPrice); // Total Price (20.00 + 0.00 = 20.00)
         Assert.Single(result.OrderItems);
         Assert.Equal("Test Product", result.OrderItems[0].ProductName);
         Assert.Equal(2, result.OrderItems[0].Quantity);

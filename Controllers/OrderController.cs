@@ -152,27 +152,4 @@ public class OrderController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-    /// <summary>
-    /// Confirms order delivery by the user
-    /// </summary>
-    /// <param name="orderId">The order ID</param>
-    /// <returns>The order confirmation details</returns>
-    [HttpPost("{orderId}/confirm")]
-    public async Task<ActionResult<OrderConfirmationResponse>> ConfirmOrderDelivery(int orderId)
-    {
-        try
-        {
-            var confirmation = await _orderService.ConfirmOrderDeliveryAsync(orderId);
-            return Ok(confirmation);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 } 
