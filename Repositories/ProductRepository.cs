@@ -117,10 +117,10 @@ public class ProductRepository : GenericRepository<Product>, IProductRepository
                 .ThenInclude(s => s.Vendor)
             .Include(p => p.Stall)
                 .ThenInclude(s => s.Picture)
-            .Where(p => p.PriceWithDelivery >= minPrice && p.PriceWithDelivery <= maxPrice)
+            .Where(p => p.PriceWithMarkup >= minPrice && p.PriceWithMarkup <= maxPrice)
             .ToListAsync();
         
-        return products.OrderBy(p => p.PriceWithDelivery);
+        return products.OrderBy(p => p.PriceWithMarkup);
     }
 
     public async Task<IEnumerable<Product>> GetAllWithDetailsAsync()

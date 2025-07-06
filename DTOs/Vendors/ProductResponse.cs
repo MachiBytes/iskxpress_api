@@ -11,7 +11,6 @@ public class ProductResponse
     public decimal BasePrice { get; set; }
     public decimal CalculatedMarkupPrice { get; set; }
     public decimal PriceWithMarkup { get; set; }
-    public decimal PriceWithDelivery { get; set; }
     public ProductAvailability Availability { get; set; }
     public string AvailabilityText { get; set; } = string.Empty;
     public int CategoryId { get; set; }

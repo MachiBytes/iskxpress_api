@@ -129,7 +129,6 @@ public class CartService : ICartService
             ProductName = cartItem.Product.Name,
             ProductBasePrice = cartItem.Product.BasePrice,
             ProductPriceWithMarkup = cartItem.Product.PriceWithMarkup,
-            ProductPriceWithDelivery = cartItem.Product.PriceWithDelivery,
             ProductAvailability = cartItem.Product.Availability,
             ProductPictureUrl = cartItem.Product.Picture?.ObjectUrl,
             

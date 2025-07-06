@@ -210,7 +210,6 @@ public class OrderServiceTests
             Id = 1, 
             Name = "Test Product", 
             PriceWithMarkup = 10.00m,
-            PriceWithDelivery = 15.00m, // Delivery price is higher
             CategoryId = 1,
             SectionId = 1,
             StallId = 1,
@@ -253,12 +252,12 @@ public class OrderServiceTests
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Equal(FulfillmentMethod.Delivery, result.FulfillmentMethod);
         Assert.Equal("123 Test Street, Test City", result.DeliveryAddress);
-        Assert.Equal(30.00m, result.TotalPrice); // 2 * 15.00 (delivery pricing)
+        Assert.Equal(30.00m, result.TotalPrice); // 2 * 10.00 (markup pricing) + 10.00 (delivery fee per stall)
         Assert.Single(result.OrderItems);
         Assert.Equal("Test Product", result.OrderItems[0].ProductName);
         Assert.Equal(2, result.OrderItems[0].Quantity);
-        Assert.Equal(15.00m, result.OrderItems[0].PriceEach); // Should use delivery price
-        Assert.Equal(30.00m, result.OrderItems[0].TotalPrice);
+        Assert.Equal(10.00m, result.OrderItems[0].PriceEach); // Should use markup price
+        Assert.Equal(20.00m, result.OrderItems[0].TotalPrice);
 
         // Verify cart items were removed
         var remainingCartItems = await _cartItemRepository.GetByUserIdAsync(1);

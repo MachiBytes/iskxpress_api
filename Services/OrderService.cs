@@ -107,7 +107,7 @@ public class OrderService : IOrderService
         // Handle delivery partner assignment based on stall availability
         if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
         {
-            if (stall.HasDeliveryPartner && stall.DeliveryAvailable)
+            if (stall.hasDelivery && stall.DeliveryAvailable)
             {
                 // Stall has delivery partner available - assign immediately
                 // Note: In a real implementation, you might want to assign to a specific partner
@@ -128,10 +128,8 @@ public class OrderService : IOrderService
         {
             var product = products.First(p => p.Id == cartItem.ProductId);
             
-            // Use appropriate pricing based on fulfillment method
-            decimal pricePerItem = request.FulfillmentMethod == FulfillmentMethod.Delivery 
-                ? product.PriceWithDelivery 
-                : product.PriceWithMarkup;
+            // Always use PriceWithMarkup for products
+            decimal pricePerItem = product.PriceWithMarkup;
             
             var orderItem = new OrderItem
             {
@@ -142,6 +140,12 @@ public class OrderService : IOrderService
 
             orderItems.Add(orderItem);
             totalPrice += pricePerItem * cartItem.Quantity;
+        }
+
+        // Add 10 pesos per stall for delivery orders
+        if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+        {
+            totalPrice += 10.00m;
         }
 
         order.TotalPrice = totalPrice;
@@ -402,10 +406,8 @@ public class OrderService : IOrderService
                 {
                     var product = products.First(p => p.Id == cartItem.ProductId);
                     
-                    // Use appropriate pricing based on fulfillment method
-                    decimal pricePerItem = request.FulfillmentMethod == FulfillmentMethod.Delivery 
-                        ? product.PriceWithDelivery 
-                        : product.PriceWithMarkup;
+                    // Always use PriceWithMarkup for products
+                    decimal pricePerItem = product.PriceWithMarkup;
                     
                     var orderItem = new OrderItem
                     {
@@ -415,6 +417,12 @@ public class OrderService : IOrderService
                     };
                     orderItems.Add(orderItem);
                     totalPrice += pricePerItem * cartItem.Quantity;
+                }
+
+                // Add 10 pesos per stall for delivery orders
+                if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
+                {
+                    totalPrice += 10.00m;
                 }
 
                 order.TotalPrice = totalPrice;

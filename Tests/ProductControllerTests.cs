@@ -32,7 +32,6 @@ public class ProductControllerTests
             Name = "Test Product",
             BasePrice = 12.99m,
             PriceWithMarkup = 15.00m,
-            PriceWithDelivery = 18.00m,
             Availability = ProductAvailability.Available,
             AvailabilityText = "Available",
             CategoryName = "Test Category",
@@ -286,8 +285,6 @@ public class ProductControllerTests
 
         _mockProductService.Verify(s => s.UpdateAsync(productId, request), Times.Once);
     }
-
-
 
     [Fact]
     public async Task UpdateProductAvailability_ValidRequest_ReturnsOkWithUpdatedProduct()

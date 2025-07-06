@@ -21,7 +21,6 @@ public class ProductMappingExtensionsTests
             Name = "Test Product",
             BasePrice = 12.99m,
             PriceWithMarkup = 15.99m, // Stored value (calculated as 12.99 + 10% = 14.289 -> 15.99)
-            PriceWithDelivery = 17.99m,
             Availability = ProductAvailability.Available,
             CategoryId = category.Id,
             Category = category,
@@ -71,7 +70,6 @@ public class ProductMappingExtensionsTests
             Name = "Test Product",
             BasePrice = basePrice,
             PriceWithMarkup = storedMarkupPrice, // Use stored values instead of calculating
-            PriceWithDelivery = storedMarkupPrice + 10.00m,
             Availability = ProductAvailability.Available,
             Category = category,
             Section = section
@@ -137,7 +135,7 @@ public class ProductMappingExtensionsTests
     }
 
     [Fact]
-    public void ToProductResponse_ValidProduct_IncludesCalculatedMarkupPrice()
+    public void ToProductResponse_ValidProduct_MapsCorrectly()
     {
         // Arrange
         var category = new Category { Id = 1, Name = "Test Category" };
@@ -153,7 +151,6 @@ public class ProductMappingExtensionsTests
             Picture = picture,
             BasePrice = 12.99m,
             PriceWithMarkup = 15.99m,
-            PriceWithDelivery = 17.99m,
             Availability = ProductAvailability.Available,
             CategoryId = category.Id,
             Category = category,
@@ -175,7 +172,6 @@ public class ProductMappingExtensionsTests
         result.BasePrice.Should().Be(12.99m);
         result.CalculatedMarkupPrice.Should().Be(15.99m); // Uses stored PriceWithMarkup value
         result.PriceWithMarkup.Should().Be(15.99m); // Original stored value
-        result.PriceWithDelivery.Should().Be(17.99m);
         result.Availability.Should().Be(ProductAvailability.Available);
         result.AvailabilityText.Should().Be("Available");
         result.CategoryId.Should().Be(1);
@@ -198,7 +194,6 @@ public class ProductMappingExtensionsTests
             Picture = null,
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m, // Stored value
-            PriceWithDelivery = 14.00m,
             Availability = ProductAvailability.Available,
             Category = new Category { Name = "Test Category" },
             Section = new StallSection { Name = "Test Section" },

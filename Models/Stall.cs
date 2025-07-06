@@ -21,9 +21,9 @@ public class Stall
     public int VendorId { get; set; }
 
     /// <summary>
-    /// Indicates if the stall has a delivery partner available
+    /// Indicates if the stall has delivery service available
     /// </summary>
-    public bool HasDeliveryPartner { get; set; } = false;
+    public bool hasDelivery { get; set; } = false;
 
     /// <summary>
     /// Indicates if delivery service is currently available

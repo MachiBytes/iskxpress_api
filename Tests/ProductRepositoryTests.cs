@@ -41,7 +41,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id,
@@ -89,7 +88,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 1", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -99,7 +97,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 2", 
             BasePrice = 20.00m,
             PriceWithMarkup = 22.00m,
-            PriceWithDelivery = 25.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -140,7 +137,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 1", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -150,7 +146,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 2", 
             BasePrice = 20.00m,
             PriceWithMarkup = 22.00m,
-            PriceWithDelivery = 25.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -191,7 +186,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Product 1", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -231,7 +225,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Apple Pie", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -241,7 +234,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Apple Juice", 
             BasePrice = 5.00m,
             PriceWithMarkup = 6.00m,
-            PriceWithDelivery = 8.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -251,7 +243,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Orange Juice", 
             BasePrice = 5.00m,
             PriceWithMarkup = 6.00m,
-            PriceWithDelivery = 8.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -292,7 +283,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Cheap Product", 
             BasePrice = 5.00m,
             PriceWithMarkup = 6.00m,
-            PriceWithDelivery = 8.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -302,7 +292,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Expensive Product", 
             BasePrice = 20.00m,
             PriceWithMarkup = 22.00m,
-            PriceWithDelivery = 25.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -344,7 +333,6 @@ public class ProductRepositoryTests : IDisposable
             Name = "Test Product", 
             BasePrice = 10.00m,
             PriceWithMarkup = 12.00m,
-            PriceWithDelivery = 15.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id

@@ -141,7 +141,6 @@ public class DatabaseMigrationTests : IDisposable
             PictureId = null,
             BasePrice = 100.00m,
             PriceWithMarkup = 110.00m,
-            PriceWithDelivery = 120.00m,
             CategoryId = category.Id,
             SectionId = section.Id,
             StallId = stall.Id
@@ -366,7 +365,6 @@ public class DatabaseMigrationTests : IDisposable
             Name = name,
             BasePrice = 100.00m,
             PriceWithMarkup = 110.00m,
-            PriceWithDelivery = 120.00m,
             CategoryId = categoryId,
             SectionId = sectionId,
             StallId = stallId

@@ -126,7 +126,6 @@ public class ProductService : IProductService
             existingProduct.Name = request.Name;
             existingProduct.BasePrice = request.BasePrice;
             existingProduct.PriceWithMarkup = CalculateMarkupPrice(request.BasePrice);
-            existingProduct.PriceWithDelivery = CalculateDeliveryPrice(request.BasePrice);
             existingProduct.CategoryId = request.CategoryId;
             existingProduct.SectionId = request.SectionId;
             // PictureId stays the same (can be updated via upload endpoint)
@@ -143,8 +142,6 @@ public class ProductService : IProductService
             throw;
         }
     }
-
-
 
     public async Task<ProductResponse?> UpdateProductAvailabilityAsync(int productId, UpdateProductAvailabilityRequest request)
     {
@@ -182,15 +179,6 @@ public class ProductService : IProductService
     private static decimal CalculateMarkupPrice(decimal basePrice)
     {
         return Math.Ceiling(basePrice + (basePrice * 0.10m));
-    }
-
-    /// <summary>
-    /// Calculates the delivery price by adding ₱10.00 to the markup price and rounding up to the nearest peso
-    /// </summary>
-    private static decimal CalculateDeliveryPrice(decimal basePrice)
-    {
-        var markupPrice = CalculateMarkupPrice(basePrice);
-        return Math.Ceiling(markupPrice + 10.00m);
     }
 
     public async Task<ProductResponse?> UploadProductPictureAsync(int productId, IFormFile file)
