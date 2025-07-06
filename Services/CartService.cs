@@ -23,7 +23,8 @@ public class CartService : ICartService
     public async Task<IEnumerable<CartItemResponse>> GetUserCartAsync(int userId)
     {
         var cartItems = await _cartItemRepository.GetByUserIdAsync(userId);
-        return cartItems.Select(MapToCartItemResponse);
+        var user = await _userRepository.GetByIdAsync(userId);
+        return cartItems.Select(ci => MapToCartItemResponse(ci, user));
     }
 
     public async Task<CartItemResponse> AddToCartAsync(int userId, AddToCartRequest request)
@@ -73,7 +74,7 @@ public class CartService : ICartService
 
         // Get the updated cart item with details
         var updatedCartItem = await _cartItemRepository.GetByIdWithDetailsAsync(cartItem.Id);
-        return MapToCartItemResponse(updatedCartItem!);
+        return MapToCartItemResponse(updatedCartItem!, user);
     }
 
     public async Task<CartItemResponse?> UpdateCartItemQuantityAsync(int userId, int cartItemId, UpdateCartItemQuantityRequest request)
@@ -96,7 +97,8 @@ public class CartService : ICartService
 
         // Get the updated cart item with details
         var updatedCartItem = await _cartItemRepository.GetByIdWithDetailsAsync(cartItemId);
-        return MapToCartItemResponse(updatedCartItem!);
+        var user = await _userRepository.GetByIdAsync(userId);
+        return MapToCartItemResponse(updatedCartItem!, user);
     }
 
     public async Task<bool> RemoveFromCartAsync(int userId, int cartItemId)
@@ -115,7 +117,7 @@ public class CartService : ICartService
         return await _cartItemRepository.ClearCartAsync(userId);
     }
 
-    private static CartItemResponse MapToCartItemResponse(CartItem cartItem)
+    private static CartItemResponse MapToCartItemResponse(CartItem cartItem, User? user)
     {
         return new CartItemResponse
         {
@@ -129,6 +131,7 @@ public class CartService : ICartService
             ProductName = cartItem.Product.Name,
             ProductBasePrice = cartItem.Product.BasePrice,
             ProductPriceWithMarkup = cartItem.Product.PriceWithMarkup,
+            ProductPremiumUserPrice = cartItem.Product.PremiumUserPrice,
             ProductAvailability = cartItem.Product.Availability,
             ProductPictureUrl = cartItem.Product.Picture?.ObjectUrl,
             

@@ -14,6 +14,7 @@ public class CartItemResponse
     public string ProductName { get; set; } = string.Empty;
     public decimal ProductBasePrice { get; set; }
     public decimal ProductPriceWithMarkup { get; set; }
+    public decimal ProductPremiumUserPrice { get; set; }
     public ProductAvailability ProductAvailability { get; set; }
     public string? ProductPictureUrl { get; set; }
     

@@ -396,22 +396,22 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Main Dishes
-            new Product { Name = "Adobong Manok", BasePrice = 12.99m, PriceWithMarkup = 15.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Sinigang na Baboy", BasePrice = 14.99m, PriceWithMarkup = 17.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Kare-Kare", BasePrice = 16.99m, PriceWithMarkup = 19.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Adobong Manok", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PremiumUserPrice = 13.50m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Sinigang na Baboy", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PremiumUserPrice = 15.30m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Kare-Kare", BasePrice = 16.99m, PriceWithMarkup = 19.00m, PremiumUserPrice = 17.10m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = mainDishesSection.Id, StallId = stall.Id, PictureId = null },
             
             // Rice Bowls
-            new Product { Name = "Chicken Tocino Bowl", BasePrice = 9.99m, PriceWithMarkup = 11.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Longganisa Bowl", BasePrice = 10.99m, PriceWithMarkup = 12.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Beef Tapa Bowl", BasePrice = 11.99m, PriceWithMarkup = 14.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Tocino Bowl", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PremiumUserPrice = 9.90m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Longganisa Bowl", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PremiumUserPrice = 10.80m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Beef Tapa Bowl", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PremiumUserPrice = 12.60m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = riceBowlsSection.Id, StallId = stall.Id, PictureId = null },
             
             // Appetizers
-            new Product { Name = "Lumpia Shanghai", BasePrice = 6.99m, PriceWithMarkup = 8.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Empanada", BasePrice = 3.99m, PriceWithMarkup = 5.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Lumpia Shanghai", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PremiumUserPrice = 7.20m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Empanada", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PremiumUserPrice = 4.50m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
             
             // Desserts & Drinks
-            new Product { Name = "Halo-Halo", BasePrice = 7.99m, PriceWithMarkup = 9.00m, Availability = ProductAvailability.Available, CategoryId = dessertsCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fresh Buko Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Halo-Halo", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PremiumUserPrice = 8.10m, Availability = ProductAvailability.Available, CategoryId = dessertsCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fresh Buko Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PremiumUserPrice = 4.50m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = dessertsSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
@@ -431,21 +431,21 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Signature Burgers
-            new Product { Name = "Classic Beef Burger", BasePrice = 11.99m, PriceWithMarkup = 14.00m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = signatureBurgersSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "BBQ Bacon Burger", BasePrice = 13.99m, PriceWithMarkup = 16.00m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = signatureBurgersSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Mushroom Swiss Burger", BasePrice = 12.99m, PriceWithMarkup = 15.00m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = signatureBurgersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Classic Beef Burger", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PremiumUserPrice = 12.60m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = signatureBurgersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "BBQ Bacon Burger", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PremiumUserPrice = 14.40m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = signatureBurgersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Mushroom Swiss Burger", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PremiumUserPrice = 13.50m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = signatureBurgersSection.Id, StallId = stall.Id, PictureId = null },
             
             // Chicken & Fish
-            new Product { Name = "Crispy Chicken Burger", BasePrice = 10.99m, PriceWithMarkup = 12.00m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fish & Chips", BasePrice = 13.99m, PriceWithMarkup = 16.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Crispy Chicken Burger", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PremiumUserPrice = 10.80m, Availability = ProductAvailability.Available, CategoryId = burgersCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fish & Chips", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PremiumUserPrice = 14.40m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = chickenFishSection.Id, StallId = stall.Id, PictureId = null },
             
             // Sides & Salads
-            new Product { Name = "Loaded Fries", BasePrice = 6.99m, PriceWithMarkup = 8.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Caesar Salad", BasePrice = 8.99m, PriceWithMarkup = 10.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Loaded Fries", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PremiumUserPrice = 7.20m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Caesar Salad", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PremiumUserPrice = 9.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = sidesSaladsSection.Id, StallId = stall.Id, PictureId = null },
             
             // Shakes & Drinks
-            new Product { Name = "Chocolate Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Vanilla Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Chocolate Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, PremiumUserPrice = 6.30m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Vanilla Milkshake", BasePrice = 5.99m, PriceWithMarkup = 7.00m, PremiumUserPrice = 6.30m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = shakesSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
@@ -465,21 +465,21 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Tacos & Quesadillas
-            new Product { Name = "Carne Asada Tacos", BasePrice = 9.99m, PriceWithMarkup = 11.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Quesadilla", BasePrice = 8.99m, PriceWithMarkup = 10.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fish Tacos", BasePrice = 10.99m, PriceWithMarkup = 12.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Carne Asada Tacos", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PremiumUserPrice = 9.90m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Quesadilla", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PremiumUserPrice = 9.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fish Tacos", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PremiumUserPrice = 10.80m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = tacosSection.Id, StallId = stall.Id, PictureId = null },
             
             // Burritos & Bowls
-            new Product { Name = "Beef Burrito", BasePrice = 11.99m, PriceWithMarkup = 14.00m, Availability = ProductAvailability.Available, CategoryId = wrapsRollsCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Bowl", BasePrice = 10.99m, PriceWithMarkup = 12.00m, Availability = ProductAvailability.Available, CategoryId = wrapsRollsCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Beef Burrito", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PremiumUserPrice = 12.60m, Availability = ProductAvailability.Available, CategoryId = wrapsRollsCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Bowl", BasePrice = 10.99m, PriceWithMarkup = 12.00m, PremiumUserPrice = 10.80m, Availability = ProductAvailability.Available, CategoryId = wrapsRollsCategory.Id, SectionId = burritosSection.Id, StallId = stall.Id, PictureId = null },
             
             // Appetizers
-            new Product { Name = "Loaded Nachos", BasePrice = 8.99m, PriceWithMarkup = 10.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Guacamole & Chips", BasePrice = 6.99m, PriceWithMarkup = 8.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Loaded Nachos", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PremiumUserPrice = 9.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Guacamole & Chips", BasePrice = 6.99m, PriceWithMarkup = 8.00m, PremiumUserPrice = 7.20m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersSection.Id, StallId = stall.Id, PictureId = null },
             
             // Beverages
-            new Product { Name = "Horchata", BasePrice = 3.99m, PriceWithMarkup = 5.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fresh Agua Fresca", BasePrice = 3.99m, PriceWithMarkup = 5.00m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Horchata", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PremiumUserPrice = 4.50m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fresh Agua Fresca", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PremiumUserPrice = 4.50m, Availability = ProductAvailability.Available, CategoryId = icedDrinksCategory.Id, SectionId = beveragesSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
@@ -499,21 +499,21 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Noodle Soups
-            new Product { Name = "Beef Noodle Soup", BasePrice = 11.99m, PriceWithMarkup = 14.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Wonton Soup", BasePrice = 9.99m, PriceWithMarkup = 11.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Beef Noodle Soup", BasePrice = 11.99m, PriceWithMarkup = 14.00m, PremiumUserPrice = 12.60m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Wonton Soup", BasePrice = 9.99m, PriceWithMarkup = 11.00m, PremiumUserPrice = 9.90m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = noodleSoupsSection.Id, StallId = stall.Id, PictureId = null },
             
             // Stir Fry
-            new Product { Name = "Kung Pao Chicken", BasePrice = 12.99m, PriceWithMarkup = 15.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Sweet & Sour Pork", BasePrice = 13.99m, PriceWithMarkup = 16.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fried Rice", BasePrice = 8.99m, PriceWithMarkup = 10.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Kung Pao Chicken", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PremiumUserPrice = 13.50m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Sweet & Sour Pork", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PremiumUserPrice = 14.40m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fried Rice", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PremiumUserPrice = 9.00m, Availability = ProductAvailability.Available, CategoryId = riceMealsCategory.Id, SectionId = stirFrySection.Id, StallId = stall.Id, PictureId = null },
             
             // Dim Sum
-            new Product { Name = "Pork Dumplings (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Chicken Siu Mai (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Pork Dumplings (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PremiumUserPrice = 8.10m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Chicken Siu Mai (6pcs)", BasePrice = 7.99m, PriceWithMarkup = 9.00m, PremiumUserPrice = 8.10m, Availability = ProductAvailability.Available, CategoryId = streetBitesCategory.Id, SectionId = dimSumSection.Id, StallId = stall.Id, PictureId = null },
             
             // Drinks & Tea
-            new Product { Name = "Jasmine Tea", BasePrice = 2.99m, PriceWithMarkup = 4.00m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fresh Lychee Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Jasmine Tea", BasePrice = 2.99m, PriceWithMarkup = 4.00m, PremiumUserPrice = 3.60m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fresh Lychee Juice", BasePrice = 3.99m, PriceWithMarkup = 5.00m, PremiumUserPrice = 4.50m, Availability = ProductAvailability.Available, CategoryId = hotDrinksCategory.Id, SectionId = drinksTeaSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 
@@ -533,20 +533,20 @@ public class DatabaseSeeder
         products.AddRange(new[]
         {
             // Classic Pizzas
-            new Product { Name = "Margherita Pizza", BasePrice = 12.99m, PriceWithMarkup = 15.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Pepperoni Pizza", BasePrice = 14.99m, PriceWithMarkup = 17.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Margherita Pizza", BasePrice = 12.99m, PriceWithMarkup = 15.00m, PremiumUserPrice = 13.50m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Pepperoni Pizza", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PremiumUserPrice = 15.30m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = classicPizzasSection.Id, StallId = stall.Id, PictureId = null },
             
             // Specialty Pizzas
-            new Product { Name = "Four Cheese Pizza", BasePrice = 15.99m, PriceWithMarkup = 18.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "BBQ Chicken Pizza", BasePrice = 16.99m, PriceWithMarkup = 19.00m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Four Cheese Pizza", BasePrice = 15.99m, PriceWithMarkup = 18.00m, PremiumUserPrice = 16.20m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "BBQ Chicken Pizza", BasePrice = 16.99m, PriceWithMarkup = 19.00m, PremiumUserPrice = 17.10m, Availability = ProductAvailability.Available, CategoryId = othersCategory.Id, SectionId = specialtyPizzasSection.Id, StallId = stall.Id, PictureId = null },
             
             // Pasta Dishes
-            new Product { Name = "Spaghetti Carbonara", BasePrice = 13.99m, PriceWithMarkup = 16.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Fettuccine Alfredo", BasePrice = 14.99m, PriceWithMarkup = 17.00m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Spaghetti Carbonara", BasePrice = 13.99m, PriceWithMarkup = 16.00m, PremiumUserPrice = 14.40m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Fettuccine Alfredo", BasePrice = 14.99m, PriceWithMarkup = 17.00m, PremiumUserPrice = 15.30m, Availability = ProductAvailability.Available, CategoryId = noodlesPastaCategory.Id, SectionId = pastaDishesSection.Id, StallId = stall.Id, PictureId = null },
             
             // Appetizers & Desserts
-            new Product { Name = "Garlic Bread", BasePrice = 4.99m, PriceWithMarkup = 6.00m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null },
-            new Product { Name = "Tiramisu", BasePrice = 8.99m, PriceWithMarkup = 10.00m, Availability = ProductAvailability.Available, CategoryId = dessertsCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null }
+            new Product { Name = "Garlic Bread", BasePrice = 4.99m, PriceWithMarkup = 6.00m, PremiumUserPrice = 5.40m, Availability = ProductAvailability.Available, CategoryId = friedSnacksCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null },
+            new Product { Name = "Tiramisu", BasePrice = 8.99m, PriceWithMarkup = 10.00m, PremiumUserPrice = 9.00m, Availability = ProductAvailability.Available, CategoryId = dessertsCategory.Id, SectionId = appetizersDessertsSection.Id, StallId = stall.Id, PictureId = null }
         });
     }
 } 
