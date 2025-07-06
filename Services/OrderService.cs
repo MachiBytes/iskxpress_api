@@ -121,7 +121,7 @@ public class OrderService : IOrderService
         }
 
         // Create order items and calculate total
-        decimal totalPrice = 0;
+        decimal totalSellingPrice = 0;
         var orderItems = new List<OrderItem>();
 
         foreach (var cartItem in stallCartItems)
@@ -139,14 +139,14 @@ public class OrderService : IOrderService
             };
 
             orderItems.Add(orderItem);
-            totalPrice += pricePerItem * cartItem.Quantity;
+            totalSellingPrice += pricePerItem * cartItem.Quantity;
         }
 
-        // Add 10 pesos per stall for delivery orders
-        if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
-        {
-            totalPrice += 10.00m;
-        }
+        // Calculate delivery fee
+        decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+        
+        // Calculate total price
+        decimal totalPrice = totalSellingPrice + deliveryFee;
 
         order.TotalPrice = totalPrice;
         order.OrderItems = orderItems;
@@ -399,7 +399,7 @@ public class OrderService : IOrderService
                     CreatedAt = DateTime.UtcNow
                 };
 
-                decimal totalPrice = 0;
+                decimal totalSellingPrice = 0;
                 var orderItems = new List<OrderItem>();
 
                 foreach (var cartItem in stallCartItems)
@@ -416,14 +416,14 @@ public class OrderService : IOrderService
                         PriceEach = pricePerItem
                     };
                     orderItems.Add(orderItem);
-                    totalPrice += pricePerItem * cartItem.Quantity;
+                    totalSellingPrice += pricePerItem * cartItem.Quantity;
                 }
 
-                // Add 10 pesos per stall for delivery orders
-                if (request.FulfillmentMethod == FulfillmentMethod.Delivery)
-                {
-                    totalPrice += 10.00m;
-                }
+                // Calculate delivery fee
+                decimal deliveryFee = request.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+                
+                // Calculate total price
+                decimal totalPrice = totalSellingPrice + deliveryFee;
 
                 order.TotalPrice = totalPrice;
                 order.OrderItems = orderItems;
@@ -453,6 +453,10 @@ public class OrderService : IOrderService
 
     private static OrderResponse MapToOrderResponse(Order order)
     {
+        // Calculate pricing breakdown
+        decimal totalSellingPrice = order.OrderItems.Sum(oi => oi.PriceEach * oi.Quantity);
+        decimal deliveryFee = order.FulfillmentMethod == FulfillmentMethod.Delivery ? 10.00m : 0.00m;
+        
         return new OrderResponse
         {
             Id = order.Id,
@@ -463,6 +467,8 @@ public class OrderService : IOrderService
             FulfillmentMethod = order.FulfillmentMethod,
             DeliveryAddress = order.DeliveryAddress,
             Notes = order.Notes,
+            TotalSellingPrice = totalSellingPrice,
+            DeliveryFee = deliveryFee,
             TotalPrice = order.TotalPrice,
             CreatedAt = order.CreatedAt,
             OrderItems = order.OrderItems.Select(oi => new OrderItemResponse

@@ -252,12 +252,78 @@ public class OrderServiceTests
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Equal(FulfillmentMethod.Delivery, result.FulfillmentMethod);
         Assert.Equal("123 Test Street, Test City", result.DeliveryAddress);
-        Assert.Equal(30.00m, result.TotalPrice); // 2 * 10.00 (markup pricing) + 10.00 (delivery fee per stall)
+        Assert.Equal(30.00m, result.TotalPrice); // Total Selling Price (2 * 10.00 = 20.00) + Delivery Fee (10.00) = 30.00
         Assert.Single(result.OrderItems);
         Assert.Equal("Test Product", result.OrderItems[0].ProductName);
         Assert.Equal(2, result.OrderItems[0].Quantity);
         Assert.Equal(10.00m, result.OrderItems[0].PriceEach); // Should use markup price
-        Assert.Equal(20.00m, result.OrderItems[0].TotalPrice);
+        Assert.Equal(20.00m, result.OrderItems[0].TotalPrice); // 2 * 10.00 = 20.00 (selling price)
+
+        // Verify cart items were removed
+        var remainingCartItems = await _cartItemRepository.GetByUserIdAsync(1);
+        Assert.Empty(remainingCartItems);
+    }
+
+    [Fact]
+    public async Task CreateOrderAsync_WithPickupMethod_ShouldUseMarkupPricingWithNoDeliveryFee()
+    {
+        // Arrange
+        var user = new User { Id = 1, Name = "Test User", Email = "test@example.com" };
+        var vendor = new User { Id = 2, Name = "Test Vendor", Email = "vendor@example.com" };
+        var stall = new Stall { Id = 1, Name = "Test Stall", VendorId = 2 };
+        var category = new Category { Id = 1, Name = "Test Category" };
+        var section = new StallSection { Id = 1, Name = "Test Section", StallId = 1 };
+        var product = new Product 
+        { 
+            Id = 1, 
+            Name = "Test Product", 
+            PriceWithMarkup = 10.00m,
+            CategoryId = 1,
+            SectionId = 1,
+            StallId = 1,
+            Availability = ProductAvailability.Available
+        };
+        var cartItem = new CartItem 
+        { 
+            Id = 1, 
+            UserId = 1, 
+            ProductId = 1, 
+            StallId = 1, 
+            Quantity = 2 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(vendor);
+        await _context.Stalls.AddAsync(stall);
+        await _context.Categories.AddAsync(category);
+        await _context.StallSections.AddAsync(section);
+        await _context.Products.AddAsync(product);
+        await _context.CartItems.AddAsync(cartItem);
+        await _context.SaveChangesAsync();
+
+        var request = new CreateOrderRequest
+        {
+            CartItemIds = new List<int> { 1 },
+            FulfillmentMethod = FulfillmentMethod.Pickup,
+            Notes = "Test pickup order"
+        };
+
+        // Act
+        var result = await _orderService.CreateOrderAsync(1, request);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(1, result.UserId);
+        Assert.Equal(1, result.StallId);
+        Assert.Equal("Test Stall", result.StallName);
+        Assert.Equal(OrderStatus.Pending, result.Status);
+        Assert.Equal(FulfillmentMethod.Pickup, result.FulfillmentMethod);
+        Assert.Equal(20.00m, result.TotalPrice); // Total Selling Price (2 * 10.00 = 20.00) + Delivery Fee (0.00) = 20.00
+        Assert.Single(result.OrderItems);
+        Assert.Equal("Test Product", result.OrderItems[0].ProductName);
+        Assert.Equal(2, result.OrderItems[0].Quantity);
+        Assert.Equal(10.00m, result.OrderItems[0].PriceEach); // Should use markup price
+        Assert.Equal(20.00m, result.OrderItems[0].TotalPrice); // 2 * 10.00 = 20.00 (selling price)
 
         // Verify cart items were removed
         var remainingCartItems = await _cartItemRepository.GetByUserIdAsync(1);
